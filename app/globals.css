@@ -26,22 +26,21 @@
   padding: 1rem;
   margin-top: 1rem;
   transition: border-color 0.3s ease;
-  cursor: pointer
+  cursor: pointer;
 }
 
 .account-type-container:hover {
   border-color: #3b82f6;
-  background: #F5F9FF;
-
+  background: #f5f9ff;
 }
 
-.form1-container{
-  background-color: #FFF;
+.form1-container {
+  background-color: #fff;
   padding: 38px 32px;
 }
 
-.text-grey{
-  color: '#8692A6'
+.text-grey {
+  color: "#8692A6";
 }
 
 body {
@@ -49,24 +48,24 @@ body {
 }
 
 .submit-button {
-  color: #ffffff; 
-  background-color: #1d4ed8; 
-  width: 420px; 
-  font-weight: 500; 
-  border-radius: 0.5rem; 
-  font-size: 1.125rem; 
+  color: #ffffff;
+  background-color: #1d4ed8;
+  width: 420px;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
   padding: 1rem 1.25rem;
-  text-align: center; 
-  transition: background-color 0.3s, ring-color 0.3s; 
+  text-align: center;
+  transition: background-color 0.3s, ring-color 0.3s;
 }
 
 .submit-button:hover {
-  background-color: #1e40af; 
+  background-color: #1e40af;
 }
 
 .submit-button:focus {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.5); 
+  box-shadow: 0 0 0 4px rgba(191, 219, 254, 0.5);
 }
 
 .submit-button.dark {
@@ -74,13 +73,28 @@ body {
 }
 
 .submit-button.dark:hover {
-  background-color: #1d4ed8; 
+  background-color: #1d4ed8;
 }
 
 .submit-button.dark:focus {
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.5);
 }
 
+.input-error {
+  border-color: #f87171;
+  box-shadow: 0 0 0 1px #f87171;
+  outline: none;
+}
+
+.input-error:focus {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 1px #f87171 !important;
+}
+
+.input-error:focus-visible {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 1px #f87171 !important;
+}
 
 @layer utilities {
   .text-balance {

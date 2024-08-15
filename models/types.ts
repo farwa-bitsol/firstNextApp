@@ -1,4 +1,4 @@
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { UseFormRegister } from "react-hook-form";
 import { Inputs } from "@/components/forms";
 
 export interface ICustomField {
@@ -6,7 +6,6 @@ export interface ICustomField {
   fieldName: keyof Inputs;
   type?: string;
   label: string;
-  errors: FieldErrors<Inputs>;
   required?: boolean;
   placeholder?: string;
 }
