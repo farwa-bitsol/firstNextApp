@@ -1,5 +1,38 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+
+const AccountOption = ({
+  heading,
+  description,
+}: {
+  heading: string;
+  description: string;
+}) => {
+  return (
+    <Link href="/form/1" className="account-type-container">
+      <div className="px-2">
+        <Image
+          src={`/images/bgContainer.svg`}
+          alt="container"
+          width={50}
+          height={50}
+        />
+      </div>
+
+      <div className="px-2">
+        <h1 className="font-2old text-gray-800 font-bold">{heading}</h1>
+        <p className="font-normal text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
+      </div>
+
+      <div className="px-2">
+        <Image src="/images/forward.svg" alt="logo" width={30} height={30} />
+      </div>
+    </Link>
+  );
+};
 
 export default function Home() {
   return (
@@ -12,10 +45,19 @@ export default function Home() {
       </div>
 
       {/* main content */}
-      <div className="flex items-center justify-center h-full">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Welcome to the Home Page
-        </h1>
+      <div className="flex justify-center flex-col h-full sm:px-12 xl:px-40">
+        <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
+        <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
+          To begin this journey, tell us what type of account you’d be opening.
+        </p>
+        <AccountOption
+          heading="Individual"
+          description="Personal account to manage all you activities."
+        />
+        <AccountOption
+          heading="Business"
+          description="Own or belong to a company, this is for you."
+        />
       </div>
     </div>
   );
