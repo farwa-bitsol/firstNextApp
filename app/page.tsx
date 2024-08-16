@@ -5,12 +5,14 @@ import Image from "next/image";
 const AccountOption = ({
   heading,
   description,
+  navigateTo,
 }: {
   heading: string;
   description: string;
+  navigateTo: string;
 }) => {
   return (
-    <Link href="/form/1" className="account-type-container">
+    <Link href={navigateTo} className="account-type-container">
       <div className="px-2">
         <Image
           src={`/images/bgContainer.svg`}
@@ -53,10 +55,12 @@ export default function Home() {
         <AccountOption
           heading="Individual"
           description="Personal account to manage all you activities."
+          navigateTo="/forms"
         />
         <AccountOption
           heading="Business"
           description="Own or belong to a company, this is for you."
+          navigateTo="/form/1" // this is dynamic route, will not retain the form state, just for practice
         />
       </div>
     </div>

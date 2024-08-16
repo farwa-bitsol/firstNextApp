@@ -1,5 +1,5 @@
 import { UseFormRegister } from "react-hook-form";
-import { Inputs } from "@/components/forms";
+import { Inputs } from "@/components/Forms";
 
 export interface ICustomField {
   register: UseFormRegister<Inputs>;

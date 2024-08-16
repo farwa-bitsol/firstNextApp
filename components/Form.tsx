@@ -7,6 +7,7 @@ import Link from "next/link";
 import { steps } from "@/models/constants";
 import { ICurrentForm, ICustomField } from "@/models/types";
 import { yupResolver } from "@hookform/resolvers/yup";
+
 import * as yup from "yup";
 import {
   SubmitHandler,
@@ -16,6 +17,7 @@ import {
   Controller,
 } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const FormDataSchema = yup.object({
   firstName: yup.string().required("Name is required*"),
@@ -117,7 +119,14 @@ const ContainerForm = ({
   );
 };
 
-export default function Form({ currStep }: { currStep: number }) {
+export default function Form({
+  currStep,
+  handleNext,
+}: Readonly<{
+  currStep: number;
+  handleNext?: () => void;
+}>) {
+  const { data: session } = useSession();
   const router = useRouter();
   const previousStep = currStep - 1;
   const delta = currStep - previousStep;
@@ -132,21 +141,30 @@ export default function Form({ currStep }: { currStep: number }) {
     handleSubmit,
     register,
     trigger,
-    control,
     formState: { errors },
   } = formInstance;
 
   const processForm: SubmitHandler<Inputs> = (data) => {
-    router.push("/");
+    //  TODO: debug issue before clicking the submit button it is submitting on reaching step 3
+    // router.push("/");
   };
 
   type FieldName = keyof Inputs;
+
+  const submit = async () => {
+    router.push("/");
+  };
 
   const next = async () => {
     const fields = steps[currStep - 1].fields;
 
     const isValid = await trigger(fields as FieldName[], { shouldFocus: true });
     if (!isValid) return;
+
+    if (handleNext) {
+      handleNext();
+      return;
+    }
 
     router.push(`/form/${currStep + 1}`);
   };
@@ -155,7 +173,7 @@ export default function Form({ currStep }: { currStep: number }) {
     <section>
       {/* Form */}
       <FormProvider {...formInstance}>
-        <form className="mt-12 py-6" onSubmit={handleSubmit(processForm)}>
+        <form className="mt-12" onSubmit={handleSubmit(processForm)} noValidate>
           {currStep === 1 && (
             <ContainerForm delta={delta} currentForm={currentForm}>
               <>
@@ -255,19 +273,70 @@ export default function Form({ currStep }: { currStep: number }) {
               />
             </ContainerForm>
           )}
+
+          {/* Navigation */}
+
+          <div className="flex justify-center">
+            {currStep === 3 ? (
+              <button type="button" onClick={submit} className="submit-button">
+                Save & Continue
+              </button>
+            ) : (
+              <button
+                onClick={next}
+                type="button"
+                className="submit-button  mt-8"
+              >
+                Register account
+              </button>
+            )}
+          </div>
         </form>
       </FormProvider>
 
-      {/* Navigation */}
-
-      <div className="flex justify-center">
-        {currStep === 3 ? (
-          <button type="submit" className="submit-button">
-            Save & Continue
-          </button>
+      <div className="flex justify-center flex-col items-center">
+        <p className="text-gray-500">or</p>
+        {session?.user?.email ? (
+          <p>
+            Logged in by&nbsp;{session?.user?.email}.
+            <button
+              onClick={() => signOut()}
+              className="text-blue-500  font-bold"
+            >
+              Logout
+            </button>
+          </p>
         ) : (
-          <button onClick={next} className="submit-button">
-            Register account
+          <button
+            onClick={() => signIn("google")}
+            type="button"
+            className="login-with-google focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 me-2 mb-2"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21.8055 10.0415H21V10H12V14H17.6515C16.827 16.3285 14.6115 18 12 18C8.6865 18 6 15.3135 6 12C6 8.6865 8.6865 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C6.4775 2 2 6.4775 2 12C2 17.5225 6.4775 22 12 22C17.5225 22 22 17.5225 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z"
+                fill="#FFC107"
+              />
+              <path
+                d="M3.15298 7.3455L6.43848 9.755C7.32748 7.554 9.48048 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C8.15898 2 4.82798 4.1685 3.15298 7.3455Z"
+                fill="#FF3D00"
+              />
+              <path
+                d="M12 22C14.583 22 16.93 21.0115 18.7045 19.404L15.6095 16.785C14.5718 17.5742 13.3037 18.0011 12 18C9.399 18 7.1905 16.3415 6.3585 14.027L3.0975 16.5395C4.7525 19.778 8.1135 22 12 22Z"
+                fill="#4CAF50"
+              />
+              <path
+                d="M21.8055 10.0415H21V10H12V14H17.6515C17.2571 15.1082 16.5467 16.0766 15.608 16.7855L15.6095 16.7845L18.7045 19.4035C18.4855 19.6025 22 17 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z"
+                fill="#1976D2"
+              />
+            </svg>
+            <p className="pl-2"> Register with Google</p>
           </button>
         )}
       </div>

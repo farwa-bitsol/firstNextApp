@@ -1,7 +1,8 @@
 import Link from "next/link";
-import Form from "@/components/forms";
+import Form from "@/components/Form";
 import { steps } from "@/models/constants";
 
+// dynamic routes just for practice
 export default function Page({
   params,
 }: Readonly<{ params: { slug: string } }>) {
