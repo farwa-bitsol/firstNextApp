@@ -8,9 +8,10 @@ const Sidebar = () => {
       <div className="absolute inset-0 -z-10">
         <Image
           src="/images/bg.jpeg"
-          layout="fill"
-          objectFit="cover"
+          fill
+          style={{ objectFit: "cover" }}
           quality={100}
+          sizes={"100%"}
           alt="background"
         />
       </div>
@@ -30,8 +31,9 @@ const Sidebar = () => {
           <p>Vincent Obi </p>
           <Image
             src="/images/check.svg"
-            layout="fill"
-            objectFit="cover"
+            fill
+            style={{ objectFit: "cover" }}
+            sizes={"100%"}
             quality={100}
             alt="background"
           />

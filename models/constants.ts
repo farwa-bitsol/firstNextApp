@@ -24,3 +24,5 @@ export const steps = [
     fields: ["verificationNumber"],
   },
 ];
+
+export const InitialFormValues = { firstName: "", email: "" };

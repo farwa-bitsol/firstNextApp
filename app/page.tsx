@@ -40,14 +40,14 @@ export default function Home() {
   return (
     <div className="relative bg-white h-screen">
       <div className="absolute top-12 right-12 text-gray-700 flex items-center space-x-2 border-b-2 border-transparent hover:border-blue-500">
-        <p>Already have an account?</p>
-        <Link href="/signin" className="text-blue-500  font-bold">
+        <p className="pl-2">Already have an account?</p>
+        <Link href="/signin" className="text-blue-500 font-bold">
           Sign in
         </Link>
       </div>
 
       {/* main content */}
-      <div className="flex justify-center flex-col h-full sm:px-12 xl:px-40">
+      <div className="flex justify-center flex-col h-full px-2 sm:px-12 xl:px-40">
         <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
         <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
           To begin this journey, tell us what type of account you’d be opening.

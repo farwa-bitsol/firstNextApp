@@ -1,23 +1,24 @@
 "use client";
 
-import { ReactElement, useMemo } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ReactElement, useMemo } from "react";
 
-import { steps } from "@/models/constants";
+import { InitialFormValues, steps } from "@/models/constants";
 import { ICurrentForm, ICustomField } from "@/models/types";
+import { createUser } from "@/services/userService";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-import * as yup from "yup";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import {
+  Controller,
+  FormProvider,
   SubmitHandler,
   useForm,
-  FormProvider,
   useFormContext,
-  Controller,
 } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useSession, signIn, signOut } from "next-auth/react";
+import * as yup from "yup";
 
 const FormDataSchema = yup.object({
   firstName: yup.string().required("Name is required*"),
@@ -106,7 +107,7 @@ const ContainerForm = ({
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className="flex justify-center flex-col h-full lg:px-28">
+      <div className="flex justify-center flex-col h-full lg:px-24">
         <h1 className="text-2xl font-bold text-gray-800">
           {currentForm?.name}
         </h1>
@@ -135,6 +136,7 @@ export default function Form({
 
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
+    defaultValues: InitialFormValues,
   });
 
   const {
@@ -144,16 +146,21 @@ export default function Form({
     formState: { errors },
   } = formInstance;
 
-  const processForm: SubmitHandler<Inputs> = (data) => {
-    //  TODO: debug issue before clicking the submit button it is submitting on reaching step 3
-    // router.push("/");
+  const processForm: SubmitHandler<Inputs> = async (data) => {
+    try {
+      const newUser = {
+        firstName: data.firstName,
+        email: data.email,
+      };
+
+      await createUser(newUser);
+      router.push("/");
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   };
 
   type FieldName = keyof Inputs;
-
-  const submit = async () => {
-    router.push("/");
-  };
 
   const next = async () => {
     const fields = steps[currStep - 1].fields;
@@ -276,23 +283,22 @@ export default function Form({
 
           {/* Navigation */}
 
-          <div className="flex justify-center">
-            {currStep === 3 ? (
-              <button type="button" onClick={submit} className="submit-button">
-                Save & Continue
-              </button>
-            ) : (
-              <button
-                onClick={next}
-                type="button"
-                className="submit-button  mt-8"
-              >
+          {currStep === 3 && (
+            <div className="flex justify-center mt-8">
+              <button type="submit" className="submit-button">
                 Register account
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </form>
       </FormProvider>
+      {currStep !== 3 && (
+        <div className="flex justify-center mt-8">
+          <button type="button" onClick={next} className="submit-button">
+            Save & Continue
+          </button>
+        </div>
+      )}
 
       <div className="flex justify-center flex-col items-center">
         <p className="text-gray-500">or</p>

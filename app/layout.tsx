@@ -18,16 +18,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <SessionWrapper>
-        <body className={inter.className}>
-          <div className="flex h-screen">
-            <div className="w-1/2">
-              <Sidebar />
-            </div>
-            <main className="w-1/2">{children}</main>
+      <body className={inter.className}>
+        <div className="flex h-screen">
+          <div className="w-1/2">
+            <Sidebar />
           </div>
-        </body>
-      </SessionWrapper>
+          <SessionWrapper>
+            <main className="w-1/2">{children}</main>
+          </SessionWrapper>
+        </div>
+      </body>
     </html>
   );
 }
