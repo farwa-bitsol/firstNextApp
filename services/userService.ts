@@ -8,7 +8,10 @@ export const fetchUsers = async (
   limit: number = 4
 ): Promise<IUser[]> => {
   const res = await fetch(
-    `http://localhost:3000/users?_page=${pageNumber}&_limit=${limit}`
+    `http://localhost:3000/users?_page=${pageNumber}&_limit=${limit}`,
+    {
+      method: "GET",
+    }
   );
 
   if (!res.ok) {
