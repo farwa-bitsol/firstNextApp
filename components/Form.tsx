@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ReactElement, useMemo } from "react";
 
 import { InitialFormValues, steps } from "@/models/constants";
-import { ICurrentForm, ICustomField } from "@/models/types";
-import { createUser } from "@/services/userService";
+import { ICurrentForm, ICustomField, IUser } from "@/models/types";
+import { createUser, fetchUsers } from "@/services/userService";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -21,12 +21,12 @@ import {
 import * as yup from "yup";
 
 const FormDataSchema = yup.object({
-  firstName: yup.string().required("Name is required*"),
+  fullName: yup.string().required("name is required*"),
   email: yup.string().required("email is required*"),
   address: yup.string(),
   country: yup.string(),
   phone: yup.string(),
-  password: yup.string(),
+  password: yup.string().required("password is required*"),
   remember: yup.boolean(),
 });
 
@@ -149,9 +149,21 @@ export default function Form({
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       const newUser = {
-        firstName: data.firstName,
+        fullName: data.fullName,
         email: data.email,
+        password: data.password,
       };
+
+      const fetchedUsers: IUser[] = await fetchUsers();
+      const emailExists = fetchedUsers.find(
+        (user) => data.email === user.email
+      );
+
+      if (emailExists) {
+        // show Error
+        window.alert("Email already exists");
+        return;
+      }
 
       await createUser(newUser);
       router.push("/");
@@ -186,7 +198,7 @@ export default function Form({
               <>
                 <CustomField
                   register={register}
-                  fieldName="firstName"
+                  fieldName="fullName"
                   label="Your fullname"
                   required
                   placeholder="Enter fullname"

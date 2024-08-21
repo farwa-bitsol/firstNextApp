@@ -15,7 +15,7 @@ const DeleteUser = ({ user }: { user: IUser }) => {
 
   return (
     <div className="p-1 flex justify-between px-4">
-      <h1 className="font-bold text-gray-800">{user.firstName}</h1>
+      <h1 className="font-bold text-gray-800">{user.fullName}</h1>
       <button
         type="button"
         className="text-blue-500 font-bold"
