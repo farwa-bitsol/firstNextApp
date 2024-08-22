@@ -12,7 +12,7 @@ const Sidebar = () => {
           style={{ objectFit: "cover" }}
           quality={100}
           sizes={"100%"}
-          alt="background"
+          alt="background image"
         />
       </div>
 
@@ -28,14 +28,14 @@ const Sidebar = () => {
           90s as desktop publishers bundled the text with their software.
         </p>
         <div className="flex">
-          <p>Vincent Obi </p>
+          <p>Vincent Obi</p>
           <Image
             src="/images/check.svg"
             fill
             style={{ objectFit: "cover" }}
             sizes={"100%"}
             quality={100}
-            alt="background"
+            alt="check mark"
           />
         </div>
       </div>
