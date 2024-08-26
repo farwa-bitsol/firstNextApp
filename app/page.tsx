@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Logout from "@/components/Logout";
+import { getServerSession } from "next-auth";
 
 const AccountOption = ({
   heading,
@@ -36,32 +38,55 @@ const AccountOption = ({
   );
 };
 
-export default function Home() {
+export default async function Home() {
+  const session = await getServerSession();
   return (
-    <div className="relative bg-white h-screen">
-      <div className="absolute top-12 right-12 text-gray-700 flex items-center space-x-2 border-b-2 border-transparent hover:border-blue-500">
-        <p className="pl-2">Already have an account?</p>
+    <div className="px-8 pt-16">
+      <div className="flex justify-between">
         <Link href="/signin" className="text-blue-500 font-bold">
-          Sign in
+          User Dashboard
         </Link>
+
+        <div className="text-gray-700 flex items-center space-x-2 border-b-2 border-transparent hover:border-blue-500">
+          {session ? (
+            <Logout />
+          ) : (
+            <>
+              <p>Already have an account?</p>
+              <Link href="/signin" className="text-blue-500 font-bold">
+                Sign in
+              </Link>
+            </>
+          )}
+        </div>
       </div>
 
       {/* main content */}
-      <div className="flex justify-center flex-col h-full px-2 sm:px-12 xl:px-40">
-        <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
-        <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
-          To begin this journey, tell us what type of account you’d be opening.
-        </p>
-        <AccountOption
-          heading="Individual"
-          description="Personal account to manage all you activities."
-          navigateTo="/forms"
-        />
-        <AccountOption
-          heading="Business"
-          description="Own or belong to a company, this is for you."
-          navigateTo="/form/1" // this is dynamic route, will not retain the form state, just for practice
-        />
+
+      <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">
+        {session ? (
+          <h1 className="text-2xl font-bold text-gray-800">
+            {`Welcome to Dashboard ${session.user?.email}!`}
+          </h1>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
+            <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
+              To begin this journey, tell us what type of account you’d be
+              opening.
+            </p>
+            <AccountOption
+              heading="Individual"
+              description="Personal account to manage all you activities."
+              navigateTo="/forms"
+            />
+            <AccountOption
+              heading="Business"
+              description="Own or belong to a company, this is for you."
+              navigateTo="/form/1" // this is dynamic route, will not retain the form state, just for practice
+            />
+          </>
+        )}
       </div>
     </div>
   );

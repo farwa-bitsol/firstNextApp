@@ -4,46 +4,6 @@
       "id": "da76",
       "firstName": "test user",
       "email": "farwa@bitsol.tech"
-    },
-    {
-      "id": "7488",
-      "firstName": "test user",
-      "email": "farwa@bitsol.tech"
-    },
-    {
-      "id": "180d",
-      "firstName": "123",
-      "email": "abc@gmail.com"
-    },
-    {
-      "id": "157b",
-      "firstName": "1",
-      "email": "1@gmail.com"
-    },
-    {
-      "id": "c266",
-      "firstName": "2",
-      "email": "2@bitsol.tech"
-    },
-    {
-      "id": "379d",
-      "firstName": "3",
-      "email": "3@bitsol.tech"
-    },
-    {
-      "id": "00a0",
-      "firstName": "3",
-      "email": "3@bitsol.tech"
-    },
-    {
-      "id": "b95f",
-      "firstName": "4",
-      "email": "4@bitsol.tch"
-    },
-    {
-      "id": "b26c",
-      "firstName": "5",
-      "email": "farwa@bitsol.tech"
-    }
+    }   
   ]
 }

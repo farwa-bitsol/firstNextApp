@@ -5,7 +5,7 @@ export const steps = [
     name: "Register Individual Account!",
     description:
       "For the purpose of industry regulation, your details are required.",
-    fields: ["firstName", "email", "password"],
+    fields: ["fullName", "email", "password"],
   },
   {
     id: "Step 2",
@@ -25,4 +25,4 @@ export const steps = [
   },
 ];
 
-export const InitialFormValues = { firstName: "", email: "" };
+export const InitialFormValues = { fullName: "", email: "" };

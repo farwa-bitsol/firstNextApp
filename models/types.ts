@@ -18,7 +18,8 @@ export interface ICurrentForm {
 }
 
 export interface IUser {
-  firstName: string;
+  fullName: string;
   id?: string;
   email: string;
+  password: string
 }

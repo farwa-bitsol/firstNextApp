@@ -1,8 +1,8 @@
+import SessionWrapper from "@/components/SessionWrapper";
+import Sidebar from "@/components/Sidebar";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import SessionWrapper from "@/components/SessionWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +20,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex h-screen">
-          <div className="w-1/2">
+          <div className="hidden md:block w-1/2">
             <Sidebar />
           </div>
           <SessionWrapper>
-            <main className="w-1/2">{children}</main>
+            <main className="w-full md:w-1/2">{children}</main>
           </SessionWrapper>
         </div>
       </body>
