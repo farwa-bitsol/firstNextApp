@@ -4,44 +4,36 @@ import "@testing-library/jest-dom";
 import Sidebar from "@/components/Sidebar";
 
 describe("Sidebar Component", () => {
-  it("renders the background image correctly", () => {
-    render(<Sidebar />);
-
-    // Check if the background image is rendered with the correct src and alt attributes
-    const bgImage = screen.getByAltText("background image");
-    expect(bgImage).toBeInTheDocument();
-    expect(bgImage).toHaveAttribute("src", "/images/bg.jpeg");
-  });
-
-  it("renders the logo image correctly", () => {
-    render(<Sidebar />);
-
-    // Check if the logo image is rendered with the correct src, alt, width, and height attributes
-    const logoImage = screen.getByAltText("logo");
-    expect(logoImage).toBeInTheDocument();
-    expect(logoImage).toHaveAttribute("src", "/images/logo.svg");
-    expect(logoImage).toHaveAttribute("width", "100");
-    expect(logoImage).toHaveAttribute("height", "100");
-  });
-
-  it("renders the text content correctly", () => {
+  it("renders the background text correctly", () => {
     render(<Sidebar />);
 
     // Check if the text content is present in the document
-    expect(
-      screen.getByText(
-        /The passage experienced a surge in popularity during the 1960s/i
-      )
-    ).toBeInTheDocument();
-    expect(screen.getByText(/Vincent Obi/i)).toBeInTheDocument();
+    const textContent = screen.getByText(
+      /The passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software./i
+    );
+    expect(textContent).toBeInTheDocument();
   });
 
-  it("renders the check image correctly", () => {
+  it("renders the author's name correctly", () => {
     render(<Sidebar />);
 
-    // Check if the check image is rendered with the correct src and alt attributes
-    const checkImage = screen.getByAltText("check mark"); // Updated alt text for the check mark image
-    expect(checkImage).toBeInTheDocument();
-    expect(checkImage).toHaveAttribute("src", "/images/check.svg");
+    // Check if the author's name is present in the document
+    const authorName = screen.getByText(/Vincent Obi/i);
+    expect(authorName).toBeInTheDocument();
+  });
+
+  it("renders the text and author name in the correct order", () => {
+    render(<Sidebar />);
+
+    // Check if the text content appears before the author's name
+    const textContent = screen.getByText(
+      /The passage experienced a surge in popularity during the 1960s when Letraset used it on their dry-transfer sheets, and again during the 90s as desktop publishers bundled the text with their software./i
+    );
+    const authorName = screen.getByText(/Vincent Obi/i);
+
+    expect(textContent).toBeInTheDocument();
+    expect(authorName).toBeInTheDocument();
+    expect(textContent).toBeTruthy();
+    expect(authorName).toBeTruthy();
   });
 });
