@@ -7,8 +7,9 @@ export const fetchUsers = async (
   pageNumber: number = 1,
   limit: number = 4
 ): Promise<IUser[]> => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const res = await fetch(
-    `http://localhost:3000/users?_page=${pageNumber}&_limit=${limit}`,
+    `${apiUrl}/users?_page=${pageNumber}&_limit=${limit}`,
     {
       method: "GET",
     }
@@ -24,7 +25,8 @@ export const fetchUsers = async (
 };
 
 export const createUser = async (user: IUser): Promise<IUser> => {
-  const res = await fetch("http://localhost:3000/users", {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const res = await fetch(`${apiUrl}/users`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +44,8 @@ export const createUser = async (user: IUser): Promise<IUser> => {
 };
 
 export const deleteUser = async (userId: string) => {
-  const response = await fetch(`http://localhost:3000/users/${userId}`, {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const response = await fetch(`${apiUrl}/users/${userId}`, {
     method: "DELETE",
   });
 
