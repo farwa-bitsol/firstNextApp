@@ -40,7 +40,7 @@ const authOptions = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          redirect_uri: "http://localhost:3001/api/auth/callback/google",
+          redirect_uri: "https://keen-melba-d92305.netlify.app/api/auth/callback/google",
         },
       },
     }),
