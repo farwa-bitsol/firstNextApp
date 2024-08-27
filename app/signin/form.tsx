@@ -22,18 +22,26 @@ export default function Form() {
   return (
     <div className="flex flex-col gap-2 items-center justify-center min-h-screen mx-auto max-w-md mt-10">
       <form onSubmit={handleSubmit}>
-        <p className="block text-sm font-medium leading-6 text-gray-900">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
           Email
-        </p>
+        </label>
         <input
+          id="email"
           name="email"
           className="block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset"
           type="email"
         />
-        <p className="block text-sm font-medium leading-6 text-gray-900">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
           Password
-        </p>
+        </label>
         <input
+          id="password"
           name="password"
           className="block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset"
           type="password"
