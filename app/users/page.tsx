@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { fetchUsers } from "@/services/userService";
 import DeleteUser from "@/components/DeleteUser";
 import { IUser } from "@/models/types";
@@ -11,18 +11,18 @@ const Users = () => {
   const [users, setUsers] = useState<IUser[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const getUsers = async () => {
+  const getUsers = useCallback(async () => {
     try {
       const fetchedUsers = await fetchUsers(currentPage);
       setUsers(fetchedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
-  };
+  }, [currentPage]);
 
   useEffect(() => {
     getUsers();
-  }, [currentPage]);
+  }, [getUsers]);
 
   return (
     <>
