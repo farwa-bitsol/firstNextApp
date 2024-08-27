@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { fetchUsers, createUser } from "@/services/userService";
+import { fetchUsers } from "@/services/userService";
 import { IUser } from "@/models/types";
 
 const authOptions = NextAuth({
@@ -11,6 +11,7 @@ const authOptions = NextAuth({
   pages: {
     signIn: "/",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       credentials: {
