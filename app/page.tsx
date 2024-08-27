@@ -4,7 +4,7 @@ import Image from "next/image";
 import Logout from "@/components/Logout";
 import { getServerSession } from "next-auth";
 
-export const AccountOption = ({
+const AccountOption = ({
   heading,
   description,
   navigateTo,
