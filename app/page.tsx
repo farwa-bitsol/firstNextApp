@@ -38,7 +38,7 @@ export const AccountOption = ({
   );
 };
 
-export default async function Home() {
+const Home = async () => {
   const session = await getServerSession();
   return (
     <div className="px-8 pt-16">
@@ -92,4 +92,6 @@ export default async function Home() {
       </div>
     </div>
   );
-}
+};
+
+export default Home;
