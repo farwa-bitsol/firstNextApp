@@ -2,8 +2,14 @@
   "users": [
     {
       "id": "da76",
-      "firstName": "test user",
+      "fullName": "test user",
       "email": "farwa@bitsol.tech"
-    }   
+    },
+    {
+      "fullName": "bilal",
+      "email": "bilal@gmail.com",
+      "password": "123",
+      "id": "bHy_D6N"
+    }
   ]
 }

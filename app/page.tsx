@@ -66,7 +66,9 @@ export default async function Home() {
       <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">
         {session ? (
           <h1 className="text-2xl font-bold text-gray-800">
-            {`Welcome to Dashboard ${session.user?.email}!`}
+            {`Welcome to Dashboard ${
+              session.user?.name ?? session.user?.email
+            }!`}
           </h1>
         ) : (
           <>

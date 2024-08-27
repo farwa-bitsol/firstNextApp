@@ -14,8 +14,8 @@ const authOptions = NextAuth({
   providers: [
     CredentialsProvider({
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
         const fetchedUsers: IUser[] = await fetchUsers();
@@ -27,6 +27,7 @@ const authOptions = NextAuth({
           return {
             id: filteredEmail.id || "",
             email: filteredEmail.email,
+            name: filteredEmail.fullName,
           };
         }
 
@@ -44,26 +45,6 @@ const authOptions = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user, account }) {
-      if (account?.provider === "google") {
-        // Handle user creation or updating in your database
-        const fetchedUsers: IUser[] = await fetchUsers();
-        const existingUser = fetchedUsers.find(
-          (existingUser) => existingUser.email === user.email
-        );
-
-        if (!existingUser) {
-          // Create a new user in your database
-          await createUser({
-            id: user.id || "",
-            email: user.email as string,
-            fullName: user.name as string,
-            password: "",
-          });
-        }
-      }
-      return true; // Continue with sign-in
-    },
     async session({ session, user }) {
       // Pass user data to the session
       session.user = user;
