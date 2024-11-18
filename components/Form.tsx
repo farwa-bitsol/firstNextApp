@@ -64,7 +64,7 @@ const CustomField = ({
                   fieldState.error
                     ? "input-error"
                     : "border-gray-300 ring-gray-300 focus:border-sky-600 focus:ring-sky-600"
-                } placeholder:text-gray-400 sm:text-sm sm:leading-6`}
+                } placeholder:text-gray-400 sm:text-sm`}
                 onChange={(e) => {
                   field.onChange(e);
                   // clear error
@@ -261,12 +261,12 @@ export default function Form({
                   >
                     Country
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 mb-6">
                     <select
                       id="country"
                       {...register("country")}
                       autoComplete="country-name"
-                      className="block w-full rounded-md border-0 px-5 py-4  text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600  sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 px-5 py-4  text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600  sm:text-sm "
                     >
                       <option>United States</option>
                       <option>Canada</option>
@@ -305,7 +305,7 @@ export default function Form({
         </form>
       </FormProvider>
       {currStep !== 3 && (
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center">
           <button type="button" onClick={next} className="submit-button">
             Save & Continue
           </button>
