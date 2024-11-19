@@ -42,17 +42,17 @@ const Home = async () => {
   const session = await getServerSession();
   return (
     <div className="px-8 pt-16">
-      <div className="flex justify-between">
+      <div className="flex justify-between  space-x-2">
         <Link href="/signin" className="text-blue-500 font-bold">
           User Dashboard
         </Link>
 
-        <div className="text-gray-700 flex items-center space-x-2 border-b-2 border-transparent hover:border-blue-500">
+        <div className="text-gray-700  space-x-2 border-b-2 border-transparent hover:border-blue-500">
           {session ? (
             <Logout />
           ) : (
             <>
-              <p>Already have an account?</p>
+              <p className="inline-block">Already have an account?</p>
               <Link href="/signin" className="text-blue-500 font-bold">
                 Sign in
               </Link>
