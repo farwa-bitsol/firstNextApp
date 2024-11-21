@@ -32,53 +32,84 @@ const FormDataSchema = yup.object({
 
 export type Inputs = yup.InferType<typeof FormDataSchema>;
 
-const CustomField = ({
+export const CustomField = ({
   fieldName,
   type = "text",
   label,
-  required,
+  required = false,
   placeholder,
+  rows,
+  noMargin
 }: ICustomField) => {
   const { clearErrors, setError } = useFormContext();
 
   return (
-    <div className="sm:col-span-3 my-4">
-      <label
-        htmlFor={fieldName}
-        className="block text-sm font-medium leading-6 text-gray-900"
-      >
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+    <div className={`sm:col-span-3 ${noMargin ? "" : "my-4"}`}>
+      {label && (
+        <label
+          htmlFor={fieldName}
+          className="block text-sm font-medium leading-6 text-gray-900"
+        >
+          {label} {required && <span className="text-red-500">*</span>}
+        </label>
+      )}
       <div className="mt-2">
         <Controller
           name={fieldName}
           render={({ field, fieldState }) => (
             <div>
-              <input
-                type={type}
-                id={fieldName}
-                placeholder={placeholder}
-                {...field}
-                autoComplete="given-name"
-                className={`block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset ${
-                  fieldState.error
-                    ? "input-error"
-                    : "border-gray-300 ring-gray-300 focus:border-sky-600 focus:ring-sky-600"
-                } placeholder:text-gray-400 sm:text-sm`}
-                onChange={(e) => {
-                  field.onChange(e);
-                  // clear error
-                  if (e.target.value) clearErrors(fieldName);
-                }}
-                onBlur={() => {
-                  field.onBlur();
-                  if (!field.value)
-                    setError(fieldName, {
-                      type: "manual",
-                      message: "required(*)",
-                    });
-                }}
-              />
+              {type === "textarea" ? (
+                <textarea
+                  id={fieldName}
+                  placeholder={placeholder}
+                  value={field.value || ""}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    // clear error
+                    if (e.target.value) clearErrors(fieldName);
+                  }}
+                  onBlur={() => {
+                    field.onBlur();
+                    if (!field.value)
+                      setError(fieldName, {
+                        type: "manual",
+                        message: "required(*)",
+                      });
+                  }}
+                  rows={rows}
+                  className={`block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset ${
+                    fieldState.error
+                      ? "input-error"
+                      : "border-gray-300 ring-gray-300 focus:border-sky-600 focus:ring-sky-600"
+                  } placeholder:text-gray-400 sm:text-sm`}
+                />
+              ) : (
+                <input
+                  type={type}
+                  id={fieldName}
+                  placeholder={placeholder}
+                  {...field}
+                  autoComplete="given-name"
+                  className={`block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset ${
+                    fieldState.error
+                      ? "input-error"
+                      : "border-gray-300 ring-gray-300 focus:border-sky-600 focus:ring-sky-600"
+                  } placeholder:text-gray-400 sm:text-sm`}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    // clear error
+                    if (e.target.value) clearErrors(fieldName);
+                  }}
+                  onBlur={() => {
+                    field.onBlur();
+                    if (!field.value)
+                      setError(fieldName, {
+                        type: "manual",
+                        message: "required(*)",
+                      });
+                  }}
+                />
+              )}
               {fieldState.error && (
                 <p className="mt-2 text-sm text-red-400">
                   {fieldState.error.message}

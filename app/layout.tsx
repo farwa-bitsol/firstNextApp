@@ -1,4 +1,4 @@
-import DynamicSidebar from "@/components/DynamicSidebar";
+import DynamicBodyContent from "@/components/DynamicBodyContent";
 import SessionWrapper from "@/components/SessionWrapper";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -20,10 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="flex h-screen">
-          <DynamicSidebar />
-          <SessionWrapper>
-            <main className="w-full md:w-1/2">{children}</main>
-          </SessionWrapper>
+          <DynamicBodyContent>{children}</DynamicBodyContent>
         </div>
       </body>
     </html>

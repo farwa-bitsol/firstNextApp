@@ -63,7 +63,7 @@ const MobileWrapper = ({ children }: MobileWrapperProps) => {
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:block w-1/2">
+      <div className="hidden md:block">
         <div className="h-screen w-64 bg-[#F5F9FF] shadow-lg z-10 p-4">
           {children}
         </div>

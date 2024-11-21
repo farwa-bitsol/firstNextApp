@@ -2,12 +2,14 @@ import { UseFormRegister } from "react-hook-form";
 import { Inputs } from "@/components/Form";
 
 export interface ICustomField {
-  register: UseFormRegister<Inputs>;
-  fieldName: keyof Inputs;
+  register: UseFormRegister<any>;
+  fieldName: string;
   type?: string;
   label: string;
   required?: boolean;
   placeholder?: string;
+  rows?: number
+  noMargin?:boolean
 }
 
 export interface ICurrentForm {
