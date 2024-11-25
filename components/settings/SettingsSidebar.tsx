@@ -3,6 +3,7 @@ import {
   CircleUserRound,
   LayoutDashboard,
   LucideIcon,
+  SquareChartGantt,
   WalletCards,
 } from "lucide-react";
 import SidebarItem from "./Item";
@@ -42,6 +43,12 @@ const items: ISidebarItem[] = [
     name: "Billing",
     path: "/billing",
     icon: BadgeDollarSign,
+  },
+
+  {
+    name: "Analytics",
+    path: "/analytics",
+    icon: SquareChartGantt,
   },
 ];
 
