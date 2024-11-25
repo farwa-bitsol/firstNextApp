@@ -3,6 +3,20 @@
 import React from "react";
 import ApexCharts from "react-apexcharts";
 
+const colorMap: Record<string, string> = {
+  "Channel pages": "#1A52E1",
+  "Direct or unknown": "#6792FF",
+  Search: "#4473EA",
+  External: "#96B3FF",
+};
+
+const data = [
+  { label: "Channel pages", value: 37.5 },
+  { label: "Direct or unknown", value: 33.6 },
+  { label: "Search", value: 11 },
+  { label: "External", value: 6 },
+];
+
 const TrafficSourceTypes = () => {
   const options = {
     chart: {
@@ -25,22 +39,15 @@ const TrafficSourceTypes = () => {
         colors: undefined,
       },
     },
-    colors: ["#6792FF", "#1A52E1", "#4473EA", "#96B3FF"], // data colors
+    colors: Object.values(colorMap), // data colors
     series: [37.5, 33.6, 11, 6], // data
-    labels: ["Channel pages", "Direct or unknown", "Search", "External"], // labels
+    labels: Object.keys(colorMap), // labels
     legend: {
       show: false,
       position: "right" as "right",
       offsetY: 30,
     },
   };
-
-  const data = [
-    { label: "Channel pages", value: 37.5 },
-    { label: "Direct or unknown", value: 33.6 },
-    { label: "Search", value: 11 },
-    { label: "External", value: 6 },
-  ];
 
   return (
     <div className="flex flex-col md:flex-row items-start flex-wrap">
@@ -52,34 +59,35 @@ const TrafficSourceTypes = () => {
       />
 
       {/* data Representation with Progress Bars */}
-      <div className="bg-[#F6F9FF] w-full md:w-72 h-fit  m-4 p-6 rounded-2xl">
-        <p className="text-lg font-medium">Traffic Source Breakdown</p>
+      <div className="w-full md:w-72 h-fit  m-4 p-6 rounded-2xl">
         <div className="space-y-4">
           {data.map((item, index) => (
             <div key={index} className="flex flex-col">
-              <div className="flex justify-between items-center">
-                <p className="text-sm">{item.label}</p>
-                <p className="text-sm">{item.value}%</p>
-              </div>
-              <div className="w-full h-2 bg-gray-200 rounded-full mt-2">
+              <p className="text-sm">{item.label}</p>
+
+              <div
+                className={`w-[${item.value}%] h-2 bg-white rounded-full mt-2 flex items-center gap-2`}
+              >
                 <div
                   className="h-2 rounded-full"
                   style={{
                     width: `${item.value}%`,
-                    backgroundColor:
-                      item.label === "Channel pages"
-                        ? "#6792FF"
-                        : item.label === "Direct or unknown"
-                        ? "#1A52E1"
-                        : item.label === "Search"
-                        ? "#4473EA"
-                        : "#96B3FF",
+                    backgroundColor: colorMap[item.label],
                   }}
                 ></div>
+                <div>
+                  <p className="text-sm">{item.value}%</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
+        <button
+          type="button"
+          className="mt-6 mb-2 text-[#1565D8] flex space-x-2  border-b-2 border-[#1565D8]"
+        >
+          See more
+        </button>
       </div>
     </div>
   );
