@@ -31,7 +31,7 @@ const TrafficSourceTypes = () => {
     labels: ["Channel pages", "Direct or unkown", "Search", "External"], // Labels for the slices
     legend: {
       position: "right" as "right",
-      offsetY: 80,
+      offsetY: 30,
     },
   };
 
@@ -41,7 +41,7 @@ const TrafficSourceTypes = () => {
         options={options}
         series={options.series}
         type="donut"
-        height={400}
+        height={300}
       />
     </div>
   );
