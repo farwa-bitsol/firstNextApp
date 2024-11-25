@@ -24,7 +24,7 @@ const SecurityForm = () => {
   return (
     <FormProvider {...formInstance}>
       <form onSubmit={handleSubmit(processForm)} noValidate>
-        <div className="flex md:gap-4  gap-1 flex-wrap">
+        <div className="flex lg:gap-4  gap-1 flex-wrap">
           <CustomField
             register={register}
             fieldName="newPassword"

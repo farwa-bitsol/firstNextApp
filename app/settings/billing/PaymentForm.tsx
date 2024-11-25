@@ -155,7 +155,7 @@ const PaymentForm = () => {
           <button
             type="button"
             onClick={removeCard}
-            className="px-4 py-2 my-4 border rounded-lg"
+            className="px-4 py-2 my-4 mr-2 border rounded-lg"
           >
             Remove Card
           </button>

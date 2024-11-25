@@ -9,8 +9,8 @@ const page = () => {
       {/*  email address field */}
       <div className="mt-6">
         <p className="text-lg font-bold">Email Address</p>
-        <div className="flex flex-wrap md:gap-28 gap-2 items-center border-b border-[#EFEFFF] w-fit py-4 mt-2">
-          <p>
+        <div className="flex flex-wrap justify-between gap-2 items-center border-b border-[#EFEFFF] w-fit py-4 mt-2">
+          <p className="lg:pr-28">
             Your email address is{" "}
             <span className="font-bold">emailis@example.com</span>
           </p>
@@ -20,7 +20,7 @@ const page = () => {
         </div>
       </div>
 
-      <div className="md:w-1/2 border-b border-[#EFEFFF] w-fit py-8">
+      <div className="border-b border-[#EFEFFF] w-fit py-8">
         <p className="text-lg font-bold">Password</p>
         <SecurityForm />
       </div>
