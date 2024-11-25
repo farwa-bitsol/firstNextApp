@@ -1,6 +1,7 @@
 import React from "react";
 import RadialProgressbar from "./RadialProgressbar";
 import TrafficSourceTypes from "./TraficSourceTypes";
+import Goals from "./Goals";
 
 const page = () => {
   return (
@@ -16,6 +17,12 @@ const page = () => {
           <p className="text-2xl font-medium">Traffic source types</p>
           <p className="text-sm">Views · Last 28 days</p>
           <TrafficSourceTypes />
+        </div>
+
+        <div className="bg-[#F6F9FF] flex-auto md:w-[60%] p-6 rounded-2xl">
+          <p className="text-2xl font-medium">Goals</p>
+
+          <Goals />
         </div>
       </div>
     </div>
