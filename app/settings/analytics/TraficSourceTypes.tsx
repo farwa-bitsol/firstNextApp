@@ -66,7 +66,7 @@ const TrafficSourceTypes = () => {
               <p className="text-sm">{item.label}</p>
 
               <div
-                className={`w-[${item.value}%] h-2 bg-white rounded-full mt-2 flex items-center gap-2`}
+                className={`w-[${item.value}%] h-2 rounded-full mt-2 flex items-center gap-2`}
               >
                 <div
                   className="h-2 rounded-full"
