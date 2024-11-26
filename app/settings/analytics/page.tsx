@@ -2,6 +2,7 @@ import React from "react";
 import RadialProgressbar from "./RadialProgressbar";
 import TrafficSourceTypes from "./TraficSourceTypes";
 import Goals from "./Goals";
+import Recycled from "./Recycled";
 
 const page = () => {
   return (
@@ -19,7 +20,12 @@ const page = () => {
           <TrafficSourceTypes />
         </div>
 
-        <div className="bg-[#F6F9FF] flex-auto md:w-[60%] p-6 rounded-2xl">
+        <div className="bg-[#F6F9FF] w-fit  p-6 rounded-2xl">
+          <p className="text-lg font-medium pb-6">Recycled</p>
+          <Recycled />
+        </div>
+
+        <div className="bg-[#F6F9FF] w-fit p-6 rounded-2xl">
           <p className="text-2xl font-medium">Goals</p>
 
           <Goals />
