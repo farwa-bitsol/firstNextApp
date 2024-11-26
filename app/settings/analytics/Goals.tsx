@@ -18,8 +18,8 @@ const totalValue = data.reduce((sum, item) => sum + item.value, 0);
 
 const Goals = () => {
   return (
-    <div className="w-full md:w-72 h-fit m-4 p-6 rounded-2xl">
-      <div className="space-y-4">
+    <div className="w-full h-fit m-4 pt-8 pr-4 rounded-2xl">
+      <div className="space-y-8">
         {data.map((item, index) => (
           <div key={index} className="flex flex-col">
             <div className="flex justify-between items-center">

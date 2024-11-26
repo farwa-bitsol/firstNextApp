@@ -4,17 +4,17 @@ import React from "react";
 import ApexCharts from "react-apexcharts";
 
 const colorMap: Record<string, string> = {
-  "Channel pages": "#1A52E1",
-  "Direct or unknown": "#6792FF",
-  Search: "#4473EA",
-  External: "#96B3FF",
+  Text: "#1565D8",
+  Images: "#5F9CF3",
+  Documents: "#96B3FF",
+  Videos: "#F572B9",
 };
 
 const data = [
-  { label: "Channel pages", value: 37.5 },
-  { label: "Direct or unknown", value: 33.6 },
-  { label: "Search", value: 11 },
-  { label: "External", value: 6 },
+  { label: "Text", value: 32 },
+  { label: "Images", value: 25 },
+  { label: "Documents", value: 22 },
+  { label: "Videos", value: 11 },
 ];
 
 const Recycled = () => {
@@ -35,9 +35,6 @@ const Recycled = () => {
         },
         offsetY: 20,
       },
-      stroke: {
-        colors: undefined,
-      },
     },
     colors: Object.values(colorMap), // data colors
     series: [37.5, 33.6, 11, 6], // data
@@ -48,49 +45,46 @@ const Recycled = () => {
   };
 
   return (
-    <>
-      <div className="flex flex-col md:flex-row items-center flex-wrap">
-        <ApexCharts
-          options={options}
-          series={options.series}
-          type="donut"
-          height={300}
-        />
+    <div className="flex flex-col md:flex-row items-center flex-wrap">
+      {/* Donut Chart */}
+      <ApexCharts
+        options={options}
+        series={options.series}
+        type="donut"
+        height={300}
+      />
 
-        {/* Custom Legends with Color Dots */}
-        <div className="w-full md:w-72 h-fit m-4 p-6 rounded-2xl">
-          <div className="space-y-4">
-            {data.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 text-sm font-medium"
-              >
-                {/* Label and Percentage */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    {/* Color Dot */}
-                    <div
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: colorMap[item.label] }}
-                    />
-                    &nbsp;&nbsp;<span>{item.label}</span>
-                  </div>
-                  <div>
-                    <span>{item.value}%</span>
-                  </div>
-                </div>
+      {/* Custom Legends Styled as a Table */}
+      <div className="w-full md:w-72 h-fit m-4 p-6 rounded-2xl">
+        <div className="space-y-4">
+          {data.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between text-sm font-medium"
+            >
+              {/* Left Side: Dot and Label */}
+              <div className="flex items-center gap-2">
+                {/* Color Dot */}
+                <div
+                  className="w-4 h-4 rounded-full"
+                  style={{ backgroundColor: colorMap[item.label] }}
+                />
+                <span>{item.label}</span>
               </div>
-            ))}
-          </div>
+
+              {/* Right Side: Percentage */}
+              <span>{item.value}%</span>
+            </div>
+          ))}
         </div>
       </div>
-      <button
-        type="button"
-        className="p-4 rounded-lg text-[#A4A4CB] flex border border-[#A4A4CB]"
-      >
-        Read Full Report
-      </button>
-    </>
+
+      <div className="border border-[#A4A4CB] w-full text-[#A4A4CB] text-center rounded-lg">
+        <button type="button" className="p-4">
+          Read Full Report
+        </button>
+      </div>
+    </div>
   );
 };
 
