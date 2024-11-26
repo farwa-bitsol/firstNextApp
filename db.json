@@ -18,16 +18,5 @@
       "id": "EBhQWrD"
     }
   ],
-  "customersCard": [
-    {
-      "cards": [
-        {
-          "last4": "1111",
-          "exp_month": 12,
-          "exp_year": 2024
-        }
-      ],
-      "id": 1
-    }
-  ]
+  "customersCard": []
 }

@@ -12,40 +12,40 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
 );
 
+interface cardType {
+  id: string;
+  last4: string;
+  exp_month: number;
+  exp_year: number;
+}
+
 const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [savedCard, setSavedCard] = useState<{
-    id: string;
-    last4: string;
-    exp_month: string;
-    exp_year: string;
-  } | null>(null);
+  const [savedCards, setSavedCards] = useState<cardType[]>([]);
 
   // Fetch the saved card data from the backend
   useEffect(() => {
-    const fetchSavedCard = async () => {
+    const fetchSavedCards = async () => {
       try {
         const response = await fetch("http://localhost:3000/customersCard");
         const data = await response.json();
 
-        if (data[0].cards && data[0]?.cards?.length) {
-          setSavedCard({
-            id: data[0].cards[0].id,
-            last4: data[0].cards[0].last4,
-            exp_month: data[0].cards[0].exp_month,
-            exp_year: data[0].cards[0].exp_year,
-          });
-        }
+        // Directly assign the saved card data (assuming it is now saved directly as an array)
+        setSavedCards(data); // Assuming data is an array of card objects
       } catch (err) {
-        setError("Failed to fetch saved card.");
+        setError("Failed to fetch saved cards.");
       }
     };
 
-    fetchSavedCard();
+    fetchSavedCards();
   }, []);
+
+  const generateRandomId = () => {
+    return Math.floor(Math.random() * 1000000000).toString();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,31 +68,25 @@ const PaymentForm = () => {
       const { card } = token;
       // Send the token to your backend to save the card
       try {
-        const response = await fetch(`http://localhost:3000/customersCard`, {
+        const newCard = {
+          id: generateRandomId()?.toString(),
+          last4: card.last4,
+          exp_month: card.exp_month,
+          exp_year: card.exp_year,
+        };
+
+        const response = await fetch("http://localhost:3000/customersCard", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            cards: [
-              {
-                last4: card.last4,
-                exp_month: card.exp_month,
-                exp_year: card.exp_year,
-              },
-            ],
-          }),
+          body: JSON.stringify(newCard), // Directly send the card data
         });
 
         const data = await response.json();
 
-        if (data.cards && data.cards.length > 0) {
-          setSavedCard({
-            id: data.cards[0].id,
-            last4: data.cards[0].last4,
-            exp_month: data.cards[0].exp_month,
-            exp_year: data.cards[0].exp_year,
-          });
+        if (data.id) {
+          setSavedCards((prevCards: cardType[]) => [...prevCards, newCard]); // Append the new card to the state
 
           setSuccessMessage("Card saved successfully!");
           setError(null);
@@ -107,12 +101,12 @@ const PaymentForm = () => {
     }
   };
 
-  const removeCard = async () => {
-    if (!savedCard) return;
+  const removeCard = async (cardId: string) => {
+    if (!savedCards) return;
 
     try {
       const response = await fetch(
-        `http://localhost:3000/customersCard/${savedCard.id}`,
+        `http://localhost:3000/customersCard/${cardId}`,
         {
           method: "DELETE",
         }
@@ -122,7 +116,10 @@ const PaymentForm = () => {
         throw new Error("Failed to remove card.");
       }
 
-      setSavedCard(null);
+      setSavedCards((prevCards: cardType[]) =>
+        prevCards.filter((card) => card.id !== cardId)
+      ); // Update the state to remove the deleted card
+
       setSuccessMessage("Card removed successfully!");
       setError(null);
     } catch (err) {
@@ -149,16 +146,22 @@ const PaymentForm = () => {
         </button>
       </form>
 
-      {savedCard && (
-        <div className="flex justify-between lg:w-1/2 w-full items-center">
-          <p className="font-bold">Card ending in {savedCard.last4}</p>
-          <button
-            type="button"
-            onClick={removeCard}
-            className="px-4 py-2 my-4 mr-2 border rounded-lg"
-          >
-            Remove Card
-          </button>
+      {savedCards && savedCards.length > 0 && (
+        <div className="mt-4">
+          <ul>
+            {savedCards.map((card) => (
+              <li key={card.id} className="flex justify-between items-center">
+                <p className="font-bold">Card ending in {card.last4}</p>
+                <button
+                  type="button"
+                  onClick={() => removeCard(card.id)}
+                  className="px-4 py-2 my-4 mr-2 border rounded-lg"
+                >
+                  Remove Card
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

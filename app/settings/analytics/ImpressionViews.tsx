@@ -1,67 +1,40 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 const impressionsData = [
   [new Date("2023-11-01").getTime(), 1500],
-  [new Date("2023-11-02").getTime(), 1800],
-  [new Date("2023-11-03").getTime(), 2000],
-  [new Date("2023-11-04").getTime(), 1700],
+  [new Date("2023-11-02").getTime(), 2200],
+  [new Date("2023-11-03").getTime(), 1800],
+  [new Date("2023-11-04").getTime(), 2500],
 ];
 
-const viewsData = [
-  [new Date("2023-11-01").getTime(), 1200],
-  [new Date("2023-11-02").getTime(), 1300],
-  [new Date("2023-11-03").getTime(), 1600],
-  [new Date("2023-11-04").getTime(), 1500],
-];
-
-const ImpressionsViewsChart = () => {
+const ImpressionsChart = () => {
   const [series, setSeries] = useState([
     {
       name: "Impressions",
       data: impressionsData,
     },
-    {
-      name: "Views",
-      data: viewsData,
-    },
   ]);
 
   const [options, setOptions] = useState({
     chart: {
-      type: "area" as "area",
-      stacked: false,
+      type: "line" as "line", 
       height: 350,
       zoom: {
-        type: "x" as "x",
-        enabled: true,
-        autoScaleYaxis: true,
+        enabled: false, 
       },
-      toolbar: {
-        autoSelected: "zoom" as "zoom",
-      },
+    },
+    stroke: {
+      curve: "straight" as "straight", 
+      width: 2, // Line thickness
     },
     dataLabels: {
       enabled: false,
     },
     markers: {
-      size: 4,
-    },
-    title: {
-      text: "Impressions and Views Over Time",
-      align: "left" as "left",
-    },
-    fill: {
-      type: "gradient" as "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        inverseColors: false,
-        opacityFrom: 0.5,
-        opacityTo: 0,
-        stops: [0, 90, 100],
-      },
+      size: 6, // Highlight data points
     },
     yaxis: {
       labels: {
@@ -78,16 +51,24 @@ const ImpressionsViewsChart = () => {
       title: {
         text: "Date",
       },
+      labels: {
+        formatter: function (val: string) {
+          return new Date(parseInt(val)).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
+        },
+      },
     },
     tooltip: {
-      shared: true,
+      shared: false, // Tooltip only for individual points
       y: {
         formatter: function (val: number) {
           return val.toFixed(0) + " counts";
         },
       },
     },
-    colors: ["#00E396", "#008FFB"],
+    colors: ["#FF4560"], // Custom color for the line
   });
 
   return (
@@ -95,11 +76,11 @@ const ImpressionsViewsChart = () => {
       <ReactApexChart
         options={options}
         series={series}
-        type="area"
+        type="line"
         height={350}
       />
     </div>
   );
 };
 
-export default ImpressionsViewsChart;
+export default ImpressionsChart;
