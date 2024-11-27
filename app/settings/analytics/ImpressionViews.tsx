@@ -20,14 +20,14 @@ const ImpressionsChart = () => {
 
   const [options, setOptions] = useState({
     chart: {
-      type: "line" as "line", 
+      type: "line" as "line",
       height: 350,
       zoom: {
-        enabled: false, 
+        enabled: false,
       },
     },
     stroke: {
-      curve: "straight" as "straight", 
+      curve: "straight" as "straight",
       width: 2, // Line thickness
     },
     dataLabels: {
@@ -71,8 +71,28 @@ const ImpressionsChart = () => {
     colors: ["#FF4560"], // Custom color for the line
   });
 
+  const dataVisuals = [
+    { label: "Impressions", value: "383" },
+    { label: "Click-through rate", value: "9.1%", isPrimary: true },
+    { label: "Views", value: "97" },
+    { label: "Unique viewers", value: "54" },
+  ];
+
   return (
     <div>
+      <div className="bg-white  w-fit rounded-lg flex gap-4">
+        {dataVisuals.map((data) => (
+          <div
+            key={data.label}
+            className={`flex flex-col justify-center items-center p-8 ${
+              data.isPrimary ? "bg-[#1565D8] text-white rounded-xl" : ""
+            }`}
+          >
+            <p className="text-sm text-center">{data.label}</p>
+            <p className="text-xl font-bold text-center`">{data.value}</p>
+          </div>
+        ))}
+      </div>
       <ReactApexChart
         options={options}
         series={series}

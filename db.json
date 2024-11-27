@@ -3,7 +3,8 @@
     {
       "id": "da76",
       "fullName": "test user",
-      "email": "farwa@bitsol.tech"
+      "email": "farwa@bitsol.tech",
+      "password": "123"
     },
     {
       "fullName": "bilal",

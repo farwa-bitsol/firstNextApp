@@ -1,74 +1,98 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 const ExpensesChart = () => {
-  // Define the initial data for the chart
+  // data for chart
   const [chartData, setChartData] = useState<{
-    series: { data: number[] }[];
+    series: { data: number[]; barWidth?: string }[];
     categories: string[] | number[];
   }>({
     series: [
-      { data: [44, 55, 41, 64, 22, 43, 21] },
-      { data: [53, 32, 33, 52, 13, 44, 32] },
+      { data: [44, 55, 41, 64, 22, 43, 21], barWidth: "40%" },
+      { data: [55, 41, 64, 22, 43, 21], barWidth: "20%" },
     ],
-    categories: [2001, 2002, 2003, 2004, 2005, 2006, 2007], // Initially numbers
+    categories: [2001, 2002, 2003, 2004, 2005, 2006, 2007],
   });
 
-  // Chart options
+  const [viewChange, setViewChange] = useState<string>("weekly");
+
   const options = {
     chart: { type: "bar" as "bar", height: 430 },
     plotOptions: {
       bar: {
-        horizontal: true,
-        dataLabels: { position: "top" },
+        horizontal: false,
+        columnWidth: "50%",
+        distributed: false,
       },
     },
     dataLabels: {
       enabled: true,
-      offsetX: -6,
+      offsetY: -6,
       style: { fontSize: "12px", colors: ["#fff"] },
     },
     stroke: { show: true, width: 1, colors: ["#fff"] },
     tooltip: { shared: true, intersect: false },
     xaxis: { categories: chartData.categories },
+    yaxis: {
+      labels: {
+        formatter: (value: number | undefined) =>
+          value != null ? value.toString() : "",
+      },
+    },
   };
 
-  // Button click handler to update the chart
-  const handleViewChange = (view: any) => {
+  const handleViewChange = (view: string) => {
+    setViewChange(view); // Update the current view state
     if (view === "weekly") {
       setChartData({
         series: [
-          { data: [10, 20, 30, 40, 50, 60, 70] },
-          { data: [15, 25, 35, 45, 55, 65, 75] },
+          { data: [10, 20, 30, 40, 50, 60, 70], barWidth: "50%" },
+          { data: [20, 30, 40, 50, 60, 70], barWidth: "30%" },
         ],
         categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       });
     } else if (view === "monthly") {
       setChartData({
         series: [
-          { data: [200, 300, 250, 400, 450, 500, 350] },
-          { data: [180, 320, 300, 420, 480, 520, 370] },
+          { data: [200, 300, 250, 400, 450, 500, 350], barWidth: "60%" },
+          { data: [300, 250, 400, 450, 500, 350], barWidth: "40%" },
         ],
         categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
       });
     } else if (view === "yearly") {
       setChartData({
         series: [
-          { data: [3000, 3200, 3400, 3600, 3800, 4000, 4200] },
-          { data: [2800, 3100, 3300, 3500, 3700, 3900, 4100] },
+          { data: [3000, 3200, 3400, 3600, 3800, 4000, 4200], barWidth: "70%" },
+          { data: [3200, 3400, 3600, 3800, 4000, 4200], barWidth: "50%" },
         ],
         categories: [2017, 2018, 2019, 2020, 2021, 2022, 2023],
       });
     }
   };
 
+  const buttons = [
+    { label: "Weekly", value: "weekly" },
+    { label: "Monthly", value: "monthly" },
+    { label: "Yearly", value: "yearly" },
+  ];
+
   return (
     <div>
-      <div>
-        <button onClick={() => handleViewChange("weekly")}>Weekly</button>
-        <button onClick={() => handleViewChange("monthly")}>Monthly</button>
-        <button onClick={() => handleViewChange("yearly")}>Yearly</button>
+      <div className="bg-[#1565D814] border w-fit p-1 rounded-full gap-4 flex">
+        {buttons.map((button) => (
+          <button
+            key={button.value}
+            className={`rounded-full py-4 px-6 ${
+              viewChange === button.value
+                ? "bg-[#1565D8] text-white"
+                : "text-[#1D235A]"
+            }`}
+            onClick={() => handleViewChange(button.value)}
+          >
+            {button.label}
+          </button>
+        ))}
       </div>
       <ReactApexChart
         options={{ ...options, xaxis: { categories: chartData.categories } }}

@@ -42,11 +42,12 @@ const page = () => {
           <RadialProgressbar hideDrescription />
         </div>
 
-        <div className="bg-[#F6F9FF] p-6 rounded-2xl col-span-12">
+        <div className="bg-[#F6F9FF] p-6 rounded-2xl col-span-10">
           <ImpressionsViewsChart />
         </div>
 
-        <div className="bg-[#F6F9FF] p-6 rounded-2xl col-span-12">
+        <div className="bg-[#F6F9FF] p-6 rounded-2xl col-span-10">
+          <p className="text-2xl font-medium pb-6">Expenses</p>
           <ExpensesChart />
         </div>
       </div>
