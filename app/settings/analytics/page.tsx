@@ -5,6 +5,7 @@ import Goals from "./Goals";
 import Recycled from "./Recycled";
 import SelectField from "./SelectField";
 import ImpressionsViewsChart from "./ImpressionViews";
+import ExpensesChart from "./Expenses";
 
 const recycledSelectOptions = [{ label: "This month", value: "current-month" }];
 const page = () => {
@@ -43,6 +44,10 @@ const page = () => {
 
         <div className="bg-[#F6F9FF] p-6 rounded-2xl col-span-12">
           <ImpressionsViewsChart />
+        </div>
+
+        <div className="bg-[#F6F9FF] p-6 rounded-2xl col-span-12">
+          <ExpensesChart />
         </div>
       </div>
     </div>
