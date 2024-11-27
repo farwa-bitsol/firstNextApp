@@ -12,7 +12,7 @@ const ExpensesChart = () => {
       { data: [44, 55, 41, 64, 22, 43, 21], barWidth: "40%" },
       { data: [55, 41, 64, 22, 43, 21], barWidth: "20%" },
     ],
-    categories: [2001, 2002, 2003, 2004, 2005, 2006, 2007],
+    categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], // default render
   });
 
   const [viewChange, setViewChange] = useState<string>("weekly");
