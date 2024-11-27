@@ -1,4 +1,8 @@
-const RadialProgressbar = () => {
+const RadialProgressbar = ({
+  hideDrescription,
+}: {
+  hideDrescription?: boolean;
+}) => {
   const progress = 75;
   const radius = 20; // Circle radius
   const circumference = 2 * Math.PI * radius; // Circumference of the circle
@@ -44,7 +48,9 @@ const RadialProgressbar = () => {
 
       <div className="pt-6">
         <p className="font-bold"> 32 of 42 complete</p>
-        <p className="text-medium py-1">Finish course to get certificate.</p>
+        {!hideDrescription && (
+          <p className="text-medium py-1">Finish course to get certificate.</p>
+        )}
       </div>
     </div>
   );

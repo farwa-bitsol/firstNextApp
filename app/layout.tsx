@@ -1,5 +1,4 @@
 import DynamicBodyContent from "@/components/DynamicBodyContent";
-import SessionWrapper from "@/components/SessionWrapper";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -19,9 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen">
-          <DynamicBodyContent>{children}</DynamicBodyContent>
-        </div>
+        <DynamicBodyContent>{children}</DynamicBodyContent>
       </body>
     </html>
   );
