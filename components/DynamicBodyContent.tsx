@@ -15,7 +15,7 @@ const DynamicBodyContent = ({ children }: { children: React.ReactNode }) => {
       <div>
         <DashboardNavbar />
         <SessionWrapper>
-          <main className="w-full overflow-auto">{children}</main>
+          <main className="w-full overflow-auto bg-[#EEF4FD]">{children}</main>
         </SessionWrapper>
       </div>
     );
