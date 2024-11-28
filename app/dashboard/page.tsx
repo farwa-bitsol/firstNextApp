@@ -10,7 +10,7 @@ const page = () => {
       </div>
 
       <div className="col-span-12 lg:col-span-6">
-        <div className="w-full max-w-screen-md flex justify-center">
+        <div className="w-full  flex justify-center">
           <UserStories />
         </div>
       </div>
