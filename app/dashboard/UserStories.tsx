@@ -22,10 +22,10 @@ const users = [
 
 const UserStories = () => {
   return (
-    <div className="flex space-x-4">
-      <div className="relative w-[160px] h-[250px] rounded-lg overflow-hidden shadow-lg">
+    <div className="flex space-x-4 w-full overflow-x-auto">
+      <div className="relative w-[80px] h-[140px] sm:w-[160px] sm:h-[250px] shadow-lg ">
         <div
-          className="w-full h-[75%] flex items-center justify-center"
+          className="w-full h-[75%] flex items-center justify-center rounded-tl-lg rounded-tr-lg"
           style={{
             backgroundImage: `url(/images/profile.png)`,
             backgroundSize: "cover",
@@ -53,14 +53,14 @@ const UserStories = () => {
           </svg>
         </button>
 
-        <div className="w-full h-[25%] bg-white flex items-center justify-center text-sm font-semibold text-gray-700">
+        <div className="w-full h-[25%] bg-white flex items-center justify-center text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
           Create Story
         </div>
       </div>
 
       {users.map((user, index) => (
         <div
-          className="relative w-[160px] h-[250px] rounded-lg overflow-hidden shadow-lg"
+          className="relative w-[80px] h-[140px] sm:w-[160px] sm:h-[250px] rounded-lg overflow-hidden shadow-lg"
           style={{
             backgroundImage: `url(${user.cover})`,
             backgroundSize: "cover",
@@ -68,11 +68,11 @@ const UserStories = () => {
           }}
           key={`${user.name}-${index}`}
         >
-          <div className="absolute bottom-2 left-8 transform -translate-x-1/2 text-sm text-white">
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-sm text-white">
             {user.name}
           </div>
 
-          <div className="absolute top-2 left-2 w-[60px] h-[60px] rounded-full border-2 border-white overflow-hidden">
+          <div className="absolute top-2 left-2 w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] rounded-full border-2 border-white overflow-hidden">
             <Image
               src={user.profile}
               width={60}
