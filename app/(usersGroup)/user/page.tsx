@@ -38,7 +38,7 @@ const AccountOption = ({
   );
 };
 
-const Home = async () => {
+const Page = async () => {
   const session = await getServerSession();
   return (
     <div className="px-8 pt-16">
@@ -53,7 +53,7 @@ const Home = async () => {
           ) : (
             <>
               <p className="inline-block">Already have an account?</p>
-              <Link href="/user/signin" className="text-blue-500 font-bold">
+              <Link href="/signin" className="text-blue-500 font-bold">
                 Sign in
               </Link>
             </>
@@ -94,4 +94,4 @@ const Home = async () => {
   );
 };
 
-export default Home;
+export default Page;

@@ -1,5 +1,11 @@
 import React from "react";
-import { Star } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faStar,
+  faStarHalfAlt,
+  faStar as faStarEmpty,
+} from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 
 const contacts = [
   { name: "username", rating: 3.0 },
@@ -16,23 +22,31 @@ const EventPlanner = () => {
     return (
       <div className="flex items-center">
         <span className="ml-2 text-sm">{rating} &nbsp;</span>
+
         {[...Array(fullStars)].map((_, index) => (
-          <Star key={`full-${index}`} className="text-yellow-500" size={15} />
+          <FontAwesomeIcon
+            key={`full-${index}`}
+            icon={faStar}
+            className="text-yellow-500"
+            size="lg"
+          />
         ))}
 
         {halfStar && (
-          <div className="relative">
-            <Star className="text-gray-300 absolute top-0 left-0" size={15} />
-            <Star
-              className="text-yellow-500 absolute top-0 left-0"
-              size={15}
-              style={{ width: "50%", overflow: "hidden" }}
-            />
-          </div>
+          <FontAwesomeIcon
+            icon={faStarHalfAlt}
+            className="text-yellow-500"
+            size="lg"
+          />
         )}
 
         {[...Array(emptyStars)].map((_, index) => (
-          <Star key={`empty-${index}`} className="text-gray-300" size={15} />
+          <FontAwesomeIcon
+            key={`empty-${index}`}
+            icon={faStarEmpty}
+            className="text-gray-300"
+            size="lg"
+          />
         ))}
       </div>
     );
@@ -48,7 +62,7 @@ const EventPlanner = () => {
             key={`${contact.name}-${index}`}
           >
             <div className="flex items-center">
-              <img
+              <Image
                 src="/images/profile.png"
                 width={50}
                 height={50}
@@ -61,7 +75,7 @@ const EventPlanner = () => {
               </div>
             </div>
             <div>
-              <img
+              <Image
                 src="/images/phone.svg"
                 width={20}
                 height={20}
