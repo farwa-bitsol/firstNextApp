@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 const Profile = () => {
   return (
-    <div className=" flex items-center justify-center flex-col p-12">
+    <div className=" flex items-center justify-center flex-col">
       <Image
         src="/images/profile.png"
         width={80}

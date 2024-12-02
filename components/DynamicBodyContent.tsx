@@ -12,10 +12,10 @@ const DynamicBodyContent = ({ children }: { children: React.ReactNode }) => {
   const isDashboardPage = pathname.startsWith("/dashboard");
   if (isDashboardPage) {
     return (
-      <div>
+      <div className="h-screen overflow-auto">
         <DashboardNavbar />
         <SessionWrapper>
-          <main className="w-full overflow-auto bg-[#EEF4FD]">{children}</main>
+          <main className="w-full  bg-[#EEF4FD]">{children}</main>
         </SessionWrapper>
       </div>
     );

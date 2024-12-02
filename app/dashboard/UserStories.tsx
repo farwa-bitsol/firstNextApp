@@ -22,8 +22,8 @@ const users = [
 
 const UserStories = () => {
   return (
-    <div className="flex space-x-4 w-full overflow-x-auto">
-      <div className="relative w-[80px] h-[140px] sm:w-[160px] sm:h-[250px] shadow-lg ">
+    <div className="flex space-x-4 w-full overflow-x-auto justify-center overflow-y-hidden">
+      <div className="relative w-[80px] h-[140px] sm:w-[160px] sm:h-[250px] shadow-lg">
         <div
           className="w-full h-[75%] flex items-center justify-center rounded-tl-lg rounded-tr-lg"
           style={{
@@ -53,7 +53,7 @@ const UserStories = () => {
           </svg>
         </button>
 
-        <div className="w-full h-[25%] bg-white flex items-center justify-center text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
+        <div className="w-full h-[25%] bg-white flex items-center justify-center  text-xs lg:text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
           Create Story
         </div>
       </div>
