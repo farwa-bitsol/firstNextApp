@@ -7,6 +7,7 @@ import WhatsOnYourMind from "./WhatsOnYourMid";
 import Contacts from "./Contacts";
 import UpComingEvents from "./UpcomingEvents";
 import EventPlanner from "./EventPlanner";
+import Posts from "./Posts";
 
 const Page = () => {
   return (
@@ -28,13 +29,16 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="flex-1 max-w-2xl">
+      <div className="flex-1 max-w-fit overflow-x-auto">
         <div className="mb-4">
           <UserStories />
         </div>
 
         <div className="bg-white px-4 py-6 rounded-lg shadow-md mx-3 sm:mx-0">
           <WhatsOnYourMind />
+        </div>
+        <div className="my-4 mx-3 md:mx-0">
+          <Posts />
         </div>
       </div>
 

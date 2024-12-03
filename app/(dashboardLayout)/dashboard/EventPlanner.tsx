@@ -13,6 +13,8 @@ const contacts = [
   { name: "username", rating: 2.5 },
 ];
 
+const starStyle = { width: "12px", height: "12px" };
+
 const EventPlanner = () => {
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -24,29 +26,36 @@ const EventPlanner = () => {
         <span className="ml-2 text-sm">{rating} &nbsp;</span>
 
         {[...Array(fullStars)].map((_, index) => (
-          <FontAwesomeIcon
-            key={`full-${index}`}
-            icon={faStar}
-            className="text-yellow-500"
-            size="lg"
-          />
+          <span key={`full-${index}`} className="inline-block">
+            <FontAwesomeIcon
+              icon={faStar}
+              className="text-yellow-500"
+              size="lg"
+              style={starStyle}
+            />
+          </span>
         ))}
 
         {halfStar && (
-          <FontAwesomeIcon
-            icon={faStarHalfAlt}
-            className="text-yellow-500"
-            size="lg"
-          />
+          <span className="inline-block">
+            <FontAwesomeIcon
+              icon={faStarHalfAlt}
+              className="text-yellow-500"
+              size="lg"
+              style={starStyle}
+            />
+          </span>
         )}
 
         {[...Array(emptyStars)].map((_, index) => (
-          <FontAwesomeIcon
-            key={`empty-${index}`}
-            icon={faStarEmpty}
-            className="text-gray-300"
-            size="lg"
-          />
+          <span key={`empty-${index}`} className="inline-block">
+            <FontAwesomeIcon
+              icon={faStarEmpty}
+              className="text-gray-300"
+              size="lg"
+              style={starStyle}
+            />
+          </span>
         ))}
       </div>
     );

@@ -35,6 +35,7 @@ const styles: Record<string, React.CSSProperties> = {
   bottomRow: {
     display: "flex",
     gap: "28px",
+    flexWrap: "wrap",
     alignItems: "center",
     marginTop: "12px",
     marginLeft: "10%",
