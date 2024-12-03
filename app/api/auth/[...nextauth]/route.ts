@@ -11,7 +11,7 @@ const authOptions = NextAuth({
   pages: {
     signIn: "/user/signin",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,  
   providers: [
     CredentialsProvider({
       credentials: {

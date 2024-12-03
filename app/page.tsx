@@ -43,7 +43,7 @@ const Home = async () => {
   return (
     <div className="px-8 pt-16">
       <div className="flex justify-between  space-x-2">
-        <Link href="/signin" className="text-blue-500 font-bold">
+        <Link href="/user/signin" className="text-blue-500 font-bold">
           User Dashboard
         </Link>
 
