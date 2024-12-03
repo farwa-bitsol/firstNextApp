@@ -9,9 +9,9 @@ const authOptions = NextAuth({
     strategy: "jwt",
   },
   pages: {
-    signIn: "/",
+    signIn: "/user/signin",
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,  
   providers: [
     CredentialsProvider({
       credentials: {
