@@ -1,4 +1,6 @@
+"use client"
 import React from "react";
+import { useQuery } from "react-query"; // Importing useQuery hook
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faThumbsUp,
@@ -8,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 
+// Define the PostProps interface
 interface PostProps {
   profilePhoto: string;
   userName: string;
@@ -20,24 +23,30 @@ interface PostProps {
   shares: number;
 }
 
-const postData = [
-  {
-    profilePhoto: "/images/profile.png",
-    userName: "John Doe",
-    postTime: "2 hours ago",
-    title: "A day in the life of a software developer",
-    description: "Had a productive day coding and debugging!",
-    postPhoto: "/images/code.jpg", // Optional
-    likes: 120,
-    comments: 45,
-    shares: 10,
-  },
-];
+const fetchPosts = async (): Promise<PostProps[]> => {
+  const response = await fetch("http://localhost:3000/postData", {
+    cache: "no-store", // Ensures fresh data fetch each time
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch posts");
+  }
+  return response.json();
+};
 
 const Posts = () => {
+  // Use react-query to fetch posts
+  const {
+    data: postData,
+    isLoading,
+    isError,
+  } = useQuery("postData", fetchPosts);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error fetching posts</div>;
+
   return (
     <>
-      {postData.map(
+      {postData?.map(
         (
           {
             profilePhoto,

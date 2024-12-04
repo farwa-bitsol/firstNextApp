@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ReactElement, useMemo, useState } from "react";
 
-import { InitialFormValues, steps } from "@/models/constants";
+import { apiUrl, InitialFormValues, steps } from "@/models/constants";
 import { ICurrentForm, ICustomField, IUser } from "@/models/types";
 import { createUser, fetchUsers } from "@/services/userService";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -361,7 +361,7 @@ export default function Form({
           <p>
             Logged in by&nbsp;{session?.user?.email}.
             <button
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: apiUrl })}
               className="text-blue-500  font-bold"
             >
               Logout

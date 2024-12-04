@@ -1,5 +1,6 @@
 "use client";
 
+import { Routes } from "@/models/constants";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent } from "react";
@@ -16,7 +17,7 @@ export default function Form() {
     });
 
     if (!response?.error) {
-      router.push("/users");
+      router.push(Routes.users);
     }
   };
   return (

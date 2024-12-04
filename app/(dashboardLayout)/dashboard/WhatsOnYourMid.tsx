@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
 import { Image, Calendar, FileText } from "lucide-react";
 
 const styles: Record<string, React.CSSProperties> = {
@@ -32,6 +33,14 @@ const styles: Record<string, React.CSSProperties> = {
     outline: "none",
     backgroundColor: "#f9f9f9",
   },
+  sendButton: {
+    padding: "8px 16px",
+    backgroundColor: "#1565D8",
+    color: "#fff",
+    border: "none",
+    borderRadius: "20px",
+    cursor: "pointer",
+  },
   bottomRow: {
     display: "flex",
     gap: "28px",
@@ -56,6 +65,54 @@ const styles: Record<string, React.CSSProperties> = {
 
 const WhatsOnYourMind = () => {
   const [input, setInput] = useState("");
+  const queryClient = useQueryClient();
+
+  const { mutate, isLoading: isPosting } = useMutation(
+    async (newPost: {
+      title: string;
+      postTime: string;
+      profilePhoto: string;
+      userName: string;
+      description: string;
+      postPhoto: string;
+      likes: number;
+      comments: number;
+      shares: number;
+    }) => {
+      const response = await fetch("http://localhost:3000/postData", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPost),
+      });
+      return await response.json();
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["postData"]); // Refresh posts
+     
+        setInput("");
+      },
+    }
+  );
+
+  // Handle button click to send data
+  const handleSend = () => {
+    if (input.trim() !== "") {
+      const currentTime = new Date().toLocaleTimeString(); // Get current time
+      mutate({
+        title: input,
+        postTime: currentTime,
+        profilePhoto: "/images/profile.png",
+        userName: "test",
+        description: "",
+        postPhoto: "",
+        likes: 0,
+        comments: 0,
+        shares: 0,
+      });
+      setInput(""); // Clear the input after sending
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -68,6 +125,13 @@ const WhatsOnYourMind = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
+        <button
+          style={styles.sendButton}
+          onClick={handleSend}
+          disabled={isPosting}
+        >
+          {isPosting ? "Sending..." : "Send"}
+        </button>
       </div>
 
       {/*  actions */}

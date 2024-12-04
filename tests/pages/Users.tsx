@@ -1,9 +1,10 @@
 import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import Users from "../../app/users/page";
+
 import { fetchUsers } from "@/services/userService";
 import { IUser } from "@/models/types";
+import Users from "@/app/(usersGroup)/user/users/page";
 
 jest.mock("@/services/userService");
 jest.mock("@/components/DeleteUser", () => {

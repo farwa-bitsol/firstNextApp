@@ -19,5 +19,31 @@
       "id": "EBhQWrD"
     }
   ],
-  "customersCard": []
+  "customersCard": [],
+  "postData": [
+    {
+      "title": "test",
+      "postTime": "2:23:01 PM",
+      "profilePhoto": "/images/profile.png",
+      "userName": "test",
+      "description": "",
+      "postPhoto": "",
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "id": 1
+    },
+    {
+      "title": "check test 123",
+      "postTime": "4:45:59 PM",
+      "profilePhoto": "/images/profile.png",
+      "userName": "test",
+      "description": "",
+      "postPhoto": "",
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "id": 2
+    }
+  ]
 }

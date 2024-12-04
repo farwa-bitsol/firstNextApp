@@ -9,9 +9,9 @@ const authOptions = NextAuth({
     strategy: "jwt",
   },
   pages: {
-    signIn: "/user/signin",
+    signIn: "/",
   },
-  secret: process.env.NEXTAUTH_SECRET,  
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       credentials: {
@@ -40,7 +40,7 @@ const authOptions = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          redirect_uri: "https://keen-melba-d92305.netlify.app/api/auth/callback/google",
+          redirect_uri: "http://localhost:3001/user/signin",
         },
       },
     }),
