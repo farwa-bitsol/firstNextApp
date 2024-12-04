@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
 import { Image, Calendar, FileText } from "lucide-react";
+import { formatDistanceToNow, parseISO } from "date-fns"; // Importing date-fns functions
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -98,7 +99,7 @@ const WhatsOnYourMind = () => {
   // Handle button click to send data
   const handleSend = () => {
     if (input.trim() !== "") {
-      const currentTime = new Date().toLocaleTimeString(); // Get current time
+      const currentTime = new Date().toISOString(); // Get current time in ISO format
       mutate({
         title: input,
         postTime: currentTime,

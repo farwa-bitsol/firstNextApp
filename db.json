@@ -23,7 +23,7 @@
   "postData": [
     {
       "title": "test",
-      "postTime": "2:23:01 PM",
+      "postTime": "2024-12-04T11:51:56.041Z",
       "profilePhoto": "/images/profile.png",
       "userName": "test",
       "description": "",
@@ -34,8 +34,8 @@
       "id": 1
     },
     {
-      "title": "check test 123",
-      "postTime": "4:45:59 PM",
+      "title": "test2",
+      "postTime": "2024-12-04T12:05:27.616Z",
       "profilePhoto": "/images/profile.png",
       "userName": "test",
       "description": "",
