@@ -43,7 +43,9 @@ const DashboardNavbar = () => {
               "Notifications",
             ].map((navItem) => (
               <li key={navItem} className="hover:text-[#1565D8]">
-                <a href="#">{navItem}</a>
+                <Link href={`/dashboard/${navItem.toLowerCase()}`}>
+                  {navItem}
+                </Link>
               </li>
             ))}
 
