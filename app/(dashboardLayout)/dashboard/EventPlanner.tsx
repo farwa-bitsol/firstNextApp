@@ -26,7 +26,7 @@ const EventPlanner = () => {
         <span className="ml-2 text-sm">{rating} &nbsp;</span>
 
         {[...Array(fullStars)].map((_, index) => (
-          <span key={`full-${index}`} className="inline-block">
+          <span key={`full-${index}`} className="self-center flex">
             <FontAwesomeIcon
               icon={faStar}
               className="text-yellow-500"
@@ -37,7 +37,7 @@ const EventPlanner = () => {
         ))}
 
         {halfStar && (
-          <span className="inline-block">
+          <span className="self-center flex">
             <FontAwesomeIcon
               icon={faStarHalfAlt}
               className="text-yellow-500"
@@ -48,7 +48,7 @@ const EventPlanner = () => {
         )}
 
         {[...Array(emptyStars)].map((_, index) => (
-          <span key={`empty-${index}`} className="inline-block">
+          <span key={`empty-${index}`} className="self-center flex">
             <FontAwesomeIcon
               icon={faStarEmpty}
               className="text-gray-300"

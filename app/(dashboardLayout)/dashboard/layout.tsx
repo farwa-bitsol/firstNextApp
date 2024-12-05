@@ -9,7 +9,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="h-screen overflow-auto">
       <DashboardNavbar />
       <SessionWrapper>
-        <main className="w-full bg-[#EEF4FD]">
+        <main className="w-full h-full bg-[#EEF4FD]">
           <Suspense fallback={<Loading />}>{children}</Suspense>
         </main>
       </SessionWrapper>

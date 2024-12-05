@@ -1,17 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 const DashboardNavbar = () => {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [pageTitle, setPageTitle] = useState("Feed");
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Derive page title from the current pathname
+  const pageTitle = useMemo(() => {
+    const currentPath = pathname?.split("/")[2] || "Feed";
+    return currentPath.charAt(0).toUpperCase() + currentPath.slice(1);
+  }, [pathname]);
 
   return (
     <nav className="w-full bg-white text-[#151B32] shadow-sm">
@@ -88,7 +95,7 @@ const DashboardNavbar = () => {
 
       {/* Mobile Dropdown Menu */}
       {isMenuOpen && (
-        <div className="sm:hidden bg-[#1565D814] p-4">
+        <div className="md:hidden bg-[#1565D814] p-4">
           <ul className="space-y-4">
             {[
               "Feed",
@@ -103,11 +110,12 @@ const DashboardNavbar = () => {
                 key={navItem}
                 className="hover:text-[#1565D8]"
                 onClick={() => {
-                  setPageTitle(navItem);
                   setIsMenuOpen(false);
                 }}
               >
-                <a href="#">{navItem}</a>
+                <Link href={`/dashboard/${navItem.toLowerCase()}`}>
+                  {navItem}
+                </Link>
               </li>
             ))}
           </ul>
