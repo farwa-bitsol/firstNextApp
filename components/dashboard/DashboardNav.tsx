@@ -35,7 +35,7 @@ const DashboardNavbar = () => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleMenuToggle = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((prev) => !prev); // Toggle the menu open/close
   };
 
   const handleNotificationsToggle = () => {
@@ -46,29 +46,6 @@ const DashboardNavbar = () => {
     const currentPath = pathname?.split("/")[2] || "Feed";
     return currentPath.charAt(0).toUpperCase() + currentPath.slice(1);
   }, [pathname]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      // Close menu if click is outside menu and not inside the menu dropdown
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
-      }
-
-      // Close notifications if click is outside notifications and not inside the notifications dropdown
-      if (
-        notificationsRef.current &&
-        !notificationsRef.current.contains(event.target as Node)
-      ) {
-        setIsNotificationsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   return (
     <nav className="w-full bg-white text-[#151B32] shadow-sm relative">
@@ -211,7 +188,9 @@ const DashboardNavbar = () => {
               <li
                 key={navItem}
                 className="hover:text-[#1565D8] cursor-pointer"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false); // Close menu on item click
+                }}
               >
                 <Link href={`/dashboard/${navItem.toLowerCase()}`}>
                   {navItem}
