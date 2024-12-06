@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const notifications = [
+export const notifications = [
   {
     id: 1,
     profileImage: "/images/profile.png",
@@ -49,14 +49,17 @@ const DashboardNavbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Close menu if click is outside menu and not inside the menu dropdown
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+
+      // Close notifications if click is outside notifications and not inside the notifications dropdown
       if (
         notificationsRef.current &&
-        !notificationsRef.current.contains(event.target as Node) &&
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
+        !notificationsRef.current.contains(event.target as Node)
       ) {
         setIsNotificationsOpen(false);
-        setIsMenuOpen(false);
       }
     };
 
@@ -177,7 +180,7 @@ const DashboardNavbar = () => {
 
           <div className="text-center text-lg font-bold">{pageTitle}</div>
 
-          <Link href="/">
+          <Link href="/dashboard">
             <Image
               width={70}
               height={38}
