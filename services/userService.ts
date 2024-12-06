@@ -1,13 +1,14 @@
 "use server";
 
+import { Routes } from "@/models/constants";
 import { IUser } from "@/models/types";
 import { revalidatePath } from "next/cache";
-
+const apiUrl = 'http://localhost:3000'
 export const fetchUsers = async (
   pageNumber: number = 1,
   limit: number = 4
 ): Promise<IUser[]> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const res = await fetch(
     `${apiUrl}/users?_page=${pageNumber}&_limit=${limit}`,
     {
@@ -20,12 +21,12 @@ export const fetchUsers = async (
   }
 
   const data: IUser[] = await res.json();
-  revalidatePath("/users");
+  revalidatePath(Routes.userDashboard);
   return data;
 };
 
 export const createUser = async (user: IUser): Promise<IUser> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const res = await fetch(`${apiUrl}/users`, {
     method: "POST",
     headers: {
@@ -39,12 +40,12 @@ export const createUser = async (user: IUser): Promise<IUser> => {
   }
 
   const data: IUser = await res.json();
-  revalidatePath("/users"); // refresh the user routes to fetch the latest data
+  revalidatePath(Routes.userDashboard); // refresh the user routes to fetch the latest data
   return data;
 };
 
 export const deleteUser = async (userId: string) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
   const response = await fetch(`${apiUrl}/users/${userId}`, {
     method: "DELETE",
   });
@@ -52,6 +53,6 @@ export const deleteUser = async (userId: string) => {
   if (!response.ok) {
     throw new Error("Failed to delete user");
   }
-  revalidatePath("/users");
+  revalidatePath(Routes.userDashboard);
   return response.json();
 };

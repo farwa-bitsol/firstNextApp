@@ -33,3 +33,10 @@ export const InitialGeneralFormValues = { firstName: "", lastName: "", location:
 
 
 export const InitialNotificationFormValues = { weeklyNewsletter: false, accountSummary: false, websiteNotifications: [] };
+
+export const Routes = {
+  userDashboard: "/user",
+  users: "/user/users",
+}
+
+export const apiUrl = "http://localhost:3001";

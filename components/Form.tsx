@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ReactElement, useMemo } from "react";
+import { ReactElement, useMemo, useState } from "react";
 
-import { InitialFormValues, steps } from "@/models/constants";
+import { apiUrl, InitialFormValues, steps } from "@/models/constants";
 import { ICurrentForm, ICustomField, IUser } from "@/models/types";
 import { createUser, fetchUsers } from "@/services/userService";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,6 +19,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import * as yup from "yup";
+import { useQuery } from "react-query";
 
 const FormDataSchema = yup.object({
   fullName: yup.string().required("name is required*"),
@@ -39,7 +40,7 @@ export const CustomField = ({
   required = false,
   placeholder,
   rows,
-  noMargin
+  noMargin,
 }: ICustomField) => {
   const { clearErrors, setError } = useFormContext();
 
@@ -164,7 +165,8 @@ export default function Form({
   const delta = currStep - previousStep;
 
   const currentForm: ICurrentForm = useMemo(() => steps[currStep], [currStep]);
-
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const limit = 4;
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialFormValues,
@@ -177,6 +179,16 @@ export default function Form({
     formState: { errors },
   } = formInstance;
 
+  const { data: fetchedUsers, isError } = useQuery({
+    queryKey: ["users", { pageNumber, limit }],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users?_page=${pageNumber}&_limit=${limit}`
+      );
+      return (await response.json()) as IUser[];
+    },
+  });
+
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       const newUser = {
@@ -185,8 +197,8 @@ export default function Form({
         password: data.password,
       };
 
-      const fetchedUsers: IUser[] = await fetchUsers();
-      const emailExists = fetchedUsers.find(
+      // const fetchedUsers: IUser[] = await fetchUsers();
+      const emailExists = fetchedUsers?.find(
         (user) => data.email === user.email
       );
 
@@ -349,7 +361,7 @@ export default function Form({
           <p>
             Logged in by&nbsp;{session?.user?.email}.
             <button
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: apiUrl })}
               className="text-blue-500  font-bold"
             >
               Logout

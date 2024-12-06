@@ -1,7 +1,9 @@
+import { Routes } from "@/models/constants";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Form from "@/app/signin/form";
+
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Form } from "react-hook-form";
 
 // Mock the signIn function and useRouter hook
 jest.mock("next-auth/react", () => ({
@@ -44,7 +46,7 @@ describe("Form Component", () => {
 
     // Wait for the redirection to happen
     await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith("/users");
+      expect(mockRouterPush).toHaveBeenCalledWith(Routes.users);
     });
   });
 });

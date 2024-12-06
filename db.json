@@ -3,7 +3,8 @@
     {
       "id": "da76",
       "fullName": "test user",
-      "email": "farwa@bitsol.tech"
+      "email": "farwa@bitsol.tech",
+      "password": "123"
     },
     {
       "fullName": "bilal",
@@ -18,16 +19,31 @@
       "id": "EBhQWrD"
     }
   ],
-  "customersCard": [
+  "customersCard": [],
+  "postData": [
     {
-      "cards": [
-        {
-          "last4": "1111",
-          "exp_month": 12,
-          "exp_year": 2024
-        }
-      ],
+      "title": "test",
+      "postTime": "2024-12-04T11:51:56.041Z",
+      "profilePhoto": "/images/profile.png",
+      "userName": "test",
+      "description": "",
+      "postPhoto": "",
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
       "id": 1
+    },
+    {
+      "title": "test2",
+      "postTime": "2024-12-04T12:05:27.616Z",
+      "profilePhoto": "/images/profile.png",
+      "userName": "test",
+      "description": "",
+      "postPhoto": "",
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "id": 2
     }
   ]
 }
