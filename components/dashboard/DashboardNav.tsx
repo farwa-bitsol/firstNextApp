@@ -4,12 +4,35 @@ import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+const notifications = [
+  {
+    id: 1,
+    profileImage: "/images/profile.png",
+    title: "John Doe commented on your post",
+    time: "2 hours ago",
+  },
+  {
+    id: 2,
+    profileImage: "/images/profile.png",
+    title: "Jane Smith liked your photo",
+    time: "4 hours ago",
+  },
+  {
+    id: 3,
+    profileImage: "/images/profile.png",
+    title: "Mike Johnson sent you a message",
+    time: "1 day ago",
+  },
+];
 const DashboardNavbar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -24,26 +47,25 @@ const DashboardNavbar = () => {
     return currentPath.charAt(0).toUpperCase() + currentPath.slice(1);
   }, [pathname]);
 
-  const notifications = [
-    {
-      id: 1,
-      profileImage: "/images/profile.png",
-      title: "John Doe commented on your post",
-      time: "2 hours ago",
-    },
-    {
-      id: 2,
-      profileImage: "/images/profile.png",
-      title: "Jane Smith liked your photo",
-      time: "4 hours ago",
-    },
-    {
-      id: 3,
-      profileImage: "/images/profile.png",
-      title: "Mike Johnson sent you a message",
-      time: "1 day ago",
-    },
-  ];
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target as Node) &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setIsNotificationsOpen(false);
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="w-full bg-white text-[#151B32] shadow-sm relative">
@@ -74,7 +96,7 @@ const DashboardNavbar = () => {
             ].map((navItem) => (
               <li
                 key={navItem}
-                className="hover:text-[#1565D8] relative"
+                className="relative"
                 onClick={
                   navItem === "Notifications"
                     ? handleNotificationsToggle
@@ -82,21 +104,27 @@ const DashboardNavbar = () => {
                 }
               >
                 {navItem === "Notifications" ? (
-                  <span className="flex items-center gap-1 cursor-pointer">
+                  <span className="flex items-center gap-1 cursor-pointer hover:text-[#1565D8]">
                     {navItem}
                   </span>
                 ) : (
-                  <Link href={`/dashboard/${navItem.toLowerCase()}`}>
+                  <Link
+                    href={`/dashboard/${navItem.toLowerCase()}`}
+                    className="hover:text-[#1565D8]"
+                  >
                     {navItem}
                   </Link>
                 )}
 
                 {navItem === "Notifications" && isNotificationsOpen && (
-                  <div className="absolute top-8 right-0 w-72 bg-white shadow-lg border rounded-lg z-10">
+                  <div
+                    className="absolute top-8 right-0 w-72 bg-white shadow-lg border rounded-lg z-10"
+                    ref={notificationsRef}
+                  >
                     <div className="text-right px-4 pt-4">
                       <Link
                         href="/dashboard/notifications"
-                        className="text-[#1565D8] text-sm"
+                        className="text-[#1565D8] text-sm hover:text-[#1565D8]"
                       >
                         View All
                       </Link>
@@ -104,7 +132,7 @@ const DashboardNavbar = () => {
                     {notifications.map((notification) => (
                       <div
                         key={notification.id}
-                        className="flex gap-3 items-start p-4 border-b last:border-none"
+                        className="flex gap-3 items-start p-4 border-b last:border-none hover:text-[#1565D8]"
                       >
                         <Image
                           src={notification.profileImage}
@@ -163,7 +191,10 @@ const DashboardNavbar = () => {
 
       {/* Mobile Dropdown Menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg border-b border-t z-20">
+        <div
+          className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg border-b border-t z-20"
+          ref={menuRef}
+        >
           <ul className="p-4 space-y-4">
             {[
               "Feed",
