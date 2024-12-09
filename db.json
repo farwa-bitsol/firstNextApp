@@ -20,6 +20,117 @@
     }
   ],
   "customersCard": [],
+
+  "chats": [
+    {
+      "id": "1",
+      "name": "Alice",
+      "lastMessage": "Hey, are you free this weekend?",
+      "messages": [
+        {
+          "id": "1",
+          "sender": "Alice",
+          "text": "Hey, are you free this weekend?"
+        },
+        {
+          "id": "2",
+          "sender": "me",
+          "text": "Yeah, I am! What's up?"
+        },
+        {
+          "id": "3",
+          "sender": "Alice",
+          "text": "Great! I was thinking of going hiking this weekend."
+        },
+        {
+          "id": "4",
+          "sender": "me",
+          "text": "Sounds awesome! Count me in."
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Bob",
+      "lastMessage": "Don't forget about the meeting tomorrow.",
+      "messages": [
+        {
+          "id": "1",
+          "sender": "Bob",
+          "text": "Don't forget about the meeting tomorrow."
+        },
+        {
+          "id": "2",
+          "sender": "me",
+          "text": "Got it, thanks for the reminder!"
+        },
+        {
+          "id": "3",
+          "sender": "Bob",
+          "text": "You're welcome!"
+        },
+        {
+          "id": "4",
+          "sender": "me",
+          "text": "Looking forward to it."
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Charlie",
+      "lastMessage": "Can you send me the report?",
+      "messages": [
+        {
+          "id": "1",
+          "sender": "Charlie",
+          "text": "Can you send me the report?"
+        },
+        {
+          "id": "2",
+          "sender": "me",
+          "text": "Sure, I'll send it over shortly."
+        },
+        {
+          "id": "3",
+          "sender": "Charlie",
+          "text": "Thanks!"
+        },
+        {
+          "id": "4",
+          "sender": "me",
+          "text": "No problem, sending it now."
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Diana",
+      "lastMessage": "Thanks for the help earlier!",
+      "messages": [
+        {
+          "id": "1",
+          "sender": "Diana",
+          "text": "Thanks for the help earlier!"
+        },
+        {
+          "id": "2",
+          "sender": "me",
+          "text": "No problem, happy to help!"
+        },
+        {
+          "id": "3",
+          "sender": "Diana",
+          "text": "I really appreciate it."
+        },
+        {
+          "id": "4",
+          "sender": "me",
+          "text": "You're welcome, anytime!"
+        }
+      ]
+    }
+  ],
   "postData": [
     {
       "title": "test",

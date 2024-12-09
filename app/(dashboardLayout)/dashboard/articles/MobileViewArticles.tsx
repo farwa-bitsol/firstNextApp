@@ -13,7 +13,7 @@ const MobileViewArticles = () => {
   );
 
   return (
-    <div className="flex flex-col bg-white p-4 md:hidden h-full">
+    <div className="flex flex-col bg-white p-4 md:hidden h-screen">
       {/* Search Bar */}
       <div className="p-2 bg-[#EEF4FD]  ml-3 rounded-full">
         <input

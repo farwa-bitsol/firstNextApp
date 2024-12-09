@@ -1,9 +1,8 @@
 "use client";
 
+import { Calendar, FileText, Image } from "lucide-react";
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
-import { Image, Calendar, FileText } from "lucide-react";
-import { formatDistanceToNow, parseISO } from "date-fns"; // Importing date-fns functions
+import { useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -16,6 +15,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     gap: "12px",
     marginBottom: "16px",
+    flexWrap: "wrap",
   },
   profileCircle: {
     width: "40px",
@@ -90,7 +90,7 @@ const WhatsOnYourMind = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["postData"]); // Refresh posts
-     
+
         setInput("");
       },
     }
