@@ -11,15 +11,17 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   // Check if the current route is the chat page
   const isChatPage = pathname.includes("/chat");
 
+  // Constructing the classes dynamically using template literals
+  const layoutClasses = `h-screen ${
+    isChatPage ? "overflow-auto md:overflow-hidden" : "overflow-auto"
+  }`;
+  const mainClasses = `w-full ${isChatPage ? "" : "h-screen"} bg-[#EEF4FD]`;
+
   return (
-    <div
-      className={`h-screen ${
-        isChatPage ? "sm:overflow-auto md:overflow-hidden" : "overflow-auto"
-      } `}
-    >
+    <div className={layoutClasses}>
       <DashboardNavbar />
       <SessionWrapper>
-        <main className={`w-full ${isChatPage ? "" : "h-screen"} bg-[#EEF4FD]`}>
+        <main className={mainClasses}>
           <Suspense fallback={<Loading />}>{children}</Suspense>
         </main>
       </SessionWrapper>
