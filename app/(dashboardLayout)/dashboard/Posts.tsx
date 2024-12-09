@@ -85,9 +85,10 @@ const Posts = () => {
                 <div className="flex items-center text-gray-500 text-xs">
                   {/* Use formatDistanceToNow to display relative time */}
                   <span>
-                    {formatDistanceToNow(new Date(postTime), {
-                      addSuffix: true,
-                    })}{" "}
+                    {postTime &&
+                      formatDistanceToNow(new Date(postTime ?? ""), {
+                        addSuffix: true,
+                      })}{" "}
                     &bull;
                   </span>
                   <FontAwesomeIcon

@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onSelectChat }) => {
   if (isError) return <div>Error fetching posts</div>;
   // Filter chats based on the search input
   const filteredChats = chats?.filter((chat) =>
-    chat.name.toLowerCase().includes(search.toLowerCase())
+    chat?.name?.toLowerCase()?.includes(search?.toLowerCase())
   );
 
   return (
