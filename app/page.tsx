@@ -43,7 +43,7 @@ const Home = async () => {
   return (
     <div className="px-8 pt-16">
       <div className="flex justify-between  space-x-2">
-        <Link href="/signin" className="text-blue-500 font-bold">
+        <Link href="/user/signin" className="text-blue-500 font-bold">
           User Dashboard
         </Link>
 
@@ -53,7 +53,7 @@ const Home = async () => {
           ) : (
             <>
               <p className="inline-block">Already have an account?</p>
-              <Link href="/signin" className="text-blue-500 font-bold">
+              <Link href="/user/signin" className="text-blue-500 font-bold">
                 Sign in
               </Link>
             </>
@@ -80,12 +80,12 @@ const Home = async () => {
             <AccountOption
               heading="Individual"
               description="Personal account to manage all you activities."
-              navigateTo="/forms"
+              navigateTo="/user/forms"
             />
             <AccountOption
               heading="Business"
               description="Own or belong to a company, this is for you."
-              navigateTo="/form/1" // this is dynamic route, will not retain the form state, just for practice
+              navigateTo="/user/form/1" // this is dynamic route, will not retain the form state, just for practice
             />
           </>
         )}
