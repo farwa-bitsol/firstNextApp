@@ -60,6 +60,16 @@
           "id": "h3z5v0l3y",
           "sender": "me",
           "text": "hi alice"
+        },
+        {
+          "id": "nn8ryz8t8",
+          "sender": "me",
+          "text": "hi"
+        },
+        {
+          "id": "bppk7dc9o",
+          "sender": "me",
+          "text": "how are you"
         }
       ]
     },
@@ -159,6 +169,18 @@
       "comments": 0,
       "shares": 0,
       "id": 2
+    },
+    {
+      "title": "test123",
+      "postTime": "2024-12-10T05:40:31.373Z",
+      "profilePhoto": "/images/profile.png",
+      "userName": "test",
+      "description": "",
+      "postPhoto": "",
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "id": 3
     }
   ]
 }

@@ -2,11 +2,11 @@ import React from "react";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
 
-import { fetchUsers } from "@/services/userService";
 import { IUser } from "@/models/types";
 import Users from "@/app/(usersGroup)/user/users/page";
 
-jest.mock("@/services/userService");
+global.fetch = jest.fn();
+
 jest.mock("@/components/DeleteUser", () => {
   const DeleteUser = (props: any) => (
     <div data-testid={`delete-user-${props.user.id}`} />
@@ -14,6 +14,7 @@ jest.mock("@/components/DeleteUser", () => {
   DeleteUser.displayName = "DeleteUser";
   return DeleteUser;
 });
+
 jest.mock("@/components/Pagination", () => {
   const Pagination = (props: any) => (
     <button onClick={() => props.setCurrentPage(props.currentPage + 1)}>
@@ -23,6 +24,7 @@ jest.mock("@/components/Pagination", () => {
   Pagination.displayName = "Pagination";
   return Pagination;
 });
+
 jest.mock("@/components/Logout", () => {
   const Logout = () => <button>Logout</button>;
   Logout.displayName = "Logout";
@@ -36,7 +38,36 @@ describe("Users Component", () => {
   ];
 
   beforeEach(() => {
-    (fetchUsers as jest.Mock).mockResolvedValue(mockUsers);
+    (fetch as jest.Mock).mockImplementation((url: string) => {
+      const params = new URL(url).searchParams;
+      const page = params.get("_page") || "1";
+
+      if (page === "1") {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockUsers),
+        });
+      }
+
+      if (page === "2") {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve([
+              { id: "3", fullName: "User 3", email: "", password: "" },
+            ]),
+        });
+      }
+
+      return Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ message: "Page not found" }),
+      });
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   test("renders users and pagination correctly", async () => {
@@ -58,16 +89,26 @@ describe("Users Component", () => {
   test("fetches users on mount and when page changes", async () => {
     render(<Users />);
 
-    // Ensure fetchUsers is called once on mount
-    expect(fetchUsers).toHaveBeenCalledTimes(1);
+    // Ensure fetch is called once on mount
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/users?_page=1&_limit=4")
+    );
 
     // Simulate clicking "Next Page"
     fireEvent.click(screen.getByText("Next Page"));
 
-    // Ensure fetchUsers is called again when the page changes
+    // Ensure fetch is called again when the page changes
     await waitFor(() => {
-      expect(fetchUsers).toHaveBeenCalledTimes(2);
-      expect(fetchUsers).toHaveBeenCalledWith(2); // currentPage is updated to 2
+      expect(fetch).toHaveBeenCalledTimes(2);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/api/users?_page=2&_limit=4")
+      );
+    });
+
+    // Verify the new user is displayed
+    await waitFor(() => {
+      expect(screen.getByTestId("delete-user-3")).toBeInTheDocument();
     });
   });
 });
