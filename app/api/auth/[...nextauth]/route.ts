@@ -1,8 +1,21 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { fetchUsers } from "@/services/userService";
 import { IUser } from "@/models/types";
+
+
+const fetchUsersFromAPI = async (page: number): Promise<IUser[]> => {
+  const response = await fetch(`http://localhost:3001/api/users?_page=${page}&_limit=4`, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to fetch users");
+  }
+
+  return response.json();
+};
 
 const authOptions = NextAuth({
   session: {
@@ -19,20 +32,19 @@ const authOptions = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const fetchedUsers: IUser[] = await fetchUsers();
-        const filteredEmail = fetchedUsers.find(
-          (user) => credentials?.email === user.email
-        );
 
-        if (filteredEmail) {
+        const users: IUser[] = await fetchUsersFromAPI(1);
+        const filteredUser = users.find((user) => user.email === credentials?.email);
+
+        if (filteredUser) {
           return {
-            id: filteredEmail.id || "",
-            email: filteredEmail.email,
-            name: filteredEmail.fullName,
+            id: filteredUser.id || "",
+            email: filteredUser.email,
+            name: filteredUser.fullName,
           };
         }
 
-        return null;
+        return null; // Return null if no user found
       },
     }),
     GoogleProvider({
@@ -40,7 +52,7 @@ const authOptions = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          redirect_uri: "http://localhost:3001/user/signin",
+          redirect_uri: "http://localhost:3001/user/signin", // saved in Google OAuth setup
         },
       },
     }),

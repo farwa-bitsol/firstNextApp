@@ -6,7 +6,6 @@ import { ReactElement, useMemo, useState } from "react";
 
 import { apiUrl, InitialFormValues, steps } from "@/models/constants";
 import { ICurrentForm, ICustomField, IUser } from "@/models/types";
-import { createUser, fetchUsers } from "@/services/userService";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -183,7 +182,7 @@ export default function Form({
     queryKey: ["users", { pageNumber, limit }],
     queryFn: async () => {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users?_page=${pageNumber}&_limit=${limit}`
+        `/api/users?_page=${pageNumber}&_limit=${limit}`
       );
       return (await response.json()) as IUser[];
     },
@@ -197,19 +196,29 @@ export default function Form({
         password: data.password,
       };
 
-      // const fetchedUsers: IUser[] = await fetchUsers();
+      // Check if email already exists
       const emailExists = fetchedUsers?.find(
         (user) => data.email === user.email
       );
 
       if (emailExists) {
-        // show Error
+        // Show error if email exists
         window.alert("Email already exists");
         return;
       }
 
-      await createUser(newUser);
-      router.push("/");
+      // Create new user through the API
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create user");
+      }
+
+      router.push("/"); // Redirect after successful user creation
     } catch (error) {
       console.error("Error creating user:", error);
     }
@@ -233,9 +242,9 @@ export default function Form({
 
   return (
     <section>
-      {/* Form */}
       <FormProvider {...formInstance}>
         <form className="mt-12" onSubmit={handleSubmit(processForm)} noValidate>
+          {/* Step 1 */}
           {currStep === 1 && (
             <ContainerForm delta={delta} currentForm={currentForm}>
               <>
@@ -246,7 +255,6 @@ export default function Form({
                   required
                   placeholder="Enter fullname"
                 />
-
                 <CustomField
                   register={register}
                   fieldName="email"
@@ -255,7 +263,6 @@ export default function Form({
                   required
                   placeholder="Enter email"
                 />
-
                 <CustomField
                   register={register}
                   fieldName="password"
@@ -289,6 +296,7 @@ export default function Form({
             </ContainerForm>
           )}
 
+          {/* Step 2 */}
           {currStep === 2 && (
             <ContainerForm delta={delta} currentForm={currentForm}>
               <>
@@ -309,7 +317,7 @@ export default function Form({
                       id="country"
                       {...register("country")}
                       autoComplete="country-name"
-                      className="block w-full rounded-md border-0 px-5 py-4  text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600  sm:text-sm "
+                      className="block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-sky-600 sm:text-sm"
                     >
                       <option>United States</option>
                       <option>Canada</option>
@@ -326,6 +334,7 @@ export default function Form({
             </ContainerForm>
           )}
 
+          {/* Step 3 */}
           {currStep === 3 && (
             <ContainerForm delta={delta} currentForm={currentForm}>
               <CustomField
@@ -337,7 +346,6 @@ export default function Form({
           )}
 
           {/* Navigation */}
-
           {currStep === 3 && (
             <div className="flex justify-center mt-8">
               <button type="submit" className="submit-button">
@@ -347,6 +355,7 @@ export default function Form({
           )}
         </form>
       </FormProvider>
+
       {currStep !== 3 && (
         <div className="flex justify-center">
           <button type="button" onClick={next} className="submit-button">
@@ -362,7 +371,7 @@ export default function Form({
             Logged in by&nbsp;{session?.user?.email}.
             <button
               onClick={() => signOut({ callbackUrl: apiUrl })}
-              className="text-blue-500  font-bold"
+              className="text-blue-500 font-bold"
             >
               Logout
             </button>
@@ -371,33 +380,9 @@ export default function Form({
           <button
             onClick={() => signIn("google")}
             type="button"
-            className="login-with-google focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 me-2 mb-2"
+            className="login-with-google"
           >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21.8055 10.0415H21V10H12V14H17.6515C16.827 16.3285 14.6115 18 12 18C8.6865 18 6 15.3135 6 12C6 8.6865 8.6865 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C6.4775 2 2 6.4775 2 12C2 17.5225 6.4775 22 12 22C17.5225 22 22 17.5225 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z"
-                fill="#FFC107"
-              />
-              <path
-                d="M3.15298 7.3455L6.43848 9.755C7.32748 7.554 9.48048 6 12 6C13.5295 6 14.921 6.577 15.9805 7.5195L18.809 4.691C17.023 3.0265 14.634 2 12 2C8.15898 2 4.82798 4.1685 3.15298 7.3455Z"
-                fill="#FF3D00"
-              />
-              <path
-                d="M12 22C14.583 22 16.93 21.0115 18.7045 19.404L15.6095 16.785C14.5718 17.5742 13.3037 18.0011 12 18C9.399 18 7.1905 16.3415 6.3585 14.027L3.0975 16.5395C4.7525 19.778 8.1135 22 12 22Z"
-                fill="#4CAF50"
-              />
-              <path
-                d="M21.8055 10.0415H21V10H12V14H17.6515C17.2571 15.1082 16.5467 16.0766 15.608 16.7855L15.6095 16.7845L18.7045 19.4035C18.4855 19.6025 22 17 22 12C22 11.3295 21.931 10.675 21.8055 10.0415Z"
-                fill="#1976D2"
-              />
-            </svg>
-            <p className="pl-2"> Register with Google</p>
+            Register with Google
           </button>
         )}
       </div>

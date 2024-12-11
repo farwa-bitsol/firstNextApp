@@ -1,28 +1,39 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { fetchUsers } from "@/services/userService";
 import DeleteUser from "@/components/DeleteUser";
-import { IUser } from "@/models/types";
-import Pagination from "@/components/Pagination";
 import Logout from "@/components/Logout";
+import Pagination from "@/components/Pagination";
+import { IUser } from "@/models/types";
+import { useState } from "react";
+import { useQuery } from "react-query";
+
+const fetchUsers = async (page: number): Promise<IUser[]> => {
+  const response = await fetch(`/api/users?_page=${page}&_limit=4`, {
+    cache: "no-store", // Ensures fresh data fetch each time
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to fetch users");
+  }
+
+  return response.json();
+};
 
 const Users = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const getUsers = useCallback(async () => {
-    try {
-      const fetchedUsers = await fetchUsers(currentPage);
-      setUsers(fetchedUsers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  }, [currentPage]);
+  const {
+    data: users,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(["fetchUsers", currentPage], () => fetchUsers(currentPage), {
+    keepPreviousData: true, // Keeps data from the previous query while fetching new data
+  });
 
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {(error as Error).message}</div>;
 
   return (
     <>
@@ -30,8 +41,8 @@ const Users = () => {
         <Logout />
       </div>
       <div className="py-32 px-12">
-        {users?.map((user, index) => (
-          <DeleteUser key={index} user={user} />
+        {users?.map((user) => (
+          <DeleteUser key={user.id} user={user} />
         ))}
         <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </div>
