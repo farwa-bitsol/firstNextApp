@@ -1,42 +1,104 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import "@testing-library/jest-dom";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { useMutation, useQueryClient } from "react-query";
 import DeleteUser from "@/components/DeleteUser";
-import { deleteUser } from "@/services/userService";
 
-// Mock the deleteUser function
-jest.mock("@/services/userService", () => ({
-  deleteUser: jest.fn(),
+jest.mock("react-query", () => ({
+  useMutation: jest.fn(),
+  useQueryClient: jest.fn(),
 }));
 
 describe("DeleteUser Component", () => {
   const mockUser = {
-    id: "123",
+    id: "1",
     fullName: "John Doe",
-    email: "123@gmail.com",
-    password: "",
+    email: "john.doe@example.com",
+    password: "password123",
   };
 
-  it("renders the user full name and a delete button", () => {
-    render(<DeleteUser user={mockUser} />);
+  let mockHandleDelete: jest.Mock;
+  let mockQueryClient: jest.Mocked<ReturnType<typeof useQueryClient>>;
 
-    // Check if the user's full name is displayed
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
+  beforeEach(() => {
+    mockHandleDelete = jest.fn();
+    mockQueryClient = {
+      invalidateQueries: jest.fn(),
+    } as unknown as jest.Mocked<ReturnType<typeof useQueryClient>>;
 
-    // Check if the delete button is rendered
-    expect(screen.getByText("Delete")).toBeInTheDocument();
+    (useQueryClient as jest.Mock).mockReturnValue(mockQueryClient);
+    (useMutation as jest.Mock).mockImplementation(() => ({
+      mutate: mockHandleDelete,
+      isLoading: false,
+      isError: false,
+      error: null,
+    }));
   });
 
-  it("calls deleteUser with the correct userId when the delete button is clicked", async () => {
-    const mockDeleteUser = deleteUser as jest.MockedFunction<typeof deleteUser>;
-    mockDeleteUser.mockResolvedValueOnce({}); // Mock successful deletion
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("renders user information correctly", () => {
+    render(<DeleteUser user={mockUser} />);
+
+    expect(screen.getByText(mockUser.fullName)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /delete/i })).toBeInTheDocument();
+  });
+
+  it("calls the delete function when the delete button is clicked", async () => {
+    render(<DeleteUser user={mockUser} />);
+
+    const deleteButton = screen.getByRole("button", { name: /delete/i });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(mockHandleDelete).toHaveBeenCalledWith(mockUser.id);
+    });
+  });
+
+  it("disables the delete button while loading", () => {
+    (useMutation as jest.Mock).mockImplementation(() => ({
+      mutate: mockHandleDelete,
+      isLoading: true,
+      isError: false,
+      error: null,
+    }));
 
     render(<DeleteUser user={mockUser} />);
 
-    // Click the delete button
-    fireEvent.click(screen.getByText("Delete"));
+    const deleteButton = screen.getByRole("button", { name: /deleting.../i });
+    expect(deleteButton).toBeDisabled();
+  });
 
-    // Check if deleteUser was called with the correct user ID
-    expect(mockDeleteUser).toHaveBeenCalledWith("123");
+  it("displays an error message if delete fails", () => {
+    (useMutation as jest.Mock).mockImplementation(() => ({
+      mutate: mockHandleDelete,
+      isLoading: false,
+      isError: true,
+      error: new Error("Failed to delete user"),
+    }));
+
+    render(<DeleteUser user={mockUser} />);
+
+    expect(screen.getByText(/failed to delete user/i)).toBeInTheDocument();
+  });
+
+  it("invalidates the users query on successful deletion", async () => {
+    (useMutation as jest.Mock).mockImplementation((_, options) => ({
+      mutate: jest.fn((userId: string) => {
+        options?.onSuccess?.();
+      }),
+      isLoading: false,
+      isError: false,
+      error: null,
+    }));
+
+    render(<DeleteUser user={mockUser} />);
+
+    const deleteButton = screen.getByRole("button", { name: /delete/i });
+    fireEvent.click(deleteButton);
+
+    await waitFor(() => {
+      expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith("users");
+    });
   });
 });
