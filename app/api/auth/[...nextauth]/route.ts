@@ -52,7 +52,7 @@ const authOptions = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          redirect_uri: "http://localhost:3001/user/signin", // saved in Google OAuth setup
+          redirect_uri: "https://keen-melba-d92305.netlify.app/api/auth/callback/google", // saved in Google OAuth setup
         },
       },
     }),
