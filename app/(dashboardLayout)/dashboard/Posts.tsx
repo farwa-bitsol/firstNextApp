@@ -25,7 +25,7 @@ interface PostProps {
 }
 
 const fetchPosts = async (): Promise<PostProps[]> => {
-  const response = await fetch("http://localhost:3000/postData", {
+  const response = await fetch("/api/posts", {
     cache: "no-store", // Ensures fresh data fetch each time
   });
   if (!response.ok) {

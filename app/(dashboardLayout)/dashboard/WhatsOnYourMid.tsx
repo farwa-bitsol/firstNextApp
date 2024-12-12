@@ -80,7 +80,7 @@ const WhatsOnYourMind = () => {
       comments: number;
       shares: number;
     }) => {
-      const response = await fetch("http://localhost:3000/postData", {
+      const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPost),
