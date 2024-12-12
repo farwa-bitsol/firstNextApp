@@ -1,11 +1,14 @@
 import React from "react";
-import RadialProgressbar from "./RadialProgressbar";
-import TrafficSourceTypes from "./TraficSourceTypes";
-import Goals from "./Goals";
-import Recycled from "./Recycled";
-import SelectField from "./SelectField";
-import ImpressionsViewsChart from "./ImpressionViews";
-import ExpensesChart from "./Expenses";
+import dynamic from "next/dynamic";
+
+// Dynamically import components with ssr: false to prevent server-side rendering
+const RadialProgressbar = dynamic(() => import("./RadialProgressbar"), { ssr: false });
+const TrafficSourceTypes = dynamic(() => import("./TraficSourceTypes"), { ssr: false });
+const Goals = dynamic(() => import("./Goals"), { ssr: false });
+const Recycled = dynamic(() => import("./Recycled"), { ssr: false });
+const SelectField = dynamic(() => import("./SelectField"), { ssr: false });
+const ImpressionsViewsChart = dynamic(() => import("./ImpressionViews"), { ssr: false });
+const ExpensesChart = dynamic(() => import("./Expenses"), { ssr: false })
 
 const recycledSelectOptions = [{ label: "This month", value: "current-month" }];
 const page = () => {

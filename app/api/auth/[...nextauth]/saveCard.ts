@@ -2,7 +2,7 @@ import Stripe from "stripe";
 
 const stripe = new Stripe("YOUR_SECRET_KEY");
 
-export default async function handler(req, res) {
+export default async function handler(req: any, res: any) {
     if (req.method === "POST") {
         const { token } = req.body;
 
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
             res.status(200).json({ customerId: customer.id });
         } catch (error) {
-            res.status(500).json({ error: error?.message ? "Error Saving Card" });
+            res.status(500).json({ error: "Error Saving Card" });
         }
     } else {
         res.status(405).json({ error: "Method not allowed" });

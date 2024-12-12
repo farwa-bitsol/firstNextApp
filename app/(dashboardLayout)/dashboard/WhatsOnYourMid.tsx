@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, FileText, Image } from "lucide-react";
+import { Calendar, FileText, File } from "lucide-react";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
 
@@ -138,7 +138,7 @@ const WhatsOnYourMind = () => {
       {/*  actions */}
       <div style={styles.bottomRow}>
         <div style={styles.iconLabel}>
-          <Image width={20} height={20} style={styles.icon} />
+          <File size={20} style={styles.icon} />
           <span>Media</span>
         </div>
         <div style={styles.iconLabel}>
