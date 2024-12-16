@@ -1,11 +1,13 @@
 "use client";
 
+import { ReactElement, useMemo } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ReactElement, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 
-import { apiUrl, InitialFormValues, steps } from "@/models/constants";
-import { ICurrentForm, ICustomField, IUser } from "@/models/types";
+import { apiUrl, InitialFormValues, Routes, steps } from "@/models/constants";
+import { ICurrentForm, ICustomField } from "@/models/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -18,7 +20,6 @@ import {
   useFormContext,
 } from "react-hook-form";
 import * as yup from "yup";
-import { useQuery } from "react-query";
 
 const FormDataSchema = yup.object({
   fullName: yup.string().required("name is required*"),
@@ -164,8 +165,6 @@ export default function Form({
   const delta = currStep - previousStep;
 
   const currentForm: ICurrentForm = useMemo(() => steps[currStep], [currStep]);
-  const [pageNumber, setPageNumber] = useState<number>(1);
-  const limit = 4;
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialFormValues,
@@ -178,16 +177,6 @@ export default function Form({
     formState: { errors },
   } = formInstance;
 
-  const { data: fetchedUsers, isError } = useQuery({
-    queryKey: ["users", { pageNumber, limit }],
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/users?_page=${pageNumber}&_limit=${limit}`
-      );
-      return (await response.json()) as IUser[];
-    },
-  });
-
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       const newUser = {
@@ -196,31 +185,12 @@ export default function Form({
         password: data.password,
       };
 
-      // Check if email already exists
-      const emailExists = fetchedUsers?.find(
-        (user) => data.email === user.email
-      );
-
-      if (emailExists) {
-        // Show error if email exists
-        window.alert("Email already exists");
-        return;
-      }
-
-      // Create new user through the API
-      const response = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create user");
-      }
-
-      router.push("/"); // Redirect after successful user creation
-    } catch (error) {
+      const response = await axios.post("/api/users/signup", newUser);
+      console.log("Signup success", response.data);
+      router.push(Routes.login); // Redirect to login after successful user creation
+    } catch (error: any) {
       console.error("Error creating user:", error);
+      toast.error(error?.message || "Failed to create user. Please try again.");
     }
   };
 
