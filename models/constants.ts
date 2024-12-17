@@ -35,7 +35,7 @@ export const InitialGeneralFormValues = { firstName: "", lastName: "", location:
 export const InitialNotificationFormValues = { weeklyNewsletter: false, accountSummary: false, websiteNotifications: [] };
 
 export const Routes = {
-  userDashboard: "/user",
+  userForm: "/user",
   users: "/user/users",
   dashboard: "/dashboard",
   login: "/user/signin"

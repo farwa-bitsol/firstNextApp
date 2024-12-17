@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactElement, useMemo } from "react";
+import { ReactElement, useMemo, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import bcrypt from "bcryptjs";
 import {
   Controller,
   FormProvider,
@@ -163,6 +164,7 @@ export default function Form({
   const router = useRouter();
   const previousStep = currStep - 1;
   const delta = currStep - previousStep;
+  const [isLoading, setIsLoading] = useState(false);
 
   const currentForm: ICurrentForm = useMemo(() => steps[currStep], [currStep]);
   const formInstance = useForm<Inputs>({
@@ -179,18 +181,29 @@ export default function Form({
 
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
+      setIsLoading(true);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(data.password, salt);
       const newUser = {
         fullName: data.fullName,
         email: data.email,
-        password: data.password,
+        password: hashedPassword,
       };
 
       const response = await axios.post("/api/users/signup", newUser);
       console.log("Signup success", response.data);
-      router.push(Routes.login); // Redirect to login after successful user creation
+      toast.success("Signup success!");
+      router.push(Routes.login);
     } catch (error: any) {
       console.error("Error creating user:", error);
-      toast.error(error?.message || "Failed to create user. Please try again.");
+      const errorMessage =
+        error?.response?.data?.error ||
+        error?.message ||
+        error?.error ||
+        "An unknown error occurred";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -318,8 +331,12 @@ export default function Form({
           {/* Navigation */}
           {currStep === 3 && (
             <div className="flex justify-center mt-8">
-              <button type="submit" className="submit-button">
-                Register account
+              <button
+                type="submit"
+                className="submit-button"
+                disabled={isLoading}
+              >
+                {isLoading ? "Loading..." : "Register account"}
               </button>
             </div>
           )}
@@ -328,7 +345,12 @@ export default function Form({
 
       {currStep !== 3 && (
         <div className="flex justify-center">
-          <button type="button" onClick={next} className="submit-button">
+          <button
+            type="button"
+            onClick={next}
+            className="submit-button"
+            disabled={isLoading}
+          >
             Save & Continue
           </button>
         </div>
@@ -342,6 +364,7 @@ export default function Form({
             <button
               onClick={() => signOut({ callbackUrl: apiUrl })}
               className="text-blue-500 font-bold"
+              disabled={isLoading}
             >
               Logout
             </button>
@@ -351,6 +374,7 @@ export default function Form({
             onClick={() => signIn("google")}
             type="button"
             className="login-with-google"
+            disabled={isLoading}
           >
             Register with Google
           </button>

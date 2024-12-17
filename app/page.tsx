@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Logout from "@/components/Logout";
 import { getServerSession } from "next-auth";
+import { Routes } from "@/models/constants";
 
 const AccountOption = ({
   heading,
@@ -43,7 +44,7 @@ const Home = async () => {
   return (
     <div className="px-8 pt-16">
       <div className="flex justify-between  space-x-2">
-        <Link href="/user/signin" className="text-blue-500 font-bold">
+        <Link href={Routes.users} className="text-blue-500 font-bold">
           User Dashboard
         </Link>
 
