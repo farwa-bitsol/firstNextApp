@@ -1,5 +1,35 @@
-// import { withAuth } from "next-auth/middleware";
-import { NextResponse, NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from "next/server";
+import { Routes } from "./models/constants";
+
+
+
+export function middleware(request: NextRequest) {
+
+    const token = request.cookies.get('token')?.value;
+
+    // Redirect users without a token away from private paths
+    if (!token) {
+        return NextResponse.redirect(new URL(Routes.login, request.nextUrl));
+    }
+
+    // Allow users without a token to access public paths
+    return NextResponse.next();
+}
+
+export const config = {
+    matcher: [
+        "/users/:path*",
+        "/dashboard/:path*",
+        "/settings/:path*",
+    ],
+};
+
+
+
+
+
+
+
 
 // export default withAuth({
 
@@ -15,34 +45,3 @@ import { NextResponse, NextRequest } from 'next/server'
 //         "/settings/:path*",
 //     ],
 // };
-
-
-
-export function middleware(request: NextRequest) {
-    const path = request.nextUrl.pathname
-
-    const isPublicPath = path.includes('/signin') || path.includes('/forms') || path.includes('/verifyemail')
-
-    const token = request.cookies.get('token')?.value || ''
-
-    if (isPublicPath && token) {
-        return NextResponse.redirect(new URL('/', request.nextUrl))
-    }
-
-    if (!isPublicPath && !token) {
-        return NextResponse.redirect(new URL('/signin', request.nextUrl))
-    }
-
-}
-
-
-// See "Matching Paths" below to learn more
-export const config = {
-    matcher: [
-        '/',
-        '/user/users',
-        '/user/signin',
-        '/user/forms',
-        '/user/verifyemail'
-    ]
-}

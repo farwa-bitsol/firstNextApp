@@ -22,10 +22,10 @@ export default function Form() {
       };
       setLoading(true);
 
-      const response = await axios.post("/api/users/login",user);
+      const response = await axios.post("/api/users/login", user);
       console.log("Login success", response.data);
       toast.success("Login success");
-      router.push(Routes.userForm);
+      router.push(Routes.users);
     } catch (error: any) {
       console.log("Login failed", error);
 

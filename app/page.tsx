@@ -1,9 +1,13 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
+"use client";
+
 import Logout from "@/components/Logout";
-import { getServerSession } from "next-auth";
 import { Routes } from "@/models/constants";
+import { IUser } from "@/models/types";
+import axios from "axios";
+import Image from "next/image";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { useQuery } from "react-query";
 
 const AccountOption = ({
   heading,
@@ -39,8 +43,25 @@ const AccountOption = ({
   );
 };
 
-const Home = async () => {
-  const session = await getServerSession();
+const fetchUser = async (): Promise<{ data: IUser }> => {
+  try {
+    const response = await axios.get(`/api/users/me`);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.error ||
+      error?.message ||
+      error?.error ||
+      "Failed to fetch user";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
+const Home = () => {
+  const { data: user } = useQuery(["fetchUser"], () => fetchUser(), {
+    keepPreviousData: true, // Keeps data from the previous query while fetching new data
+  });
+
   return (
     <div className="px-8 pt-16">
       <div className="flex justify-between  space-x-2">
@@ -49,7 +70,7 @@ const Home = async () => {
         </Link>
 
         <div className="text-gray-700  space-x-2 border-b-2 border-transparent hover:border-blue-500">
-          {session ? (
+          {user?.data ? (
             <Logout />
           ) : (
             <>
@@ -65,10 +86,10 @@ const Home = async () => {
       {/* main content */}
 
       <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">
-        {session ? (
+        {user?.data ? (
           <h1 className="text-2xl font-bold text-gray-800">
             {`Welcome to Dashboard ${
-              session.user?.name ?? session.user?.email
+              user?.data?.fullName ?? user?.data?.email
             }!`}
           </h1>
         ) : (

@@ -11,9 +11,6 @@ export async function GET(request: NextRequest) {
         // Fetch all users, excluding the password field
         const users = await User.find({}).select("-password");
 
-
-        console.log("Retrieved users:", users);
-
         return NextResponse.json({
             success: true,
             message: "Users fetched successfully",

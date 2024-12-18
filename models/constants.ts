@@ -38,7 +38,8 @@ export const Routes = {
   userForm: "/user",
   users: "/user/users",
   dashboard: "/dashboard",
-  login: "/user/signin"
+  login: "/user/signin",
+  settings: "/settings",
 }
 
 export const apiUrl = "http://localhost:3001";
