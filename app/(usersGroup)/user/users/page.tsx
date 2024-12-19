@@ -1,7 +1,6 @@
 "use client";
 
 import DeleteUser from "@/components/DeleteUser";
-import Logout from "@/components/Logout";
 import Pagination from "@/components/Pagination";
 import { Routes } from "@/models/constants";
 import { IUser } from "@/models/types";
@@ -13,7 +12,7 @@ import { useQuery } from "react-query";
 
 const fetchUsers = async (page: number): Promise<{ users: IUser[] }> => {
   try {
-    const response = await axios.get(`/api/users/userList?page=${page}`);
+    const response = await axios.get(`/api/users/userList`);
     return response.data;
   } catch (error: any) {
     const errorMessage =

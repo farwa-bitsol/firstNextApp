@@ -1,47 +1,54 @@
-import { NextResponse } from 'next/server';
+import { connect } from "@/dbConfig/config";
+import Post from "@/models/postModel";
+import { NextRequest, NextResponse } from "next/server";
 
-const JSON_SERVER_URL = 'http://localhost:3000/postData';
 
-export async function GET(req: Request) {
+connect()
+
+export async function POST(request: NextRequest) {
     try {
-        const response = await fetch(`${JSON_SERVER_URL}`);
+        const reqBody = await request.json();
+        const { profilePhoto, userName, postTime, title, description, postPhoto, likes, comments, shares } = reqBody;
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch posts');
-        }
+        const newPost = new Post({
+            profilePhoto,
+            userName,
+            title,
+            description,
+            postPhoto,
+            likes,
+            comments,
+            shares,
+            postTime
+        });
 
-        const paginatedUsers = await response.json();
-        return NextResponse.json(paginatedUsers);
-    } catch (error) {
-        console.error('GET Error:', error);
-        return NextResponse.json(
-            { message: 'Failed to fetch posts', error: (error as Error).message },
-            { status: 500 }
-        );
+        const savedPost = await newPost.save();
+        console.log('This is our new saved post:', savedPost);
+
+        return NextResponse.json({
+            message: "Post created successfully.",
+            success: true,
+            savedPost
+        });
+
+    } catch (error: any) {
+        console.error("Error in POST request:", error);
+        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
     }
 }
 
-export async function POST(req: Request) {
+export async function GET(request: NextRequest) {
     try {
-        const newPost = await req.json();
+        const posts = await Post.find().sort({ postTime: -1 });
 
-        const response = await fetch(JSON_SERVER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newPost),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to create user');
+        if (!posts) {
+            return NextResponse.json({ message: "No posts found" }, { status: 404 });
         }
 
-        const createdPost = await response.json();
-        return NextResponse.json(createdPost, { status: 201 });
-    } catch (error) {
-        console.error('POST Error:', error);
-        return NextResponse.json(
-            { message: 'Failed to create post', error: (error as Error).message },
-            { status: 500 }
-        );
+        return NextResponse.json(posts);
+
+    } catch (error: any) {
+        console.error("Error in GET request:", error);
+        return NextResponse.json({ error: error.message || "Failed to fetch posts" }, { status: 500 });
     }
 }

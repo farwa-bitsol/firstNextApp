@@ -2,19 +2,17 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { IUser } from "@/models/types";
+import axios from "axios";
 
 
 const fetchUsersFromAPI = async (page: number): Promise<IUser[]> => {
-  const response = await fetch(`http://localhost:3001/api/users?_page=${page}&_limit=4`, {
-    cache: "no-store",
-  });
+  const response = await axios.get(`/api/users/userList`);
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to fetch users");
+  if (response.status !== 200) {
+    throw new Error(response.statusText || "Failed to fetch users");
   }
 
-  return response.json();
+  return response.data;
 };
 
 const authOptions = NextAuth({

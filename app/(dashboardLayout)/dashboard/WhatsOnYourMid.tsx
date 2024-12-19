@@ -2,7 +2,8 @@
 
 import { Calendar, FileText, File } from "lucide-react";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
+import { useMutation, useQueryClient } from "react-query";
+import axios from "axios";
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -80,26 +81,20 @@ const WhatsOnYourMind = () => {
       comments: number;
       shares: number;
     }) => {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      });
-      return await response.json();
+      const response = await axios.post("/api/posts", newPost);
+      return response.data;
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["postData"]); // Refresh posts
-
+        queryClient.invalidateQueries(["postData"]);
         setInput("");
       },
     }
   );
 
-  // Handle button click to send data
   const handleSend = () => {
     if (input.trim() !== "") {
-      const currentTime = new Date().toISOString(); // Get current time in ISO format
+      const currentTime = new Date().toISOString();
       mutate({
         title: input,
         postTime: currentTime,
@@ -111,7 +106,7 @@ const WhatsOnYourMind = () => {
         comments: 0,
         shares: 0,
       });
-      setInput(""); // Clear the input after sending
+      setInput("");
     }
   };
 
@@ -135,7 +130,7 @@ const WhatsOnYourMind = () => {
         </button>
       </div>
 
-      {/*  actions */}
+      {/* Actions */}
       <div style={styles.bottomRow}>
         <div style={styles.iconLabel}>
           <File size={20} style={styles.icon} />

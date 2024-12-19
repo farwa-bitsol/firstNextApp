@@ -9,7 +9,7 @@ import {
   faGlobe,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
-import { formatDistanceToNow } from "date-fns"; // Importing the date-fns function
+import { formatDistanceToNow } from "date-fns";
 
 // Define the PostProps interface
 interface PostProps {
@@ -44,6 +44,11 @@ const Posts = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching posts</div>;
+
+  // If there are no posts, show a "No posts" message
+  if (!postData || postData.length === 0) {
+    return <div>No posts available</div>;
+  }
 
   // Sort posts by postTime in descending order (newest first)
   const sortedPosts = postData?.sort((a, b) => {
