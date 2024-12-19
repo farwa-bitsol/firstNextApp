@@ -14,7 +14,7 @@ const Page = () => {
         <Sidebar onSelectChat={setSelectedChatId} />
       </div>
       {/* Chat Display */}
-      <div className="w-full md:h-full flex-grow overflow-auto">
+      <div className="w-full md:h-full flex-grow overflow-auto border-t">
         <ChatDisplay chatId={selectedChatId} />
       </div>
     </div>

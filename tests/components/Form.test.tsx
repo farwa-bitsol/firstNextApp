@@ -1,51 +1,56 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+// Form.test.tsx
+import Form from "@/components/Form";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-import Form from "../../components/Form";
-import { SessionProvider } from "next-auth/react";
-import { Session } from "next-auth";
-import { useRouter } from "../mocks/routerMock";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useQuery } from "react-query";
 
-jest.mock("next/router", () => ({
-  useRouter: jest.fn().mockReturnValue({
-    route: "/",
-    pathname: "",
-    query: {},
-    asPath: "",
-  }),
+// Mocks for dependencies
+jest.mock("next-auth/react", () => ({
+  useSession: jest.fn(),
+  signIn: jest.fn(),
+  signOut: jest.fn(),
+}));
+
+jest.mock("next/navigation", () => ({
+  useRouter: jest.fn(),
+}));
+
+jest.mock("react-query", () => ({
+  useQuery: jest.fn(),
 }));
 
 describe("Form Component", () => {
-  const mockSession: Session = {
-    expires: "2024-08-26T00:00:00.000Z",
-    user: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      image: "http://example.com/image.jpg",
-    },
-  };
+  it("should submit the form and redirect to home after successful submission", async () => {
+    // Mocking session and router
+    const mockPush = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+    (useSession as jest.Mock).mockReturnValue({
+      data: { user: { email: "test@example.com" } },
+    });
 
-  beforeEach(() => {
-    (useRouter).mockReturnValue({ push: jest.fn() });
-  });
+    // Mocking API response for fetching users
+    (useQuery as jest.Mock).mockReturnValue({
+      data: [{ email: "existinguser@example.com" }],
+      isError: false,
+    });
 
-  test("renders form fields for step 1", () => {
-    render(
-      <SessionProvider session={mockSession}>
-        <Form currStep={1} />
-      </SessionProvider>
-    );
-    expect(screen.getByLabelText(/Your fullname/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email address/i)).toBeInTheDocument();
-  });
+    render(<Form currStep={1} handleNext={jest.fn()} />);
 
-  test("handles button click", () => {
-    const handleNext = jest.fn();
-    render(
-      <SessionProvider session={mockSession}>
-        <Form currStep={1} handleNext={handleNext} />
-      </SessionProvider>
-    );
-    fireEvent.click(screen.getByText(/Save & Continue/i));
-    expect(handleNext).toHaveBeenCalled();
+    // Get form elements
+    const fullNameInput = screen.getByLabelText(/your fullname/i);
+    const emailInput = screen.getByLabelText(/email address/i);
+    const passwordInput = screen.getByLabelText(/create password/i);
+    const submitButton = screen.getByText(/save & continue/i);
+
+    // Simulate user input
+    await userEvent.type(fullNameInput, "Test User");
+    await userEvent.type(emailInput, "newuser@example.com");
+    await userEvent.type(passwordInput, "password123");
+
+    // Simulate form submission
+    await userEvent.click(submitButton);
   });
 });

@@ -1,37 +1,66 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { fetchUsers } from "@/services/userService";
 import DeleteUser from "@/components/DeleteUser";
-import { IUser } from "@/models/types";
 import Pagination from "@/components/Pagination";
-import Logout from "@/components/Logout";
+import { Routes } from "@/models/constants";
+import { IUser } from "@/models/types";
+import axios from "axios";
+import Link from "next/link";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useQuery } from "react-query";
+
+const fetchUsers = async (page: number): Promise<{ users: IUser[] }> => {
+  try {
+    const response = await axios.get(`/api/users/userList`);
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error?.response?.data?.error ||
+      error?.message ||
+      error?.error ||
+      "Failed to fetch users";
+    toast.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+};
 
 const Users = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const getUsers = useCallback(async () => {
-    try {
-      const fetchedUsers = await fetchUsers(currentPage);
-      setUsers(fetchedUsers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
+  const { data, isLoading } = useQuery(
+    ["fetchUsers", currentPage],
+    () => fetchUsers(currentPage),
+    {
+      keepPreviousData: true, // Keeps data from the previous query while fetching new data
     }
-  }, [currentPage]);
+  );
 
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
+  const logout = async () => {
+    try {
+      const response = await axios.get("/api/users/logout");
+      if (response?.data?.success) {
+        window.location.href = Routes.login;
+      } else {
+        toast.error("Failed to log out");
+      }
+    } catch (error: any) {
+      toast.error("Logout failed, please try again later");
+    }
+  };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
-      <div className="absolute top-12 right-12 text-gray-700 flex items-center space-x-2 border-b-2 border-transparent hover:border-blue-500">
-        <Logout />
+      <div className="flex gap-4 justify-center mt-4 text-blue-500">
+        <Link href={Routes.dashboard}>Dashboard</Link>
+        <Link href={Routes.settings}>Settings</Link>
+        <button onClick={logout}>Logout</button>
       </div>
       <div className="py-32 px-12">
-        {users?.map((user, index) => (
-          <DeleteUser key={index} user={user} />
+        {data?.users?.map((user) => (
+          <DeleteUser key={user.id} user={user} />
         ))}
         <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </div>

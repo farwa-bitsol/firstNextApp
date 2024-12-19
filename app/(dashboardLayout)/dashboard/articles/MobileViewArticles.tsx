@@ -1,15 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
-import { articles } from "./page";
+import { Article } from "./page";
+const articles: Article[] = [
+  {
+    id: 1,
+    title: "Understanding React Hooks",
+    author: "John Doe",
+    time: "7 min read",
+    image: "/images/bg.jpeg",
+  },
+  {
+    id: 2,
+    title: "Getting Started with Tailwind CSS",
+    author: "Jane Smith",
+    time: "5 min read",
+    image: "/images/bg.jpeg",
+  },
+  {
+    id: 3,
+    title: "Building a Fullstack App with Next.js",
+    author: "Mike Johnson",
+    time: "10 min read",
+    image: "/images/bg.jpeg",
+  },
+];
 
 const MobileViewArticles = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Filter articles based on the search term
-  const filteredArticles = articles.filter((article) =>
-    article.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredArticles: Article[] = useMemo(
+    () =>
+      (articles as Article[]).filter((article) =>
+        article.title.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
   );
 
   return (
@@ -26,7 +53,7 @@ const MobileViewArticles = () => {
       </div>
 
       {/* Article List */}
-      {filteredArticles.map((article) => (
+      {filteredArticles.map((article: Article) => (
         <div
           className="flex   p-4 border-b justify-between items-center"
           key={article.id}
@@ -48,7 +75,9 @@ const MobileViewArticles = () => {
           </div>
           <div>
             <p className="text-gray-500 text-sm">
-              <span className="text-gray-500 font-medium text-sm">Est Time: </span>
+              <span className="text-gray-500 font-medium text-sm">
+                Est Time:{" "}
+              </span>
               {article.time}
             </p>
           </div>
