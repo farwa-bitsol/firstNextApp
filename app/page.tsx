@@ -1,8 +1,13 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
+"use client";
+
 import Logout from "@/components/Logout";
-import { getServerSession } from "next-auth";
+import { Routes } from "@/models/constants";
+import { IUser } from "@/models/types";
+import axios from "axios";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const AccountOption = ({
   heading,
@@ -38,17 +43,39 @@ const AccountOption = ({
   );
 };
 
-const Home = async () => {
-  const session = await getServerSession();
+const Page = () => {
+  const [user, setUser] = useState<IUser | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get<{ data: IUser }>(`/api/users/me`);
+        setUser(response.data.data);
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.error ||
+          error?.message ||
+          error?.error ||
+          "Failed to fetch user";
+        toast.error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []); // Empty dependency array ensures this runs only on mount
+
   return (
     <div className="px-8 pt-16">
-      <div className="flex justify-between  space-x-2">
-        <Link href="/user/signin" className="text-blue-500 font-bold">
+      <div className="flex justify-between space-x-2">
+        <Link href={Routes.users} className="text-blue-500 font-bold">
           User Dashboard
         </Link>
 
-        <div className="text-gray-700  space-x-2 border-b-2 border-transparent hover:border-blue-500">
-          {session ? (
+        <div className="text-gray-700 space-x-2 border-b-2 border-transparent hover:border-blue-500">
+          {user ? (
             <Logout />
           ) : (
             <>
@@ -61,14 +88,13 @@ const Home = async () => {
         </div>
       </div>
 
-      {/* main content */}
-
+      {/* Main content */}
       <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">
-        {session ? (
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : user ? (
           <h1 className="text-2xl font-bold text-gray-800">
-            {`Welcome to Dashboard ${
-              session.user?.name ?? session.user?.email
-            }!`}
+            {`Welcome to Dashboard ${user.fullName ?? user.email}!`}
           </h1>
         ) : (
           <>
@@ -79,13 +105,13 @@ const Home = async () => {
             </p>
             <AccountOption
               heading="Individual"
-              description="Personal account to manage all you activities."
+              description="Personal account to manage all your activities."
               navigateTo="/user/forms"
             />
             <AccountOption
               heading="Business"
-              description="Own or belong to a company, this is for you."
-              navigateTo="/user/form/1" // this is dynamic route, will not retain the form state, just for practice
+              description="Own or belong to a company? This is for you."
+              navigateTo="/user/form/1" // Example dynamic route
             />
           </>
         )}
@@ -94,4 +120,4 @@ const Home = async () => {
   );
 };
 
-export default Home;
+export default Page;

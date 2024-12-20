@@ -1,52 +1,46 @@
-import { Routes } from "@/models/constants";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-
-import { signIn } from "next-auth/react";
+import Form from "@/app/(usersGroup)/user/signin/form";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import axios from "axios";
 import { useRouter } from "next/navigation";
-import { Form } from "react-hook-form";
 
-// Mock the signIn function and useRouter hook
-jest.mock("next-auth/react", () => ({
-  signIn: jest.fn(),
-}));
-
+jest.mock("axios");
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
 describe("Form Component", () => {
-  const mockRouterPush = jest.fn();
-  beforeEach(() => {
-    (useRouter as jest.Mock).mockReturnValue({
-      push: mockRouterPush,
+  it("submits form and redirects to 'user dashboard' on successful login", async () => {
+    const mockPush = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
+
+    (axios.post as jest.Mock).mockResolvedValue({
+      data: { message: "Login success" },
     });
-  });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("submits the form and redirects on successful login", async () => {
-    // Mock successful signIn response
-    (signIn as jest.Mock).mockResolvedValueOnce({ error: null });
-
-    // Render the component
     render(<Form />);
 
-    // Fill in the form
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "test@example.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: "password123" },
-    });
+    // Get form elements
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+    const submitButton = screen.getByText(/login/i);
 
-    // Submit the form
-    fireEvent.click(screen.getByText(/login/i));
+    // Simulate user entering email and password
+    await userEvent.type(emailInput, "user@example.com");
+    await userEvent.type(passwordInput, "password123");
 
-    // Wait for the redirection to happen
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith(Routes.users);
-    });
+    // Simulate form submission
+    await userEvent.click(submitButton);
+
+    // Wait for axios.post to be called with the correct arguments
+    await waitFor(() =>
+      expect(axios.post).toHaveBeenCalledWith("/api/users/login", {
+        email: "user@example.com",
+        password: "password123",
+      })
+    );
+
+    // Ensure the router push was called with the correct URL
+    expect(mockPush).toHaveBeenCalledWith("/user/users");
   });
 });
