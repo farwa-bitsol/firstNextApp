@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Routes } from "@/models/constants";
 import axios from "axios";
 import Link from "next/link";
@@ -13,7 +13,7 @@ export default function VerifyEmailPage() {
     useState(false);
   const [error, setError] = useState("");
 
-  const verifyUserEmail = async () => {
+  const verifyUserEmail = useCallback(async () => {
     try {
       setIsVerificationProcessing(true);
       await axios.post("/api/users/verifyemail", { token });
@@ -29,7 +29,7 @@ export default function VerifyEmailPage() {
     } finally {
       setIsVerificationProcessing(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     const urlToken = window.location.search.split("=")[1];
@@ -40,7 +40,7 @@ export default function VerifyEmailPage() {
     if (token?.length) {
       verifyUserEmail();
     }
-  }, [token]);
+  }, [token, verifyUserEmail]);
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
