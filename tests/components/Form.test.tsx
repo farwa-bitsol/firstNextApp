@@ -1,11 +1,10 @@
-// Form.test.tsx
 import Form from "@/components/Form";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import axios from "axios";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "react-query";
 
 // Mocks for dependencies
 jest.mock("next-auth/react", () => ({
@@ -18,9 +17,7 @@ jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
 }));
 
-jest.mock("react-query", () => ({
-  useQuery: jest.fn(),
-}));
+jest.mock("axios");
 
 describe("Form Component", () => {
   it("should submit the form and redirect to home after successful submission", async () => {
@@ -32,9 +29,8 @@ describe("Form Component", () => {
     });
 
     // Mocking API response for fetching users
-    (useQuery as jest.Mock).mockReturnValue({
+    (axios.get as jest.Mock).mockResolvedValueOnce({
       data: [{ email: "existinguser@example.com" }],
-      isError: false,
     });
 
     render(<Form currStep={1} handleNext={jest.fn()} />);
@@ -44,6 +40,11 @@ describe("Form Component", () => {
     const emailInput = screen.getByLabelText(/email address/i);
     const passwordInput = screen.getByLabelText(/create password/i);
     const submitButton = screen.getByText(/save & continue/i);
+
+    // Ensure all inputs are not undefined or null initially
+    expect(fullNameInput).toHaveValue("");
+    expect(emailInput).toHaveValue("");
+    expect(passwordInput).toHaveValue("");
 
     // Simulate user input
     await userEvent.type(fullNameInput, "Test User");
