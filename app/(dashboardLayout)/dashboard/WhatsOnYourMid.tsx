@@ -67,13 +67,27 @@ const styles: Record<string, React.CSSProperties> = {
   hiddenFileInput: {
     display: "none",
   },
-  mediaPreview: {
+  mediaPreviewContainer: {
+    position: "relative",
     marginTop: "6px",
     maxWidth: "30px",
     height: "30px",
     borderRadius: "8px",
     marginLeft: "10%",
     marginBottom: "02px",
+  },
+  mediaPreview: {
+    width: "100%",
+    height: "100%",
+    borderRadius: "8px",
+  },
+  closeButton: {
+    position: "absolute",
+    top: "-6px",
+    right: 0,
+    color: "#000",
+    border: "none",
+    cursor: "pointer",
   },
 };
 
@@ -159,6 +173,11 @@ const WhatsOnYourMind = () => {
     }
   };
 
+  const handleClearMedia = () => {
+    setMedia(null);
+    setMediaPreview(null);
+  };
+
   return (
     <div style={styles.container}>
       <div style={styles.topRow}>
@@ -179,22 +198,32 @@ const WhatsOnYourMind = () => {
         </button>
       </div>
       {mediaPreview && (
-        <div>
+        <div style={styles.mediaPreviewContainer}>
           {media?.type.startsWith("image/") && (
-            <Image
-              src={mediaPreview}
-              alt="Media Preview"
-              style={styles.mediaPreview}
-              width={30}
-              height={30}
-            />
+            <>
+              <Image
+                src={mediaPreview}
+                alt="Media Preview"
+                style={styles.mediaPreview}
+                width={100}
+                height={100}
+              />
+              <button style={styles.closeButton} onClick={handleClearMedia}>
+                &times;
+              </button>
+            </>
           )}
           {media?.type.startsWith("video/") && (
-            <video
-              src={mediaPreview}
-              controls
-              style={styles.mediaPreview}
-            ></video>
+            <>
+              <video
+                src={mediaPreview}
+                controls
+                style={styles.mediaPreview}
+              ></video>
+              <button style={styles.closeButton} onClick={handleClearMedia}>
+                &times;
+              </button>
+            </>
           )}
         </div>
       )}
