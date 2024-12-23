@@ -71,7 +71,7 @@ const ChatDisplay = ({ chatId }: ChatDisplayProps) => {
   }, []);
 
   const filteredChat = chats?.find((chat) => chat._id === chatId);
-  console.log(">>>chat", chatId);
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !chatId) return;
     try {

@@ -1,16 +1,18 @@
 "use client";
 import React from "react";
-import { useQuery } from "react-query"; // Importing useQuery hook
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faThumbsUp,
   faCommentAlt,
   faShare,
   faGlobe,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
-import { File } from "buffer";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface PostMediaProps {
   contentType: string;
@@ -28,25 +30,43 @@ interface PostProps {
   likes: number;
   comments: number;
   shares: number;
+  _id: string;
 }
 
 const fetchPosts = async (): Promise<PostProps[]> => {
-  const response = await fetch("/api/posts", {
-    cache: "no-store", // Ensures fresh data fetch each time
-  });
-  if (!response.ok) {
+  const response = await axios.get("/api/posts");
+  if (response.status !== 200) {
     throw new Error("Failed to fetch posts");
   }
-  return response.json();
+  return response.data;
+};
+
+const deletePost = async (postId: string) => {
+  const response = await axios.delete(`/api/posts/${postId}`);
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch posts");
+  }
+  toast.success("post deleted successfully");
+  return postId;
 };
 
 const Posts = () => {
-  // Use react-query to fetch posts
   const {
     data: postData,
     isLoading,
     isError,
   } = useQuery("postData", fetchPosts);
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteMutate } = useMutation(deletePost, {
+    onSuccess: (postId) => {
+      // Optimistically update UI after successful delete
+      queryClient.invalidateQueries("postData");
+    },
+    onError: (error) => {
+      console.error("Error deleting post:", error);
+    },
+  });
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error fetching posts</div>;
@@ -75,6 +95,7 @@ const Posts = () => {
             likes,
             comments,
             shares,
+            _id: postId,
           },
           index
         ) => {
@@ -84,32 +105,41 @@ const Posts = () => {
               key={`${title}-${index}`}
             >
               {/* Header */}
-              <div className="flex items-center">
-                <Image
-                  src={profilePhoto}
-                  alt="Profile"
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
-                <div className="ml-4">
-                  <p className="font-bold text-sm">{userName}</p>
-                  <div className="flex items-center text-gray-500 text-xs">
-                    {/* Use formatDistanceToNow to display relative time */}
-                    <span>
-                      {postTime &&
-                        formatDistanceToNow(new Date(postTime ?? ""), {
-                          addSuffix: true,
-                        })}{" "}
-                      &bull;
-                    </span>
-                    <FontAwesomeIcon
-                      icon={faGlobe}
-                      className="ml-1"
-                      style={{ width: "12px", height: "12px" }}
-                    />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Image
+                    src={profilePhoto}
+                    alt="Profile"
+                    width={40}
+                    height={40}
+                    className="rounded-full"
+                  />
+                  <div className="ml-4">
+                    <p className="font-bold text-sm">{userName}</p>
+                    <div className="flex items-center text-gray-500 text-xs">
+                      {/* Use formatDistanceToNow to display relative time */}
+                      <span>
+                        {postTime &&
+                          formatDistanceToNow(new Date(postTime ?? ""), {
+                            addSuffix: true,
+                          })}{" "}
+                        &bull;
+                      </span>
+                      <FontAwesomeIcon
+                        icon={faGlobe}
+                        className="ml-1"
+                        style={{ width: "12px", height: "12px" }}
+                      />
+                    </div>
                   </div>
                 </div>
+                {/* Delete Icon */}
+                <FontAwesomeIcon
+                  icon={faTrash}
+                  className="cursor-pointer text-red-500"
+                  onClick={() => deleteMutate(postId)}
+                  style={{ width: "16px", height: "16px" }}
+                />
               </div>
 
               {/* Title */}
