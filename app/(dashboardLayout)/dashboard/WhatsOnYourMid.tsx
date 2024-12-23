@@ -4,6 +4,7 @@ import { Calendar, FileText, File } from "lucide-react";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
+import Image from "next/image";
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -15,7 +16,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
-    marginBottom: "16px",
+    marginBottom: "6px",
     flexWrap: "wrap",
   },
   profileCircle: {
@@ -63,50 +64,98 @@ const styles: Record<string, React.CSSProperties> = {
   icon: {
     color: "#1565D8",
   },
+  hiddenFileInput: {
+    display: "none",
+  },
+  mediaPreview: {
+    marginTop: "6px",
+    maxWidth: "30px",
+    height: "30px",
+    borderRadius: "8px",
+    marginLeft: "10%",
+    marginBottom: "02px",
+  },
 };
 
 const WhatsOnYourMind = () => {
   const [input, setInput] = useState("");
+  const [media, setMedia] = useState<File | null>(null);
+  const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { mutate, isLoading: isPosting } = useMutation(
     async (newPost: {
       title: string;
       postTime: string;
-      profilePhoto: string;
       userName: string;
       description: string;
-      postPhoto: string;
+      profilePhoto: string;
+      postMedia: File | null;
       likes: number;
       comments: number;
       shares: number;
     }) => {
-      const response = await axios.post("/api/posts", newPost);
+      const formData = new FormData();
+      formData.append("title", newPost.title);
+      formData.append("postTime", newPost.postTime);
+      formData.append("userName", newPost.userName);
+      formData.append("description", newPost.description);
+      formData.append("profilePhoto", newPost.profilePhoto);
+      if (newPost.postMedia) {
+        formData.append("postMedia", newPost.postMedia);
+      }
+      formData.append("likes", newPost.likes.toString());
+      formData.append("comments", newPost.comments.toString());
+      formData.append("shares", newPost.shares.toString());
+
+      const response = await axios.post("/api/posts", formData);
       return response.data;
     },
     {
       onSuccess: () => {
         queryClient.invalidateQueries(["postData"]);
         setInput("");
+        setMedia(null);
+        setMediaPreview(null);
+      },
+      onError: (error) => {
+        console.log("Error posting:", error);
       },
     }
   );
 
   const handleSend = () => {
-    if (input.trim() !== "") {
+    if (input.trim() !== "" || media) {
       const currentTime = new Date().toISOString();
       mutate({
         title: input,
         postTime: currentTime,
-        profilePhoto: "/images/profile.png",
         userName: "test",
         description: "",
-        postPhoto: "",
+        profilePhoto: "/images/profile.png",
+        postMedia: media,
         likes: 0,
         comments: 0,
         shares: 0,
       });
-      setInput("");
+    }
+  };
+
+  const handleMediaClick = () => {
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+    fileInput.click();
+  };
+
+  const handleMediaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setMedia(file);
+      const fileType = file.type;
+      if (fileType.startsWith("image/")) {
+        setMediaPreview(URL.createObjectURL(file));
+      } else if (fileType.startsWith("video/")) {
+        setMediaPreview(URL.createObjectURL(file));
+      }
     }
   };
 
@@ -129,12 +178,38 @@ const WhatsOnYourMind = () => {
           {isPosting ? "Sending..." : "Send"}
         </button>
       </div>
-
+      {mediaPreview && (
+        <div>
+          {media?.type.startsWith("image/") && (
+            <Image
+              src={mediaPreview}
+              alt="Media Preview"
+              style={styles.mediaPreview}
+              width={30}
+              height={30}
+            />
+          )}
+          {media?.type.startsWith("video/") && (
+            <video
+              src={mediaPreview}
+              controls
+              style={styles.mediaPreview}
+            ></video>
+          )}
+        </div>
+      )}
       {/* Actions */}
       <div style={styles.bottomRow}>
-        <div style={styles.iconLabel}>
+        <div style={styles.iconLabel} onClick={handleMediaClick}>
           <File size={20} style={styles.icon} />
           <span>Media</span>
+          <input
+            id="fileInput"
+            type="file"
+            accept="image/*,video/*"
+            style={styles.hiddenFileInput}
+            onChange={handleMediaChange}
+          />
         </div>
         <div style={styles.iconLabel}>
           <Calendar size={20} style={styles.icon} />
