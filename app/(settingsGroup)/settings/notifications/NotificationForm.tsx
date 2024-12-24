@@ -74,6 +74,9 @@ const saveNotificationSettings = async (data: InputsWithUserId) => {
 
 const NotificationForm = () => {
   const [user, setUser] = useState<IUser | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for fetching data
+  const [isSaving, setIsSaving] = useState<boolean>(false); // Saving state for saving data
+
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialNotificationFormValues,
@@ -86,6 +89,7 @@ const NotificationForm = () => {
       setValue("weeklyNewsletter", notifications?.weeklyNewsletter);
       setValue("accountSummary", notifications?.accountSummary);
       setValue("websiteNotifications", notifications?.websiteNotifications);
+      setIsLoading(false);
     },
     [setValue]
   );
@@ -97,6 +101,7 @@ const NotificationForm = () => {
   }, [loadNotificationSettings, user?._id]);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchUser = async () => {
       try {
         const response = await axios.get<{ data: IUser }>(`/api/users/me`);
@@ -108,6 +113,7 @@ const NotificationForm = () => {
           error?.error ||
           "Failed to fetch user";
         toast.error(errorMessage);
+        setIsLoading(false);
       }
     };
 
@@ -115,8 +121,14 @@ const NotificationForm = () => {
   }, []);
 
   const processForm: SubmitHandler<Inputs> = async (data) => {
+    setIsSaving(true);
     await saveNotificationSettings({ ...data, userId: user?._id ?? "" });
+    setIsSaving(false);
   };
+
+  if (isLoading) {
+    <>Loading...</>;
+  }
 
   return (
     <FormProvider {...formInstance}>
@@ -141,12 +153,17 @@ const NotificationForm = () => {
 
         <div className="flex gap-4 flex-wrap">
           <button
+            disabled={isSaving}
             type="submit"
             className="bg-[#1565D8] text-white px-6 py-3 rounded-xl"
           >
-            Save changes
+            {isSaving ? " Saving..." : "Save changes"}
           </button>
-          <button type="button" className="border px-12 py-3 rounded-xl">
+          <button
+            type="button"
+            className="border px-12 py-3 rounded-xl"
+            disabled={isSaving}
+          >
             Cancel
           </button>
         </div>
