@@ -6,6 +6,10 @@ import { InitialNotificationFormValues } from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { IUser } from "@/models/types";
 
 const FormDataSchema = yup.object({
   weeklyNewsletter: yup.boolean(),
@@ -45,14 +49,74 @@ const websiteNotificationOptions = [
   { label: "Post downloaded", value: "postDownloaded" },
 ];
 
+const fetchNotificationSettings = async (userId: string): Promise<Inputs> => {
+  try {
+    const response = await axios.get(`/api/settings/notifications/${userId}`);
+    return response?.data?.data;
+  } catch (error) {
+    console.error("Failed to fetch notification settings:", error);
+    return InitialNotificationFormValues;
+  }
+};
+
+type InputsWithUserId = Inputs & {
+  userId: string;
+};
+
+const saveNotificationSettings = async (data: InputsWithUserId) => {
+  try {
+    await axios.post("/api/settings/notifications", data);
+    console.log("Notification settings saved successfully!");
+  } catch (error) {
+    console.error("Failed to save notification settings:", error);
+  }
+};
+
 const NotificationForm = () => {
+  const [user, setUser] = useState<IUser | null>(null);
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialNotificationFormValues,
   });
-  const { handleSubmit, register, control } = formInstance;
+  const { handleSubmit, setValue } = formInstance;
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {};
+  const loadNotificationSettings = useCallback(
+    async (userId: string) => {
+      const notifications = await fetchNotificationSettings(userId);
+      setValue("weeklyNewsletter", notifications?.weeklyNewsletter);
+      setValue("accountSummary", notifications?.accountSummary);
+      setValue("websiteNotifications", notifications?.websiteNotifications);
+    },
+    [setValue]
+  );
+
+  useEffect(() => {
+    if (user?._id) {
+      loadNotificationSettings(user?._id);
+    }
+  }, [loadNotificationSettings, user?._id]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get<{ data: IUser }>(`/api/users/me`);
+        setUser(response.data.data);
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.error ||
+          error?.message ||
+          error?.error ||
+          "Failed to fetch user";
+        toast.error(errorMessage);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const processForm: SubmitHandler<Inputs> = async (data) => {
+    await saveNotificationSettings({ ...data, userId: user?._id ?? "" });
+  };
 
   return (
     <FormProvider {...formInstance}>
@@ -77,12 +141,12 @@ const NotificationForm = () => {
 
         <div className="flex gap-4 flex-wrap">
           <button
-            type="button"
+            type="submit"
             className="bg-[#1565D8] text-white px-6 py-3 rounded-xl"
           >
             Save changes
           </button>
-          <button type="button" className=" border px-12 py-3 rounded-xl">
+          <button type="button" className="border px-12 py-3 rounded-xl">
             Cancel
           </button>
         </div>

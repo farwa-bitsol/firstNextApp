@@ -1,5 +1,4 @@
 import { UseFormRegister } from "react-hook-form";
-import { Inputs } from "@/components/Form";
 
 export interface ICustomField {
   register: UseFormRegister<any>;
@@ -21,7 +20,7 @@ export interface ICurrentForm {
 
 export interface IUser {
   fullName: string;
-  id?: string;
+  _id?: string;
   email: string;
   password: string
 }
