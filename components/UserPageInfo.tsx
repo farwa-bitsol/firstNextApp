@@ -28,7 +28,7 @@ const UserPageInfo = ({ Children }: { Children: React.ReactNode }) => {
 
     fetchUser();
   }, []);
-  console.log(">>>user2", user);
+
   return (
     <div>
       <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">

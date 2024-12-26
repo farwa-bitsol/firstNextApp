@@ -1,5 +1,6 @@
 import React from "react";
 import SecurityForm from "./SecurityForm";
+import EmailAddress from "./EmailAddress";
 
 const page = () => {
   return (
@@ -10,10 +11,7 @@ const page = () => {
       <div className="mt-6">
         <p className="text-lg font-bold">Email Address</p>
         <div className="flex flex-wrap justify-between gap-2 items-center border-b border-[#EFEFFF] w-fit py-4 mt-2">
-          <p className="lg:pr-28">
-            Your email address is{" "}
-            <span className="font-bold">emailis@example.com</span>
-          </p>
+          <EmailAddress />
           <button type="button" className="text-[#1565D8]">
             Change
           </button>
