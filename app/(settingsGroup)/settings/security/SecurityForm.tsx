@@ -7,6 +7,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const FormDataSchema = yup.object({
   newPassword: yup.string().required("New password is required"),
@@ -16,6 +17,9 @@ const FormDataSchema = yup.object({
 type Inputs = yup.InferType<typeof FormDataSchema>;
 
 const SecurityForm = () => {
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
+
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialSecurityFormValues,
@@ -24,6 +28,7 @@ const SecurityForm = () => {
   const { handleSubmit, register, reset } = formInstance;
 
   const processForm: SubmitHandler<Inputs> = async (data) => {
+    setIsUpdatingPassword(true);
     try {
       const response = await axios.patch("/api/users/updatePassword", {
         currentPassword: data.currentPassword,
@@ -36,6 +41,8 @@ const SecurityForm = () => {
     } catch (error: any) {
       console.error(error.response?.data?.error || error.message);
       toast.error(error.response?.data?.error || "Password reset failed");
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -47,6 +54,7 @@ const SecurityForm = () => {
       return;
     }
 
+    setIsSendingResetEmail(true);
     try {
       const response = await axios.post("/api/users/forgetPassword", { email });
 
@@ -56,6 +64,8 @@ const SecurityForm = () => {
     } catch (error: any) {
       console.error(error.response?.data?.error || error.message);
       toast.error(error.response?.data?.error || "Failed to send reset email");
+    } finally {
+      setIsSendingResetEmail(false);
     }
   };
 
@@ -85,16 +95,18 @@ const SecurityForm = () => {
             type="button"
             className="text-[#1565D8]"
             onClick={handleForgotPassword}
+            disabled={isSendingResetEmail}
           >
-            Reset your password
+            {isSendingResetEmail ? "Sending..." : "Reset your password"}
           </button>
         </p>
 
         <button
           type="submit"
           className="bg-[#1565D8] text-white px-6 py-3 rounded-xl"
+          disabled={isUpdatingPassword}
         >
-          Save password
+          {isUpdatingPassword ? "Saving..." : "Save password"}
         </button>
       </form>
     </FormProvider>

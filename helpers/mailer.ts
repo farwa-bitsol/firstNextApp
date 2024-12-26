@@ -25,14 +25,19 @@ export const sendEmail = async ({ email, emailType, userId }: any) => {
             },
         });
 
+        const resetPassHtml = `<p>You requested to reset your password. Please use the link below to set a new password:</p>
+                   <a href="${process.env.NEXTAUTH_URL}/user/resetPassword?token=${hashedToken}">Reset Password</a> or copy and paste the link below in your browser. <br> ${process.env.NEXTAUTH_URL}/user/verifyemail?token=${hashedToken}
+            </p><p>If you didn't request this, please ignore this email.</p>`
+
+        const verifyEmailHtml = `<p>Click <a href="${process.env.NEXTAUTH_URL}/user/verifyemail?token=${hashedToken}">here</a> to verify your email
+            or copy and paste the link below in your browser. <br> ${process.env.NEXTAUTH_URL}/user/verifyemail?token=${hashedToken}
+            </p>`
 
         const mailOptions = {
             from: 'farwa@gmail.com',
             to: email,
             subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password",
-            html: `<p>Click <a href="${process.env.NEXTAUTH_URL}/user/verifyemail?token=${hashedToken}">here</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}
-            or copy and paste the link below in your browser. <br> ${process.env.NEXTAUTH_URL}/user/verifyemail?token=${hashedToken}
-            </p>`
+            html: emailType === 'VERIFY' ? verifyEmailHtml : resetPassHtml
         }
 
         const mailresponse = await transport.sendMail
