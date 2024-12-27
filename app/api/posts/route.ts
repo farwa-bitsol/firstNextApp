@@ -1,11 +1,14 @@
 import { connect } from "@/dbConfig/config";
+import { getDataFromToken } from "@/helpers/getDataFromToken";
 import MediaFile from "@/models/MediaFileModel";
 import Post from "@/models/postModel";
 import { NextRequest, NextResponse } from "next/server";
 
 connect();
+
 export async function POST(request: NextRequest) {
     try {
+        const userId = await getDataFromToken(request);
         const reqBody = await request.formData();
         const profilePhoto = reqBody.get("profilePhoto") as string;
         const postMedia = reqBody.get("postMedia") as File;
@@ -30,7 +33,7 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        const newPost = new Post({
+        const newPost = {
             profilePhoto,
             postMedia: media,
             userName,
@@ -40,15 +43,28 @@ export async function POST(request: NextRequest) {
             comments: +comments,
             shares: +shares,
             postTime,
-        });
+        };
 
-        const savedPost = await newPost.save();
-        console.log("This is our new saved post:", savedPost);
+        // Check if a document for the user already exists
+        let postDocument = await Post.findOne({ userId });
+
+        if (postDocument) {
+            // Append the new post to the existing posts array
+            postDocument.posts.push(newPost);
+            await postDocument.save();
+        } else {
+            // Create a new document for the user
+            postDocument = new Post({
+                userId,
+                posts: [newPost],
+            });
+            await postDocument.save();
+        }
 
         return NextResponse.json({
             message: "Post created successfully.",
             success: true,
-            savedPost,
+            posts: postDocument.posts,
         });
     } catch (error: any) {
         console.error("Error in POST request:", error);
@@ -59,15 +75,13 @@ export async function POST(request: NextRequest) {
     }
 }
 
+
 export async function GET(request: NextRequest) {
     try {
-        const posts = await Post.find().sort({ postTime: -1 });
+        const userId = await getDataFromToken(request);
+        const data = await Post.findOne({ userId }).sort({ postTime: -1 });
 
-        if (!posts) {
-            return NextResponse.json({ message: "No posts found" }, { status: 404 });
-        }
-
-        return NextResponse.json(posts);
+        return NextResponse.json(data?.posts ?? []);
 
     } catch (error: any) {
         console.error("Error in GET request:", error);

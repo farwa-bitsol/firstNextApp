@@ -35,7 +35,7 @@ export async function PATCH(request: NextRequest) {
     try {
         const reqBody = await request.json();
         const { token, newPassword } = reqBody;
-console.log('>>>>token', token);    
+
         // Find the user based on the provided token and ensure it's not expired
         const user = await User.findOne({
             forgotPasswordToken: token,

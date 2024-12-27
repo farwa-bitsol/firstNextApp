@@ -1,6 +1,8 @@
 import React from "react";
 import SecurityForm from "./SecurityForm";
 import EmailAddress from "./EmailAddress";
+import PostCount from "./PostCount";
+import DeleteAccount from "./DeleteAccount";
 
 const page = () => {
   return (
@@ -25,17 +27,8 @@ const page = () => {
 
       <div className="md:w-1/2 my-8">
         <p className="text-lg font-bold">Delete account</p>
-        <p className="py-6">
-          Would you like to delete your account? This account contains 1388
-          posts. Deleting your account will remove all the content associated
-          with it.
-        </p>
-        <button
-          type="button"
-          className="text-[#EE4878] border-b border-[#EE4878]"
-        >
-          I want to delete my account
-        </button>
+        <PostCount />
+        <DeleteAccount />
       </div>
     </div>
   );

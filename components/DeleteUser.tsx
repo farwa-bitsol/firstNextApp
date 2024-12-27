@@ -44,7 +44,7 @@ const DeleteUser = ({ user }: { user: IUser }) => {
       <button
         type="button"
         className="text-blue-500 font-bold"
-        onClick={() => handleDelete(user.id ?? "")}
+        onClick={() => handleDelete(user?._id ?? "")}
         disabled={isLoading}
       >
         {isLoading ? "Deleting..." : "Delete"}

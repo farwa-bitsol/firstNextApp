@@ -19,7 +19,7 @@ interface PostMediaProps {
   data: string;
   name: string;
 }
-interface PostProps {
+export interface PostProps {
   profilePhoto: string;
   postMedia: PostMediaProps | null;
   userName: string;
