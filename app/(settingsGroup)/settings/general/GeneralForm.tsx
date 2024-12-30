@@ -3,7 +3,7 @@
 import { CustomField } from "@/components/Form";
 import { InitialGeneralFormValues } from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React from "react";
+import React, { useRef, useState } from "react";
 import {
   FormProvider,
   SubmitHandler,
@@ -12,6 +12,7 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 import { Plus } from "lucide-react";
+import ImageUpload from "./ImageUpload";
 
 const FormDataSchema = yup.object({
   firstName: yup.string(),
@@ -29,6 +30,9 @@ const FormDataSchema = yup.object({
 
 type Inputs = yup.InferType<typeof FormDataSchema>;
 const GeneralForm = () => {
+  const [image, setImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialGeneralFormValues,
@@ -43,77 +47,89 @@ const GeneralForm = () => {
   const processForm: SubmitHandler<Inputs> = async (data) => {};
 
   return (
-    <FormProvider {...formInstance}>
-      <form onSubmit={handleSubmit(processForm)} noValidate>
-        <CustomField
-          register={register}
-          fieldName="firstName"
-          label="First name"
-          placeholder="Enter First name"
-        />
+    <React.Fragment>
+      <ImageUpload
+        setImage={setImage}
+        image={image}
+        fileInputRef={fileInputRef}
+      />
+      <div className="md:w-1/2">
+        <FormProvider {...formInstance}>
+          <form onSubmit={handleSubmit(processForm)} noValidate>
+            <CustomField
+              register={register}
+              fieldName="firstName"
+              label="First name"
+              placeholder="Enter First name"
+            />
 
-        <CustomField
-          register={register}
-          fieldName="lastName"
-          label="Last name"
-          placeholder="Enter Last name"
-        />
+            <CustomField
+              register={register}
+              fieldName="lastName"
+              label="Last name"
+              placeholder="Enter Last name"
+            />
 
-        <CustomField
-          register={register}
-          fieldName="location"
-          label="Location"
-          placeholder="Enter Location"
-        />
+            <CustomField
+              register={register}
+              fieldName="location"
+              label="Location"
+              placeholder="Enter Location"
+            />
 
-        <CustomField
-          register={register}
-          fieldName="profession"
-          label="Profession"
-          placeholder="Enter Profession"
-        />
+            <CustomField
+              register={register}
+              fieldName="profession"
+              label="Profession"
+              placeholder="Enter Profession"
+            />
 
-        <CustomField
-          register={register}
-          fieldName="profession"
-          label="Profession"
-          placeholder="Enter Profession"
-        />
+            <CustomField
+              register={register}
+              fieldName="profession"
+              label="Profession"
+              placeholder="Enter Profession"
+            />
 
-        <CustomField
-          register={register}
-          fieldName="bio"
-          label="Bio"
-          type="textarea"
-          placeholder="Enter Bio"
-          rows={3}
-        />
+            <CustomField
+              register={register}
+              fieldName="bio"
+              label="Bio"
+              type="textarea"
+              placeholder="Enter Bio"
+              rows={3}
+            />
 
-        <div className="mt-4">
-          <label className="block text-sm font-medium leading-6 text-gray-900">
-            Online presence
-          </label>
-          {fields.map((field, index) => (
-            <React.Fragment key={field.id}>
-              <CustomField
-                noMargin
-                register={register}
-                fieldName={`onlinePresence[${index}].url`}
-                label=""
-                placeholder="Enter URL"
-                type="url"
-              />
-            </React.Fragment>
-          ))}
-          <div className="my-4 text-[#201CCD] flex space-x-2">
-            <Plus />
-            <button type="button" onClick={() => append({ id: "", url: "" })}>
-              Add other
-            </button>
-          </div>
-        </div>
-      </form>
-    </FormProvider>
+            <div className="mt-4">
+              <label className="block text-sm font-medium leading-6 text-gray-900">
+                Online presence
+              </label>
+              {fields.map((field, index) => (
+                <React.Fragment key={field.id}>
+                  <CustomField
+                    noMargin
+                    register={register}
+                    fieldName={`onlinePresence[${index}].url`}
+                    label=""
+                    placeholder="Enter URL"
+                    type="url"
+                  />
+                </React.Fragment>
+              ))}
+              <div className="my-4 text-[#201CCD] flex space-x-2">
+                <Plus />
+                <button
+                  type="button"
+                  onClick={() => append({ id: "", url: "" })}
+                >
+                  Add other
+                </button>
+              </div>
+            </div>
+          </form>
+        </FormProvider>
+      </div>
+    </React.Fragment>
   );
 };
 

@@ -2,10 +2,15 @@
 import Image from "next/image";
 import React, { useRef, useState } from "react";
 
-const ImageUpload = () => {
-  const [image, setImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+const ImageUpload = ({
+  setImage,
+  image,
+  fileInputRef,
+}: {
+  setImage: (url: string | null) => void;
+  image: string | null;
+  fileInputRef: React.RefObject<HTMLInputElement>;
+}) => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -32,7 +37,7 @@ const ImageUpload = () => {
     <div className="flex items-center gap-6">
       <div className="w-28 h-28 border rounded-xl flex items-center justify-center overflow-hidden my-8">
         {image ? (
-          <Image  
+          <Image
             src={image}
             alt="Preview"
             width={112}
