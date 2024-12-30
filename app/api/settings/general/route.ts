@@ -12,11 +12,11 @@ export async function POST(request: NextRequest) {
         const reqBody = await request.formData();
 
         const generalProfileFile = reqBody.get("generalProfile") as File | null;
-        const firstName = reqBody.get("firstName") as string;
-        const lastName = reqBody.get("lastName") as string;
-        const location = reqBody.get("location") as string;
-        const profession = reqBody.get("profession") as string;
-        const bio = reqBody.get("bio") as string;
+        const firstName = reqBody.get("firstName") as string || "";
+        const lastName = reqBody.get("lastName") as string || "";
+        const location = reqBody.get("location") as string || "";
+        const profession = reqBody.get("profession") as string || "";
+        const bio = reqBody.get("bio") as string || "";
         const onlinePresence = JSON.parse(reqBody.get("onlinePresence") as string || "[]");
 
         let generalProfile = null;
@@ -33,32 +33,38 @@ export async function POST(request: NextRequest) {
             };
         }
 
-        const formData = {
-            userId,
-            generalProfile,
-            firstName,
-            lastName,
-            location,
-            profession,
-            bio,
-            onlinePresence,
-        };
+
 
 
         let userForm = await GeneralForm.findOne({ userId });
 
         if (userForm) {
-            // Update existing document
-            Object.assign(userForm, formData);
+            userForm.generalProfile = generalProfile;
+            userForm.firstName = firstName;
+            userForm.lastName = lastName;
+            userForm.location = location;
+            userForm.profession = profession;
+            userForm.bio = bio;
+            userForm.onlinePresence = onlinePresence;
+
             await userForm.save();
         } else {
             // Create a new document
-            userForm = new GeneralForm(formData);
+            userForm = new GeneralForm({
+                userId,
+                generalProfile,
+                firstName,
+                lastName,
+                location,
+                profession,
+                bio,
+                onlinePresence,
+            });
             await userForm.save();
         }
 
         return NextResponse.json({
-            message: "Form data saved successfully.",
+            message: "General data saved successfully.",
             success: true,
             data: userForm,
         });

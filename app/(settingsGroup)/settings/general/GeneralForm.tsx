@@ -13,6 +13,8 @@ import {
 import * as yup from "yup";
 import { Plus } from "lucide-react";
 import ImageUpload from "./ImageUpload";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const FormDataSchema = yup.object({
   firstName: yup.string(),
@@ -20,17 +22,23 @@ const FormDataSchema = yup.object({
   location: yup.string(),
   profession: yup.string(),
   bio: yup.string(),
-  onlinePresence: yup.array().of(
-    yup.object({
-      id: yup.string(),
-      url: yup.string().url(),
-    })
-  ),
+  generalProfile: yup.string(),
+  onlinePresence: yup
+    .array()
+    .of(
+      yup.object({
+        id: yup.string(),
+        url: yup.string(),
+      })
+    )
+    .default([]),
 });
 
 type Inputs = yup.InferType<typeof FormDataSchema>;
+
 const GeneralForm = () => {
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formInstance = useForm<Inputs>({
@@ -44,7 +52,36 @@ const GeneralForm = () => {
     name: "onlinePresence",
   });
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {};
+  const processForm: SubmitHandler<Inputs> = async (data) => {
+    setIsSaving(true);
+    const formData = new FormData();
+    formData.append("generalProfile", image ?? "");
+
+    const { firstName, lastName, location, profession, bio, onlinePresence } =
+      data;
+    formData.append("firstName", firstName ?? "");
+    formData.append("lastName", lastName ?? "");
+    formData.append("location", location ?? "");
+    formData.append("profession", profession ?? "");
+    formData.append("bio", bio ?? "");
+    formData.append("onlinePresence", JSON.stringify(onlinePresence));
+
+    try {
+      const response = await axios.post("/api/settings/general", formData);
+
+      if (response.status === 200) {
+        toast.success("Form submitted successfully!");
+        console.log("Server Response:", response.data);
+      } else {
+        toast.error("Failed to submit the form.");
+      }
+      setIsSaving(false);
+    } catch (error) {
+      console.error("Error during submission:", error);
+      toast.error("An error occurred while submitting the form.");
+      setIsSaving(false);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -75,13 +112,6 @@ const GeneralForm = () => {
               fieldName="location"
               label="Location"
               placeholder="Enter Location"
-            />
-
-            <CustomField
-              register={register}
-              fieldName="profession"
-              label="Profession"
-              placeholder="Enter Profession"
             />
 
             <CustomField
@@ -126,6 +156,14 @@ const GeneralForm = () => {
                 </button>
               </div>
             </div>
+
+            <button
+              disabled={isSaving}
+              type="submit"
+              className="bg-[#1565D8] text-white px-6 py-3 rounded-xl"
+            >
+              {isSaving ? " Saving..." : "Save changes"}
+            </button>
           </form>
         </FormProvider>
       </div>

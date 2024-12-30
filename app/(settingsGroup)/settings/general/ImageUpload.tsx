@@ -7,20 +7,20 @@ const ImageUpload = ({
   image,
   fileInputRef,
 }: {
-  setImage: (url: string | null) => void;
-  image: string | null;
+  setImage: (file: File | null) => void;
+  image: File | null;
   fileInputRef: React.RefObject<HTMLInputElement>;
 }) => {
+  const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
-
       // Reset file input value to allow re-upload of the same file
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+      setImage(file);
+      setMediaPreview(URL.createObjectURL(file));
     }
   };
 
@@ -36,9 +36,9 @@ const ImageUpload = ({
   return (
     <div className="flex items-center gap-6">
       <div className="w-28 h-28 border rounded-xl flex items-center justify-center overflow-hidden my-8">
-        {image ? (
+        {mediaPreview ? (
           <Image
-            src={image}
+            src={mediaPreview}
             alt="Preview"
             width={112}
             height={112}
