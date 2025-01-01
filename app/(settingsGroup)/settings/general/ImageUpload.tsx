@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const ImageUpload = ({
   setImage,
-  image,
+  imageUrl,
   fileInputRef,
 }: {
   setImage: (file: File | null) => void;
-  image: File | null;
+  imageUrl: string | null;
   fileInputRef: React.RefObject<HTMLInputElement>;
 }) => {
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
@@ -32,6 +32,12 @@ const ImageUpload = ({
       fileInputRef.current.value = "";
     }
   };
+
+  useEffect(() => {
+    if (imageUrl) {
+      setMediaPreview(imageUrl);
+    }
+  }, [imageUrl, setImage]);
 
   return (
     <div className="flex items-center gap-6">
@@ -66,7 +72,7 @@ const ImageUpload = ({
         <button
           className={`px-4 py-2 border rounded-lg`}
           onClick={handleDeleteImage}
-          disabled={!image}
+          disabled={!mediaPreview}
         >
           Delete Picture
         </button>

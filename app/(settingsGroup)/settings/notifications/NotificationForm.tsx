@@ -2,14 +2,13 @@
 
 import CustomMultiCheckbox from "@/components/CustomCheckbox";
 import CustomSwitch from "@/components/CustomSwitch";
+import useFetchUser from "@/hooks/useFetchUser";
 import { InitialNotificationFormValues } from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { useCallback, useEffect, useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { IUser } from "@/models/types";
 
 const FormDataSchema = yup.object({
   weeklyNewsletter: yup.boolean(),
@@ -73,8 +72,7 @@ const saveNotificationSettings = async (data: InputsWithUserId) => {
 };
 
 const NotificationForm = () => {
-  const [user, setUser] = useState<IUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // Loading state for fetching data
+  const [isUpdating, setIsUpdating] = useState<boolean>(false); // Loading state for fetching data
   const [isSaving, setIsSaving] = useState<boolean>(false); // Saving state for saving data
 
   const formInstance = useForm<Inputs>({
@@ -82,14 +80,16 @@ const NotificationForm = () => {
     defaultValues: InitialNotificationFormValues,
   });
   const { handleSubmit, setValue } = formInstance;
+  const { user, isLoading } = useFetchUser();
 
   const loadNotificationSettings = useCallback(
     async (userId: string) => {
+      setIsUpdating(true);
       const notifications = await fetchNotificationSettings(userId);
       setValue("weeklyNewsletter", notifications?.weeklyNewsletter);
       setValue("accountSummary", notifications?.accountSummary);
       setValue("websiteNotifications", notifications?.websiteNotifications);
-      setIsLoading(false);
+      setIsUpdating(false);
     },
     [setValue]
   );
@@ -100,34 +100,14 @@ const NotificationForm = () => {
     }
   }, [loadNotificationSettings, user?._id]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get<{ data: IUser }>(`/api/users/me`);
-        setUser(response.data.data);
-      } catch (error: any) {
-        const errorMessage =
-          error?.response?.data?.error ||
-          error?.message ||
-          error?.error ||
-          "Failed to fetch user";
-        toast.error(errorMessage);
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
   const processForm: SubmitHandler<Inputs> = async (data) => {
     setIsSaving(true);
     await saveNotificationSettings({ ...data, userId: user?._id ?? "" });
     setIsSaving(false);
   };
 
-  if (isLoading) {
-    <>Loading...</>;
+  if (isLoading || isUpdating) {
+    <p>Loading...</p>;
   }
 
   return (

@@ -10,6 +10,7 @@ import SidebarItem from "./Item";
 import Image from "next/image";
 import LogoutMenuItem from "./LogoutMenuItem";
 import MobileWrapper from "./MobileWrapper";
+import SettingsUserInfo from "./SettingsUserInfo";
 
 interface ISidebarItem {
   name: string;
@@ -65,8 +66,7 @@ const SettingsSidebar = () => {
             alt="Logo"
           />
           <div className="flex flex-col  w-full">
-            <p className="font-bold">User name</p>
-            <p className="text-sm color-[#62618F]">@email</p>
+            <SettingsUserInfo />
           </div>
         </div>
         <div className="flex flex-col space-y-2 px-2">

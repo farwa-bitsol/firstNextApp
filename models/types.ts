@@ -1,7 +1,7 @@
 import { UseFormRegister } from "react-hook-form";
 
 export interface ICustomField {
-  register: UseFormRegister<any>;
+  register?: UseFormRegister<any>;
   fieldName: string;
   type?: string;
   label: string;

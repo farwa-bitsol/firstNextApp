@@ -1,13 +1,10 @@
 "use client";
 
 import Logout from "@/components/Logout";
+import useFetchUser from "@/hooks/useFetchUser";
 import { Routes } from "@/models/constants";
-import { IUser } from "@/models/types";
-import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 const AccountOption = ({
   heading,
@@ -44,28 +41,9 @@ const AccountOption = ({
 };
 
 const Page = () => {
-  const [user, setUser] = useState<IUser | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { user, isLoading } = useFetchUser();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get<{ data: IUser }>(`/api/users/me`);
-        setUser(response.data.data);
-      } catch (error: any) {
-        const errorMessage =
-          error?.response?.data?.error ||
-          error?.message ||
-          error?.error ||
-          "Failed to fetch user";
-        toast.error(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []); // Empty dependency array ensures this runs only on mount
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <div className="px-8 pt-16">
@@ -90,9 +68,7 @@ const Page = () => {
 
       {/* Main content */}
       <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : user ? (
+        {user ? (
           <h1 className="text-2xl font-bold text-gray-800">
             {`Welcome to Dashboard ${user.fullName ?? user.email}!`}
           </h1>

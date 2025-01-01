@@ -29,7 +29,15 @@ export const InitialFormValues = { fullName: "", email: "" };
 
 export const InitialSecurityFormValues = { currentPassword: "", newPassword: "" };
 
-export const InitialGeneralFormValues = { firstName: "", lastName: "", location: "", profession: "", bio: "", onlinePresence: [{ id: "123", url: "" }, { id: "345", url: "" }] };
+export const InitialGeneralFormValues = {
+  firstName: "", lastName: "", location: "", profession: "", bio: "", onlinePresence: [{ id: "123", url: "" }, { id: "345", url: "" }], generalProfile: {
+
+    name: "",
+    data: "",
+    contentType: "",
+
+  }
+};
 
 
 export const InitialNotificationFormValues = { weeklyNewsletter: false, accountSummary: false, websiteNotifications: [] };

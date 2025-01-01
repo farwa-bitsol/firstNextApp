@@ -43,7 +43,7 @@ export const CustomField = ({
   rows,
   noMargin,
 }: ICustomField) => {
-  const { clearErrors, setError } = useFormContext();
+  const { clearErrors, setError, control } = useFormContext();
 
   return (
     <div className={`sm:col-span-3 ${noMargin ? "" : "my-4"}`}>
@@ -58,6 +58,7 @@ export const CustomField = ({
       <div className="mt-2">
         <Controller
           name={fieldName}
+          control={control}
           render={({ field, fieldState }) => (
             <div>
               {type === "textarea" ? (

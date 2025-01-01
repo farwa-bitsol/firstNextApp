@@ -3,7 +3,7 @@
 import { CustomField } from "@/components/Form";
 import { InitialGeneralFormValues } from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FormProvider,
   SubmitHandler,
@@ -22,7 +22,11 @@ const FormDataSchema = yup.object({
   location: yup.string(),
   profession: yup.string(),
   bio: yup.string(),
-  generalProfile: yup.string(),
+  generalProfile: yup.object({
+    name: yup.string(),
+    data: yup.string(),
+    contentType: yup.string(),
+  }),
   onlinePresence: yup
     .array()
     .of(
@@ -38,14 +42,46 @@ type Inputs = yup.InferType<typeof FormDataSchema>;
 
 const GeneralForm = () => {
   const [image, setImage] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [initialValues, setInitialValues] = useState<Inputs | null>(null);
+
+  useEffect(() => {
+    // Fetch initial data for the form
+    const fetchFormData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get("/api/settings/general");
+        if (response.status === 200) {
+          setInitialValues(response.data.data);
+          const responseImage = response?.data?.data?.generalProfile;
+          setImage(responseImage);
+          setImageUrl(
+            `data:${responseImage?.contentType};base64,${responseImage?.data}`
+          );
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+          toast.error("Failed to fetch form data.");
+        }
+      } catch (error) {
+        console.error("Error fetching form data:", error);
+        toast.error("An error occurred while fetching the form data.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchFormData();
+  }, []);
 
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(FormDataSchema),
     defaultValues: InitialGeneralFormValues,
   });
-  const { handleSubmit, register, control } = formInstance;
+
+  const { handleSubmit, control } = formInstance;
 
   const { fields, append } = useFieldArray({
     control,
@@ -55,16 +91,16 @@ const GeneralForm = () => {
   const processForm: SubmitHandler<Inputs> = async (data) => {
     setIsSaving(true);
     const formData = new FormData();
-    formData.append("generalProfile", image ?? "");
+    if (image) {
+      formData.append("generalProfile", image as unknown as File);
+    }
 
-    const { firstName, lastName, location, profession, bio, onlinePresence } =
-      data;
-    formData.append("firstName", firstName ?? "");
-    formData.append("lastName", lastName ?? "");
-    formData.append("location", location ?? "");
-    formData.append("profession", profession ?? "");
-    formData.append("bio", bio ?? "");
-    formData.append("onlinePresence", JSON.stringify(onlinePresence));
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(
+        key,
+        typeof value === "object" ? JSON.stringify(value) : value
+      );
+    });
 
     try {
       const response = await axios.post("/api/settings/general", formData);
@@ -83,46 +119,50 @@ const GeneralForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (initialValues) {
+      formInstance.reset(initialValues); //reset the form values when form data fetched
+    }
+  }, [formInstance, initialValues]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <React.Fragment>
       <ImageUpload
         setImage={setImage}
-        image={image}
+        imageUrl={imageUrl}
         fileInputRef={fileInputRef}
       />
       <div className="md:w-1/2">
         <FormProvider {...formInstance}>
           <form onSubmit={handleSubmit(processForm)} noValidate>
             <CustomField
-              register={register}
               fieldName="firstName"
               label="First name"
               placeholder="Enter First name"
             />
 
             <CustomField
-              register={register}
               fieldName="lastName"
               label="Last name"
               placeholder="Enter Last name"
             />
 
             <CustomField
-              register={register}
               fieldName="location"
               label="Location"
               placeholder="Enter Location"
             />
 
             <CustomField
-              register={register}
               fieldName="profession"
               label="Profession"
               placeholder="Enter Profession"
             />
 
             <CustomField
-              register={register}
               fieldName="bio"
               label="Bio"
               type="textarea"
@@ -138,7 +178,6 @@ const GeneralForm = () => {
                 <React.Fragment key={field.id}>
                   <CustomField
                     noMargin
-                    register={register}
                     fieldName={`onlinePresence[${index}].url`}
                     label=""
                     placeholder="Enter URL"
