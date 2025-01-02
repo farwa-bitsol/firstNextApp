@@ -36,7 +36,7 @@ const authOptions = NextAuth({
 
         if (filteredUser) {
           return {
-            id: filteredUser.id || "",
+            id: filteredUser?._id || "",
             email: filteredUser.email,
             name: filteredUser.fullName,
           };
