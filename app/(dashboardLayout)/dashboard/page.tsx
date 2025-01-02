@@ -29,7 +29,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="flex-1 max-w-fit overflow-x-auto">
+      <div className="flex-1 w-full px-8 lg:px-0 lg:max-w-[40%] overflow-x-auto">
         <div className="mb-4">
           <UserStories />
         </div>

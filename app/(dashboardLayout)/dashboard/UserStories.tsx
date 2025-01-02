@@ -1,55 +1,58 @@
 "use client";
-import Image from "next/image";
-import React, { useState } from "react";
-
-const users = [
-  {
-    name: "Guy",
-    cover: "/images/dummyCover.jpg",
-    profile: "/images/dummyProfile.png",
-  },
-  {
-    name: "John",
-    cover: "/images/dummyCover.jpg",
-    profile: "/images/dummyProfile.png",
-  },
-  {
-    name: "Steve",
-    cover: "/images/dummyCover.jpg",
-    profile: "/images/dummyProfile.png",
-  },
-];
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const UserStories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [storyContent, setStoryContent] = useState<{
     text: string;
-    image: string | null;
+    image: File | null;
   }>({ text: "", image: null });
+  const [stories, setStories] = useState([]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files[0]) {
-      setStoryContent({
-        ...storyContent,
-        image: URL.createObjectURL(files[0]),
-      });
+  const fetchStories = async () => {
+    try {
+      const response = await axios.get("/api/userStory");
+      setStories(response?.data?.stories ?? []);
+    } catch (error: any) {
+      console.error("Error fetching stories:", error.message);
     }
   };
 
-  const handleTextChange = (e: { target: { value: any } }) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files[0]) {
+      setStoryContent({ ...storyContent, image: files[0] });
+    }
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setStoryContent({ ...storyContent, text: e.target.value });
   };
 
-  const handleSubmit = () => {
-    console.log("Story Submitted:", storyContent);
-    // Reset modal state and close
-    setStoryContent({ text: "", image: null });
-    closeModal();
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append("text", storyContent.text);
+    if (storyContent.image) {
+      formData.append("image", storyContent.image);
+    }
+
+    try {
+      await axios.post("/api/userStory", formData);
+      fetchStories(); // Refresh stories after submission
+      setStoryContent({ text: "", image: null });
+      closeModal();
+    } catch (error: any) {
+      console.error("Error posting story:", error.message);
+    }
   };
+
+  useEffect(() => {
+    fetchStories();
+  }, []);
 
   return (
     <div>
@@ -84,36 +87,33 @@ const UserStories = () => {
             </svg>
           </button>
 
-          <div className="w-full h-[25%] bg-white flex items-center justify-center  text-xs lg:text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
+          <div className="w-full h-[25%] bg-white flex items-center justify-center text-xs lg:text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
             Create Story
           </div>
         </div>
 
-        {users.map((user, index) => (
-          <div
-            className="relative w-[80px] h-[140px] sm:w-[160px] sm:h-[250px] rounded-lg overflow-hidden shadow-lg"
-            style={{
-              backgroundImage: `url(${user.cover})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-            key={`${user.name}-${index}`}
-          >
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-sm text-white">
-              {user.name}
+        <div className="flex overflow-x-auto space-x-4 pb-4">
+          {stories?.map((data: any, index: number) => (
+            <div
+              className="relative w-[160px] h-[250px] rounded-lg overflow-hidden shadow-lg"
+              key={index}
+              style={{
+                backgroundImage: `url(${data.story.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundColor: data.story.image ? "transparent" : "#f3f4f6",
+              }}
+            >
+              {/* Centering the text */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-sm text-black">
+                <div className="text-center">{data.story?.text}</div>
+                <div className="absolute bottom-6 left-4 transform -translate-x-1/2 text-sm text-black">
+                  {data?.userId?.fullName}
+                </div>
+              </div>
             </div>
-
-            <div className="absolute top-2 left-2 w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] rounded-full border-2 border-white overflow-hidden">
-              <Image
-                src={user.profile}
-                width={60}
-                height={60}
-                alt="User Profile"
-                className="object-cover"
-              />
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {isModalOpen && (
@@ -132,15 +132,6 @@ const UserStories = () => {
               onChange={handleFileChange}
               className="mb-4"
             />
-            {storyContent.image && (
-              <Image
-                src={storyContent.image}
-                alt="Preview"
-                width={32}
-                height={32}
-                className="w-full h-32 object-cover rounded-lg mb-4"
-              />
-            )}
             <div className="flex justify-end space-x-2">
               <button
                 className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
