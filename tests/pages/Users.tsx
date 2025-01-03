@@ -33,8 +33,8 @@ jest.mock("@/components/Logout", () => {
 
 describe("Users Component", () => {
   const mockUsers: IUser[] = [
-    { id: "1", fullName: "User 1", email: "", password: "" },
-    { id: "2", fullName: "User 2", email: "", password: "" },
+    { _id: "1", fullName: "User 1", email: "", password: "" },
+    { _id: "2", fullName: "User 2", email: "", password: "" },
   ];
 
   beforeEach(() => {
