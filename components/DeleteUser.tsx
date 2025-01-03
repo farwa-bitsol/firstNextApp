@@ -1,8 +1,10 @@
 "use client";
 
+import useFetchUser from "@/hooks/useFetchUser";
 import { IUser } from "@/models/types";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
+import { SkeletonDeleteUser } from "./skeltons/User";
 
 const deleteUser = async (userId: string): Promise<{ message: string }> => {
   const response = await fetch(`/api/users/${userId}`, {
@@ -21,6 +23,7 @@ const deleteUser = async (userId: string): Promise<{ message: string }> => {
 };
 
 const DeleteUser = ({ user }: { user: IUser }) => {
+  const { user: currentUser, isLoading: isUserLoading } = useFetchUser();
   const queryClient = useQueryClient();
 
   const {
@@ -35,20 +38,26 @@ const DeleteUser = ({ user }: { user: IUser }) => {
     },
   });
 
+  if (isUserLoading || isLoading) {
+    return <SkeletonDeleteUser />;
+  }
+
   return (
     <div className="p-1 flex justify-between px-4">
       <div className="flex gap-4">
         <h1 className="font-bold text-gray-800">{user?.fullName}</h1>
         <h1 className="font-bold text-gray-800">{user?.email}</h1>
       </div>
-      <button
-        type="button"
-        className="text-blue-500 font-bold"
-        onClick={() => handleDelete(user?._id ?? "")}
-        disabled={isLoading}
-      >
-        {isLoading ? "Deleting..." : "Delete"}
-      </button>
+      {currentUser?._id !== user._id && (
+        <button
+          type="button"
+          className="text-blue-500 font-bold"
+          onClick={() => handleDelete(user?._id ?? "")}
+          disabled={isLoading}
+        >
+          {isLoading ? "Deleting..." : "Delete"}
+        </button>
+      )}
       {isError && <p className="text-red-500">{(error as Error).message}</p>}
     </div>
   );
