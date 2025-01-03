@@ -48,11 +48,11 @@ const authOptions = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      authorization: {
-        params: {
-          redirect_uri: "https://keen-melba-d92305.netlify.app/user/signin", // saved in Google OAuth setup
-        },
-      },
+      // authorization: {
+      //   params: {
+      //     redirect_uri: "https://keen-melba-d92305.netlify.app/user/signin", // saved in Google OAuth setup
+      //   },
+      // },
     }),
   ],
   callbacks: {
