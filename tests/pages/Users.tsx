@@ -9,7 +9,7 @@ global.fetch = jest.fn();
 
 jest.mock("@/components/DeleteUser", () => {
   const DeleteUser = (props: any) => (
-    <div data-testid={`delete-user-${props.user.id}`} />
+    <div data-testid={`delete-user-${props.user._id}`} />
   );
   DeleteUser.displayName = "DeleteUser";
   return DeleteUser;
@@ -54,7 +54,7 @@ describe("Users Component", () => {
           ok: true,
           json: () =>
             Promise.resolve([
-              { id: "3", fullName: "User 3", email: "", password: "" },
+              { _id: "3", fullName: "User 3", email: "", password: "" },
             ]),
         });
       }

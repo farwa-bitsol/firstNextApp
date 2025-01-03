@@ -9,7 +9,7 @@ jest.mock("react-query", () => ({
 
 describe("DeleteUser Component", () => {
   const mockUser = {
-    id: "1",
+    _id: "1",
     fullName: "John Doe",
     email: "john.doe@example.com",
     password: "password123",
@@ -51,7 +51,7 @@ describe("DeleteUser Component", () => {
     fireEvent.click(deleteButton);
 
     await waitFor(() => {
-      expect(mockHandleDelete).toHaveBeenCalledWith(mockUser.id);
+      expect(mockHandleDelete).toHaveBeenCalledWith(mockUser._id);
     });
   });
 
