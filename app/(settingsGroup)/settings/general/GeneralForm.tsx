@@ -15,30 +15,10 @@ import { Plus } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { GeneralFormSkeleton } from "@/components/skeltons/GeneralForm";
+import { generalFormSchema } from "@/components/schemas/GeneralForm";
 
-const FormDataSchema = yup.object({
-  firstName: yup.string(),
-  lastName: yup.string(),
-  location: yup.string(),
-  profession: yup.string(),
-  bio: yup.string(),
-  generalProfile: yup.object({
-    name: yup.string(),
-    data: yup.string(),
-    contentType: yup.string(),
-  }),
-  onlinePresence: yup
-    .array()
-    .of(
-      yup.object({
-        id: yup.string(),
-        url: yup.string(),
-      })
-    )
-    .default([]),
-});
-
-type Inputs = yup.InferType<typeof FormDataSchema>;
+type Inputs = yup.InferType<typeof generalFormSchema>;
 
 const GeneralForm = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -77,7 +57,7 @@ const GeneralForm = () => {
   }, []);
 
   const formInstance = useForm<Inputs>({
-    resolver: yupResolver(FormDataSchema),
+    resolver: yupResolver(generalFormSchema),
     defaultValues: InitialGeneralFormValues,
   });
 
@@ -126,7 +106,7 @@ const GeneralForm = () => {
   }, [formInstance, initialValues]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <GeneralFormSkeleton />;
   }
   return (
     <React.Fragment>

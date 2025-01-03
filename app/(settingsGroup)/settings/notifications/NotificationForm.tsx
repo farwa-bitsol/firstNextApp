@@ -2,21 +2,20 @@
 
 import CustomMultiCheckbox from "@/components/CustomCheckbox";
 import CustomSwitch from "@/components/CustomSwitch";
+import { notificationFormSchema } from "@/components/schemas/NotificationForm";
+import { NotificationFormSkeleton } from "@/components/skeltons/NotificationForm";
 import useFetchUser from "@/hooks/useFetchUser";
-import { InitialNotificationFormValues } from "@/models/constants";
+import {
+  InitialNotificationFormValues,
+  websiteNotificationOptions,
+} from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 
-const FormDataSchema = yup.object({
-  weeklyNewsletter: yup.boolean(),
-  accountSummary: yup.boolean(),
-  websiteNotifications: yup.array(),
-});
-
-type Inputs = yup.InferType<typeof FormDataSchema>;
+type Inputs = yup.InferType<typeof notificationFormSchema>;
 
 const SwitchWithLabel = ({
   fieldName,
@@ -39,14 +38,6 @@ const SwitchWithLabel = ({
     </div>
   );
 };
-
-const websiteNotificationOptions = [
-  { label: "New follower", value: "newfollower" },
-  { label: "Post like", value: "postLike" },
-  { label: "Someone you followed posted", value: "followedPosted" },
-  { label: "Post added to collection", value: "postAddedToCollection" },
-  { label: "Post downloaded", value: "postDownloaded" },
-];
 
 const fetchNotificationSettings = async (userId: string): Promise<Inputs> => {
   try {
@@ -72,11 +63,11 @@ const saveNotificationSettings = async (data: InputsWithUserId) => {
 };
 
 const NotificationForm = () => {
-  const [isUpdating, setIsUpdating] = useState<boolean>(false); // Loading state for fetching data
-  const [isSaving, setIsSaving] = useState<boolean>(false); // Saving state for saving data
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const formInstance = useForm<Inputs>({
-    resolver: yupResolver(FormDataSchema),
+    resolver: yupResolver(notificationFormSchema),
     defaultValues: InitialNotificationFormValues,
   });
   const { handleSubmit, setValue } = formInstance;
@@ -107,7 +98,7 @@ const NotificationForm = () => {
   };
 
   if (isLoading || isUpdating) {
-    <p>Loading...</p>;
+    <NotificationFormSkeleton />;
   }
 
   return (

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import "./userModel"; // register userdashboard schema
 
 const storySchema = new mongoose.Schema({
   text: { type: String },

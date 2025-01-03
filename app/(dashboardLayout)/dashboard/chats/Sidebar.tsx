@@ -1,5 +1,6 @@
 "use client";
 
+import { SkeletonChatList, SkeletonSearch } from "@/components/skeltons/Chat";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
@@ -49,7 +50,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onSelectChat }) => {
     chat?.name?.toLowerCase()?.includes(search?.toLowerCase())
   );
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="p-2">
+        <SkeletonSearch />
+        <SkeletonChatList />
+      </div>
+    );
   if (isError) return <div>Error fetching posts</div>;
 
   return (

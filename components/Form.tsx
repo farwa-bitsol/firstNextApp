@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import toast from "react-hot-toast";
 
-import { apiUrl, InitialFormValues, Routes, steps } from "@/models/constants";
+import { InitialFormValues, Routes, steps } from "@/models/constants";
 import { ICurrentForm, ICustomField } from "@/models/types";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -21,6 +21,7 @@ import {
   useFormContext,
 } from "react-hook-form";
 import * as yup from "yup";
+import Logout from "./Logout";
 
 const FormDataSchema = yup.object({
   fullName: yup.string().required("name is required*"),
@@ -362,13 +363,7 @@ export default function Form({
         {session?.user?.email ? (
           <p>
             Logged in by&nbsp;{session?.user?.email}.
-            <button
-              onClick={() => signOut({ callbackUrl: apiUrl })}
-              className="text-blue-500 font-bold"
-              disabled={isLoading}
-            >
-              Logout
-            </button>
+            <Logout />
           </p>
         ) : (
           <button

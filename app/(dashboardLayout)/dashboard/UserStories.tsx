@@ -4,6 +4,7 @@ import axios from "axios";
 
 const UserStories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [storyContent, setStoryContent] = useState<{
     text: string;
     image: File | null;
@@ -17,7 +18,9 @@ const UserStories = () => {
     try {
       const response = await axios.get("/api/userStory");
       setStories(response?.data?.stories ?? []);
+      setLoading(false);
     } catch (error: any) {
+      setLoading(false);
       console.error("Error fetching stories:", error.message);
     }
   };
@@ -51,71 +54,30 @@ const UserStories = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
     fetchStories();
   }, []);
 
-  return (
-    <div>
-      <div className="flex space-x-4 w-full overflow-x-auto justify-center overflow-y-hidden">
-        <div className="relative w-[80px] h-[140px] sm:w-[160px] sm:h-[250px] shadow-lg">
-          <div
-            className="w-full h-[75%] flex items-center justify-center rounded-tl-lg rounded-tr-lg"
-            style={{
-              backgroundImage: `url(/images/profile.png)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          ></div>
+  const StorySkeleton = () => (
+    <div className="relative w-[160px] h-[250px] flex-shrink-0 rounded-lg overflow-hidden shadow-lg animate-pulse">
+      <div className="w-full h-[75%] bg-gray-300 rounded-tl-lg rounded-tr-lg" />
+      <div className="w-full h-[25%] bg-gray-300 flex items-center justify-center text-xs lg:text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg" />
+    </div>
+  );
 
-          <button
-            className="absolute left-1/2 top-[75%] transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md cursor-pointer hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            onClick={openModal}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-2 h-2 transform scale-150"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </button>
-
-          <div className="w-full h-[25%] bg-white flex items-center justify-center text-xs lg:text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
-            Create Story
-          </div>
-        </div>
-
-        <div className="flex overflow-x-auto space-x-4 pb-4">
-          {stories?.map((data: any, index: number) => (
-            <div
-              className="relative w-[160px] h-[250px] rounded-lg overflow-hidden shadow-lg"
-              key={index}
-              style={{
-                backgroundImage: `url(${data.story.image})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundColor: data.story.image ? "transparent" : "#f3f4f6",
-              }}
-            >
-              {/* Centering the text */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-sm text-black">
-                <div className="text-center">{data.story?.text}</div>
-                <div className="absolute bottom-6 left-4 transform -translate-x-1/2 text-sm text-black">
-                  {data?.userId?.fullName}
-                </div>
-              </div>
-            </div>
+  if (loading)
+    return (
+      <div className="w-full overflow-x-auto whitespace-nowrap py-4 horizontal-scroll-container flex justify-center">
+        <div className="flex space-x-4 justify-start items-center min-w-0">
+          {[...Array(5)].map((_, index) => (
+            <StorySkeleton key={index} />
           ))}
         </div>
       </div>
+    );
 
+  return (
+    <>
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-lg shadow-lg p-6">
@@ -149,7 +111,70 @@ const UserStories = () => {
           </div>
         </div>
       )}
-    </div>
+      <div className="w-full overflow-x-auto whitespace-nowrap py-4 horizontal-scroll-container flex justify-center">
+        <div className="flex space-x-4 justify-start items-center min-w-0">
+          <div className="relative w-[160px] h-[250px] shadow-lg flex-shrink-0">
+            <div
+              className="w-full h-[75%] flex items-center justify-center rounded-tl-lg rounded-tr-lg"
+              style={{
+                backgroundImage: `url(/images/profile.png)`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            ></div>
+            <button
+              className="absolute left-1/2 top-[75%] transform -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white p-2 rounded-full shadow-md cursor-pointer hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              onClick={openModal}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-2 h-2 transform scale-150"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </button>
+            <div className="w-full h-[25%] bg-white flex items-center justify-center text-xs lg:text-sm font-semibold text-gray-700 rounded-bl-lg rounded-br-lg">
+              Create Story
+            </div>
+          </div>
+          {stories?.map((data: any, index: number) => (
+            <div
+              className="relative w-[160px] h-[250px] flex-shrink-0 rounded-lg overflow-hidden shadow-lg"
+              key={index}
+            >
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${data.story.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                <div className="absolute inset-0 bg-black opacity-60"></div>{" "}
+                {/* This overlays the image with reduced opacity */}
+              </div>
+
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-sm text-white">
+                <p className="text-center text-2xl h-[160px] text-wrap overflow-auto scrollbar-hidden">
+                  {data.story?.text}
+                </p>
+                <div className="absolute bottom-6 left-4 transform -translate-x-1/2 text-sm text-white">
+                  {data?.userId?.fullName}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

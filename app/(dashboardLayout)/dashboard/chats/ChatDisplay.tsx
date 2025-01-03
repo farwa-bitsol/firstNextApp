@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Chat } from "./Sidebar";
+import { SkeletonChatMessages } from "@/components/skeltons/Chat";
 
 interface ChatDisplayProps {
   chatId: string | null;
@@ -85,7 +86,7 @@ const ChatDisplay = ({ chatId }: ChatDisplayProps) => {
     }
   };
 
-  if (loadingMessages) return <div>Loading...</div>;
+  if (loadingMessages) return <SkeletonChatMessages />;
 
   if (!chats || !chats?.length)
     return (

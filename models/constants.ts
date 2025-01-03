@@ -50,4 +50,10 @@ export const Routes = {
   settings: "/settings",
 }
 
-export const apiUrl = "http://localhost:3001";
+export const websiteNotificationOptions = [
+  { label: "New follower", value: "newfollower" },
+  { label: "Post like", value: "postLike" },
+  { label: "Someone you followed posted", value: "followedPosted" },
+  { label: "Post added to collection", value: "postAddedToCollection" },
+  { label: "Post downloaded", value: "postDownloaded" },
+];
