@@ -142,7 +142,7 @@ const ContainerForm = ({
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
     >
-      <div className="flex justify-center flex-col h-full lg:px-24">
+      <div className="flex justify-center flex-col h-full lg:px-14">
         <h1 className="text-2xl font-bold text-gray-800">
           {currentForm?.name}
         </h1>

@@ -22,8 +22,9 @@
     "apexcharts": "^4.1.0",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "framer-motion": "^11.3.27",
+    "framer-motion": "^11.15.0",
     "json-server": "^0.16.3",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.460.0",
@@ -38,7 +39,9 @@
     "react-hot-toast": "^2.4.1",
     "react-query": "^3.39.3",
     "sharp": "^0.33.5",
+    "simplex-noise": "^4.0.3",
     "stripe": "^17.4.0",
+    "tailwind-merge": "^2.6.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {
