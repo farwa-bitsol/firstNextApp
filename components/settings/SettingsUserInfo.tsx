@@ -1,15 +1,18 @@
 "use client";
 
 import useFetchUser from "@/hooks/useFetchUser";
+import { SkeletonUserInfo } from "../skeltons/UserInfo";
 
 const SettingsUserInfo = () => {
   const { user, isLoading } = useFetchUser();
-  if (isLoading) return <p>Loading...</p>;
+
+  if (isLoading) return <SkeletonUserInfo />;
+
   return (
-    <p className="lg:pr-28">
+    <div>
       <p className="font-bold">{user?.fullName}</p>
-      <p className="text-sm color-[#62618F]">{user?.email}</p>
-    </p>
+      <p className="text-sm text-[#62618F]">{user?.email}</p>
+    </div>
   );
 };
 

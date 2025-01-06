@@ -83,17 +83,11 @@ export async function GET(request: NextRequest) {
         const userId = await getDataFromToken(request);
         const userForm = await GeneralForm.findOne({ userId });
 
-        if (!userForm) {
-            return NextResponse.json({
-                message: "No form data found for the user.",
-                success: false,
-            }, { status: 404 });
-        }
 
         return NextResponse.json({
             message: "Form data retrieved successfully.",
             success: true,
-            data: userForm,
+            data: userForm ?? null,
         });
     } catch (error: any) {
         console.error("Error in GET request:", error);

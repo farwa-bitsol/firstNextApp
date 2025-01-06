@@ -222,7 +222,7 @@ export default function Form({
       return;
     }
 
-    router.push(`/form/${currStep + 1}`);
+    router.push(`${Routes.signupForm}/${currStep + 1}`);
   };
 
   return (

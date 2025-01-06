@@ -38,9 +38,11 @@ const GeneralForm = () => {
           setInitialValues(response.data.data);
           const responseImage = response?.data?.data?.generalProfile;
           setImage(responseImage);
-          setImageUrl(
-            `data:${responseImage?.contentType};base64,${responseImage?.data}`
-          );
+          if (responseImage) {
+            setImageUrl(
+              `data:${responseImage?.contentType};base64,${responseImage?.data}`
+            );
+          }
           setIsLoading(false);
         } else {
           setIsLoading(false);

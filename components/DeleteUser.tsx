@@ -5,24 +5,24 @@ import { IUser } from "@/models/types";
 import React from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { SkeletonDeleteUser } from "./skeltons/User";
+import axios from "axios";
 
 const deleteUser = async (userId: string): Promise<{ message: string }> => {
-  const response = await fetch(`/api/users/${userId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to delete user");
+  try {
+    const response = await axios.delete(`/api/users/${userId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Failed to delete user");
   }
-
-  return response.json();
 };
 
-const DeleteUser = ({ user }: { user: IUser }) => {
+const DeleteUser = ({
+  user,
+  invalidateQueryKey,
+}: {
+  user: IUser;
+  invalidateQueryKey: any;
+}) => {
   const { user: currentUser, isLoading: isUserLoading } = useFetchUser();
   const queryClient = useQueryClient();
 
@@ -34,7 +34,7 @@ const DeleteUser = ({ user }: { user: IUser }) => {
   } = useMutation(deleteUser, {
     onSuccess: () => {
       // Invalidate the users query to refetch the updated list
-      queryClient.invalidateQueries("users");
+      queryClient.invalidateQueries(invalidateQueryKey);
     },
   });
 

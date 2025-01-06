@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Form from "@/components/Form";
-import { steps } from "@/models/constants";
+import { Routes, steps } from "@/models/constants";
 
 // dynamic routes just for practice
 export default function Page({
@@ -10,7 +10,11 @@ export default function Page({
     <div className="form1-container">
       <div className="flex justify-between items-center">
         <Link
-          href={+params.slug - 1 == 0 ? "/" : `/form/${+params.slug - 1}`}
+          href={
+            +params.slug - 1 == 0
+              ? "/"
+              : `${Routes.signupForm}/${+params.slug - 1}`
+          }
           className="text-grey flex"
         >
           <svg

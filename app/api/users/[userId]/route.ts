@@ -1,31 +1,47 @@
-import { NextResponse } from 'next/server';
+import { connect } from "@/dbConfig/config";
+import User from "@/models/userModel";
+import { NextRequest, NextResponse } from "next/server";
 
-const JSON_SERVER_URL = 'http://localhost:3000/users';
+connect();
 
-// Handle DELETE requests
-export async function DELETE(req: Request) {
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: { userId: string } }
+) {
     try {
-        const { searchParams } = new URL(req.url);
-        const id = searchParams.get('id');
+        const { userId } = params;
 
-        if (!id) {
+        if (!userId) {
             return NextResponse.json(
-                { message: 'Invalid user ID' },
+                { message: "User ID is required" },
                 { status: 400 }
             );
         }
 
-        const deleteResponse = await fetch(`${JSON_SERVER_URL}/${id}`, { method: 'DELETE' });
-
-        if (!deleteResponse.ok) {
-            throw new Error(`Failed to delete user with ID ${id}`);
+        // Find and verify the user performing the action
+        const requestingUser = await User.findById(userId);
+        if (!requestingUser) {
+            return NextResponse.json(
+                { message: "Requesting user not found" },
+                { status: 404 }
+            );
         }
 
-        return NextResponse.json({ message: `User ${id} deleted successfully` });
-    } catch (error) {
-        console.error('DELETE Error:', error);
+        // Find and delete the target user
+        const targetUser = await User.findByIdAndDelete(userId);
+
+        if (!targetUser) {
+            return NextResponse.json(
+                { message: "user not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({ message: "User deleted successfully" });
+    } catch (error: any) {
+        console.error("Error in DELETE request:", error);
         return NextResponse.json(
-            { message: 'Failed to delete user', error: (error as Error).message },
+            { error: error.message || "Failed to delete user" },
             { status: 500 }
         );
     }

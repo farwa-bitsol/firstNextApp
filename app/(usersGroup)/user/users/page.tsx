@@ -60,7 +60,11 @@ const Users = () => {
       </div>
       <div className="py-32 px-12">
         {data?.users?.map((user) => (
-          <DeleteUser key={user?._id} user={user} />
+          <DeleteUser
+            key={user?._id}
+            user={user}
+            invalidateQueryKey={["fetchUsers", currentPage]}
+          />
         ))}
         <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </div>
