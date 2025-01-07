@@ -1,20 +1,9 @@
 "use client";
 
 import { SkeletonChatList, SkeletonSearch } from "@/components/skeltons/Chat";
+import { Chat, SidebarProps } from "@/models/types";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
-export interface Chat {
-  _id?: string;
-  name: string;
-  lastMessage: string;
-  messages: { id: string; sender: string; text: string }[];
-}
-
-// Define the type for the props
-interface SidebarProps {
-  onSelectChat: (id: string) => void;
-}
 
 const fetchChats = async (): Promise<Chat[]> => {
   const response = await axios.get("/api/chats");

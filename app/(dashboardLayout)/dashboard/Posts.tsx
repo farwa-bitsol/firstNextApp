@@ -13,6 +13,7 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { PostProps } from "@/models/types";
 
 const PostSkeleton = () => (
   <div className="bg-white rounded-lg shadow-md p-4 mb-4 animate-pulse">
@@ -61,25 +62,6 @@ const PostSkeleton = () => (
   </div>
 );
 
-interface PostMediaProps {
-  contentType: string;
-  data: string;
-  name: string;
-}
-export interface PostProps {
-  profilePhoto: string;
-  postMedia: PostMediaProps | null;
-  userName: string;
-  postTime: string;
-  title: string;
-  description: string;
-  postPhoto?: string; // Optional
-  likes: number;
-  comments: number;
-  shares: number;
-  _id: string;
-}
-
 const fetchPosts = async (): Promise<PostProps[]> => {
   const response = await axios.get("/api/posts");
   if (response.status !== 200) {
@@ -98,10 +80,15 @@ const deletePost = async (postId: string) => {
 };
 
 const Posts = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedPosts, setExpandedPosts] = useState<{
+    [key: string]: boolean;
+  }>({});
 
-  const handleToggleExpand = () => {
-    setIsExpanded((prev) => !prev);
+  const handleToggleExpand = (postId: string) => {
+    setExpandedPosts((prev) => ({
+      ...prev,
+      [postId]: !prev[postId],
+    }));
   };
 
   const truncateText = useCallback(
@@ -157,6 +144,7 @@ const Posts = () => {
           },
           index
         ) => {
+          console.log(">>>>description", description);
           return (
             <div
               className="bg-white rounded-lg shadow-md p-4 mb-4"
@@ -203,15 +191,20 @@ const Posts = () => {
               {/* Title */}
               <p className="mt-2 font-semibold">{title}</p>
 
-              <div className="mt-2 text-gray-700">
-                {isExpanded ? (
+              <div
+                className="mt-2 text-gray-700"
+                style={{
+                  whiteSpace: "break-spaces",
+                }}
+              >
+                {expandedPosts[postId] ? (
                   <>
                     <p>{description}</p>
                     <button
                       className="text-blue-500 mt-1 inline-block"
-                      onClick={handleToggleExpand}
+                      onClick={() => handleToggleExpand(postId)}
                     >
-                      Less...
+                      Show Less...
                     </button>
                   </>
                 ) : (
@@ -220,7 +213,7 @@ const Posts = () => {
                     {description.length > 300 && (
                       <button
                         className="text-blue-500 mt-1 inline-block"
-                        onClick={handleToggleExpand}
+                        onClick={() => handleToggleExpand(postId)}
                       >
                         Read More...
                       </button>

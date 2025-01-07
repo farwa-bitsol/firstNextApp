@@ -13,18 +13,7 @@ import MobileWrapper from "./MobileWrapper";
 import SettingsUserInfo from "./SettingsUserInfo";
 import Link from "next/link";
 import { Routes } from "@/models/constants";
-
-interface ISidebarItem {
-  name: string;
-  path: string;
-  icon: LucideIcon;
-  items?: ISubItem[];
-}
-
-interface ISubItem {
-  name: string;
-  path: string;
-}
+import { ISidebarItem } from "@/models/types";
 
 const items: ISidebarItem[] = [
   {

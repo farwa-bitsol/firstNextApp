@@ -1,14 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import MobileViewArticles from "./MobileViewArticles";
-
-export interface Article {
-  id: number;
-  title: string;
-  author: string;
-  time: string;
-  image: string;
-}
+import { Article } from "@/models/types";
 
 const Page = () => {
   const articles: Article[] = [

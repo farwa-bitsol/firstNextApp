@@ -1,14 +1,6 @@
+import { ICustomMultiCheckbox } from "@/models/types";
 import React from "react";
 import { useFormContext, Controller } from "react-hook-form";
-
-interface ICustomMultiCheckbox {
-  fieldName: string;
-  label?: string;
-  options: { label: string; value: string }[];
-  required?: boolean;
-  layout?: "row" | "col";
-  noMargin?: boolean;
-}
 
 const CustomMultiCheckbox = ({
   fieldName,

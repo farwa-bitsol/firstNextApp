@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import Image from "next/image";
+import { EventModal } from "@/components/dashboard/EventModal";
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -199,6 +200,7 @@ const WhatsOnYourMind = () => {
   const [media, setMedia] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isEventModalOpen, setEventModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate, isLoading: isPosting } = useMutation(
@@ -260,6 +262,21 @@ const WhatsOnYourMind = () => {
   };
 
   const handleArticleSubmit = (title: string, content: string) => {
+    const currentTime = new Date().toISOString();
+    mutate({
+      title,
+      description: content,
+      postTime: currentTime,
+      userName: "test",
+      profilePhoto: "/images/profile.png",
+      postMedia: null,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+    });
+  };
+
+  const handleEventSubmit = (title: string, content: string) => {
     const currentTime = new Date().toISOString();
     mutate({
       title,
@@ -359,7 +376,7 @@ const WhatsOnYourMind = () => {
             onChange={handleMediaChange}
           />
         </div>
-        <div style={styles.iconLabel}>
+        <div style={styles.iconLabel} onClick={() => setEventModalOpen(true)}>
           <Calendar size={20} style={styles.icon} />
           <span>Events</span>
         </div>
@@ -372,6 +389,11 @@ const WhatsOnYourMind = () => {
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onSubmit={handleArticleSubmit}
+      />
+      <EventModal
+        isOpen={isEventModalOpen}
+        onClose={() => setEventModalOpen(false)}
+        onEventSubmit={handleEventSubmit}
       />
     </div>
   );
