@@ -6,10 +6,12 @@ export const EventModal = ({
   isOpen,
   onClose,
   onEventSubmit,
+  isPosting,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onEventSubmit: (title: string, description: string) => void;
+  isPosting: boolean;
 }) => {
   const [eventName, setEventName] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -39,7 +41,6 @@ export const EventModal = ({
     }
 
     onEventSubmit(eventName, eventDescription.trim());
-    onClose();
   };
 
   return (
@@ -172,6 +173,7 @@ export const EventModal = ({
               borderRadius: "4px",
               cursor: "pointer",
             }}
+            disabled={isPosting}
           >
             Cancel
           </button>
@@ -186,7 +188,7 @@ export const EventModal = ({
               cursor: "pointer",
             }}
           >
-            Add Event
+            {isPosting ? "Adding Event..." : "Add Event"}
           </button>
         </div>
       </div>

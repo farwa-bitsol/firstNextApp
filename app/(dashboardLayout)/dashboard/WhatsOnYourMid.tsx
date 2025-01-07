@@ -96,10 +96,12 @@ const Modal = ({
   isOpen,
   onClose,
   onSubmit,
+  isPosting,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (articleTitle: string, articleContent: string) => void;
+  isPosting: boolean;
 }) => {
   const [articleTitle, setArticleTitle] = useState("");
   const [articleContent, setArticleContent] = useState("");
@@ -170,13 +172,13 @@ const Modal = ({
               borderRadius: "4px",
               cursor: "pointer",
             }}
+            disabled={isPosting}
           >
             Cancel
           </button>
           <button
             onClick={() => {
               onSubmit(articleTitle, articleContent);
-              onClose();
             }}
             style={{
               padding: "8px 16px",
@@ -187,7 +189,7 @@ const Modal = ({
               cursor: "pointer",
             }}
           >
-            Submit
+            {isPosting ? "Submitting..." : "Submit"}
           </button>
         </div>
       </div>
@@ -237,9 +239,13 @@ const WhatsOnYourMind = () => {
         setInput("");
         setMedia(null);
         setMediaPreview(null);
+        setEventModalOpen(false);
+        setModalOpen(false);
       },
       onError: (error) => {
         console.log("Error posting:", error);
+        setEventModalOpen(false);
+        setModalOpen(false);
       },
     }
   );
@@ -389,11 +395,13 @@ const WhatsOnYourMind = () => {
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         onSubmit={handleArticleSubmit}
+        isPosting={isPosting}
       />
       <EventModal
         isOpen={isEventModalOpen}
         onClose={() => setEventModalOpen(false)}
         onEventSubmit={handleEventSubmit}
+        isPosting={isPosting}
       />
     </div>
   );
