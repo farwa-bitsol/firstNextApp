@@ -21,6 +21,7 @@ export const config = {
         "/users/:path*",
         "/dashboard/:path*",
         "/settings/:path*",
+        "/user/users"
     ],
 };
 

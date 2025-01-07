@@ -1,5 +1,4 @@
 import React from "react";
-import ImageUpload from "./ImageUpload";
 import GeneralForm from "./GeneralForm";
 
 const page = () => {

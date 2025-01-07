@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -98,6 +98,18 @@ const deletePost = async (postId: string) => {
 };
 
 const Posts = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const handleToggleExpand = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  const truncateText = useCallback(
+    (text: string, limit: number) =>
+      text?.length > limit ? text?.slice(0, limit) : text,
+    []
+  );
+
   const {
     data: postData,
     isLoading,
@@ -127,7 +139,6 @@ const Posts = () => {
   const sortedPosts = postData?.sort((a, b) => {
     return new Date(b.postTime).getTime() - new Date(a.postTime).getTime();
   });
-
   return (
     <>
       {sortedPosts?.map(
@@ -192,8 +203,31 @@ const Posts = () => {
               {/* Title */}
               <p className="mt-2 font-semibold">{title}</p>
 
-              {/* Description */}
-              <p className="mt-2 text-gray-700">{description}</p>
+              <div className="mt-2 text-gray-700">
+                {isExpanded ? (
+                  <>
+                    <p>{description}</p>
+                    <button
+                      className="text-blue-500 mt-1 inline-block"
+                      onClick={handleToggleExpand}
+                    >
+                      Less...
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p>{truncateText(description, 300)}</p>
+                    {description.length > 300 && (
+                      <button
+                        className="text-blue-500 mt-1 inline-block"
+                        onClick={handleToggleExpand}
+                      >
+                        Read More...
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
 
               {/* Post Photo */}
               {postMedia && (

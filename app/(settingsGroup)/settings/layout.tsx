@@ -2,7 +2,7 @@
 import SessionWrapper from "@/components/SessionWrapper";
 import SettingsSidebar from "@/components/settings/SettingsSidebar";
 import React, { Suspense } from "react";
-import Loading from "./loading";
+import { GeneralFormSkeleton } from "@/components/skeltons/GeneralForm";
 
 const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -10,7 +10,7 @@ const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
       <SettingsSidebar />
       <SessionWrapper>
         <main className="w-full overflow-auto">
-          <Suspense fallback={<Loading />}>{children}</Suspense>
+          <Suspense fallback={<GeneralFormSkeleton />}>{children}</Suspense>
         </main>
       </SessionWrapper>
     </div>

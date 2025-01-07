@@ -91,10 +91,114 @@ const styles: Record<string, React.CSSProperties> = {
   },
 };
 
+const Modal = ({
+  isOpen,
+  onClose,
+  onSubmit,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (articleTitle: string, articleContent: string) => void;
+}) => {
+  const [articleTitle, setArticleTitle] = useState("");
+  const [articleContent, setArticleContent] = useState("");
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "#fff",
+          borderRadius: "8px",
+          padding: "20px",
+          width: "90%",
+          maxWidth: "400px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px",
+        }}
+      >
+        <h3>Write an Article</h3>
+        <input
+          type="text"
+          placeholder="Title"
+          value={articleTitle}
+          onChange={(e) => setArticleTitle(e.target.value)}
+          style={{
+            padding: "10px",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            fontSize: "16px",
+          }}
+        />
+        <textarea
+          placeholder="Content"
+          value={articleContent}
+          onChange={(e) => setArticleContent(e.target.value)}
+          style={{
+            padding: "10px",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            fontSize: "16px",
+            minHeight: "100px",
+          }}
+        />
+        <div
+          style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}
+        >
+          <button
+            onClick={onClose}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#ccc",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              onSubmit(articleTitle, articleContent);
+              onClose();
+            }}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#1565D8",
+              color: "#fff",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const WhatsOnYourMind = () => {
   const [input, setInput] = useState("");
   const [media, setMedia] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { mutate, isLoading: isPosting } = useMutation(
@@ -153,6 +257,21 @@ const WhatsOnYourMind = () => {
         shares: 0,
       });
     }
+  };
+
+  const handleArticleSubmit = (title: string, content: string) => {
+    const currentTime = new Date().toISOString();
+    mutate({
+      title,
+      description: content,
+      postTime: currentTime,
+      userName: "test",
+      profilePhoto: "/images/profile.png",
+      postMedia: null,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+    });
   };
 
   const handleMediaClick = () => {
@@ -244,11 +363,16 @@ const WhatsOnYourMind = () => {
           <Calendar size={20} style={styles.icon} />
           <span>Events</span>
         </div>
-        <div style={styles.iconLabel}>
+        <div style={styles.iconLabel} onClick={() => setModalOpen(true)}>
           <FileText size={20} style={styles.icon} />
           <span>Articles</span>
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmit={handleArticleSubmit}
+      />
     </div>
   );
 };
