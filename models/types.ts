@@ -39,7 +39,8 @@ export interface PostProps {
   postTime: string;
   title: string;
   description: string;
-  postPhoto?: string; // Optional
+  postPhoto?: string;
+  postType?: "event" | "article" | "normal"
   likes: number;
   comments: number;
   shares: number;

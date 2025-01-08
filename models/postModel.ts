@@ -7,15 +7,19 @@ const postSchema = new mongoose.Schema({
     },
     posts: [
         {
-            profilePhoto: { type: String, required: true },
+            profilePhoto: { type: String },
             postMedia: {
                 name: { type: String },
                 data: { type: String },
                 contentType: { type: String },
             },
             userName: { type: String, required: true },
-            title: { type: String, required: true },
+            title: { type: String },
             description: { type: String },
+            postType: {
+                type: String,
+                enum: ["event", "article", "normal"],
+            },
             likes: { type: Number, default: 0 },
             comments: { type: Number, default: 0 },
             shares: { type: Number, default: 0 },

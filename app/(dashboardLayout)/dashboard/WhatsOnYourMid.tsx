@@ -106,72 +106,34 @@ const Modal = ({
   const [articleTitle, setArticleTitle] = useState("");
   const [articleContent, setArticleContent] = useState("");
 
+  const clearForm = () => {
+    setArticleTitle("");
+    setArticleContent("");
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#fff",
-          borderRadius: "8px",
-          padding: "20px",
-          width: "90%",
-          maxWidth: "400px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-        }}
-      >
-        <h3>Write an Article</h3>
+    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg p-5 w-11/12 max-w-sm flex flex-col gap-3">
+        <h3 className="text-lg font-semibold">Write an Article</h3>
         <input
           type="text"
           placeholder="Title"
           value={articleTitle}
           onChange={(e) => setArticleTitle(e.target.value)}
-          style={{
-            padding: "10px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "16px",
-          }}
+          className="p-2 border border-gray-300 rounded-md text-base"
         />
         <textarea
           placeholder="Content"
           value={articleContent}
           onChange={(e) => setArticleContent(e.target.value)}
-          style={{
-            padding: "10px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "16px",
-            minHeight: "100px",
-          }}
+          className="p-2 border border-gray-300 rounded-md text-base min-h-[100px]"
         />
-        <div
-          style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}
-        >
+        <div className="flex gap-3 justify-end">
           <button
             onClick={onClose}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#ccc",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
             disabled={isPosting}
           >
             Cancel
@@ -179,15 +141,9 @@ const Modal = ({
           <button
             onClick={() => {
               onSubmit(articleTitle, articleContent);
+              clearForm();
             }}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#1565D8",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer"
           >
             {isPosting ? "Submitting..." : "Submit"}
           </button>
@@ -213,6 +169,7 @@ const WhatsOnYourMind = () => {
       description: string;
       profilePhoto: string;
       postMedia: File | null;
+      postType: "event" | "article" | "normal";
       likes: number;
       comments: number;
       shares: number;
@@ -229,6 +186,7 @@ const WhatsOnYourMind = () => {
       formData.append("likes", newPost.likes.toString());
       formData.append("comments", newPost.comments.toString());
       formData.append("shares", newPost.shares.toString());
+      formData.append("postType", newPost.postType);
 
       const response = await axios.post("/api/posts", formData);
       return response.data;
@@ -260,6 +218,7 @@ const WhatsOnYourMind = () => {
         description: "",
         profilePhoto: "/images/profile.png",
         postMedia: media,
+        postType: "normal",
         likes: 0,
         comments: 0,
         shares: 0,
@@ -276,6 +235,7 @@ const WhatsOnYourMind = () => {
       userName: "test",
       profilePhoto: "/images/profile.png",
       postMedia: null,
+      postType: "article",
       likes: 0,
       comments: 0,
       shares: 0,
@@ -291,6 +251,7 @@ const WhatsOnYourMind = () => {
       userName: "test",
       profilePhoto: "/images/profile.png",
       postMedia: null,
+      postType: "event",
       likes: 0,
       comments: 0,
       shares: 0,

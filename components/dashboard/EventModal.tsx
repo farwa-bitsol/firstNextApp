@@ -22,6 +22,15 @@ export const EventModal = ({
 
   if (!isOpen) return null;
 
+  const clearForm = () => {
+    setEventName("");
+    setStartDate("");
+    setStartTime("");
+    setEndTime("");
+    setLocation("");
+    setDescription("");
+  };
+
   const handleSubmit = () => {
     let eventDescription = "";
 
@@ -41,152 +50,80 @@ export const EventModal = ({
     }
 
     onEventSubmit(eventName, eventDescription.trim());
+    clearForm();
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#fff",
-          borderRadius: "8px",
-          padding: "20px",
-          width: "90%",
-          maxWidth: "400px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-        }}
-      >
-        <h3>Create an Event</h3>
-        <label>
+    <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white rounded-lg p-5 w-11/12 max-w-sm flex flex-col gap-3">
+        <h3 className="text-lg font-semibold">Create an Event</h3>
+        <label className="flex flex-col gap-2">
           Event Name
           <input
             type="text"
             placeholder="Event Name"
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              fontSize: "16px",
-              width: "100%",
-            }}
+            className="p-2 border border-gray-300 rounded-md text-base w-full"
           />
         </label>
-        <label>
+        <label className="flex flex-col gap-2">
           Date
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              width: "100%",
-            }}
+            className="p-2 border border-gray-300 rounded-md w-full"
           />
         </label>
-        <label>
+        <label className="flex flex-col gap-2">
           Start Time
           <input
             type="time"
             value={startTime}
             onChange={(e) => setStartTime(e.target.value)}
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              width: "100%",
-            }}
+            className="p-2 border border-gray-300 rounded-md w-full"
           />
         </label>
-        <label>
+        <label className="flex flex-col gap-2">
           End Time
           <input
             type="time"
             value={endTime}
             onChange={(e) => setEndTime(e.target.value)}
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              width: "100%",
-            }}
+            className="p-2 border border-gray-300 rounded-md w-full"
           />
         </label>
-        <label>
+        <label className="flex flex-col gap-2">
           Location
           <input
             type="text"
             placeholder="Location"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              fontSize: "16px",
-              width: "100%",
-            }}
+            className="p-2 border border-gray-300 rounded-md text-base w-full"
           />
         </label>
-        <label>
+        <label className="flex flex-col gap-2">
           Description
           <textarea
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            style={{
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "4px",
-              fontSize: "16px",
-              minHeight: "100px",
-              width: "100%",
-            }}
+            className="p-2 border border-gray-300 rounded-md text-base min-h-[100px] w-full"
           />
         </label>
-        <div
-          style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}
-        >
+        <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#ccc",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="px-4 py-2 bg-gray-300 rounded-md cursor-pointer"
             disabled={isPosting}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            style={{
-              padding: "8px 16px",
-              backgroundColor: "#1565D8",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md cursor-pointer"
           >
             {isPosting ? "Adding Event..." : "Add Event"}
           </button>

@@ -2,6 +2,7 @@
 
 import DeleteUser from "@/components/DeleteUser";
 import Pagination from "@/components/Pagination";
+import LogoutSkeletonLoader from "@/components/skeltons/Logout";
 import { Routes } from "@/models/constants";
 import { IUser } from "@/models/types";
 import axios from "axios";
@@ -49,7 +50,7 @@ const Users = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LogoutSkeletonLoader />;
 
   return (
     <>

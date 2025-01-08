@@ -1,6 +1,7 @@
 "use client";
 
 import Logout from "@/components/Logout";
+import SignupSkelton from "@/components/skeltons/Signup";
 import useFetchUser from "@/hooks/useFetchUser";
 import { Routes } from "@/models/constants";
 import Image from "next/image";
@@ -43,7 +44,7 @@ const AccountOption = ({
 const Page = () => {
   const { user, isLoading } = useFetchUser();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <SignupSkelton />;
 
   return (
     <div className="px-8 pt-16">

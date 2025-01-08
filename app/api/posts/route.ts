@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
         const likes = reqBody.get("likes") as string;
         const comments = reqBody.get("comments") as string;
         const shares = reqBody.get("shares") as string;
+        const postType = reqBody.get("postType") as string;
 
         let media = null;
 
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
             comments: +comments,
             shares: +shares,
             postTime,
+            postType
         };
 
         // Check if a document for the user already exists

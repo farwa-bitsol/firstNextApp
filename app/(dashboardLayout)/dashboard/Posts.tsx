@@ -37,7 +37,7 @@ const Posts = () => {
   const [expandedPosts, setExpandedPosts] = useState<{
     [key: string]: boolean;
   }>({});
-  const [isDeleting, setIsDeleting] = useState(false); // Track if a post is being deleted
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleToggleExpand = (postId: string) => {
     setExpandedPosts((prev) => ({
