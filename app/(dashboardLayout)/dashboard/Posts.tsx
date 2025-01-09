@@ -178,7 +178,7 @@ const Posts = () => {
                   ) : (
                     <>
                       <p>{truncateText(description, 300)}</p>
-                      {description.length > 300 && (
+                      {description?.length > 300 && (
                         <button
                           className="text-blue-500 mt-1 inline-block"
                           onClick={() => handleToggleExpand(postId)}

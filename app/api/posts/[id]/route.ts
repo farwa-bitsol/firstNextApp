@@ -1,7 +1,8 @@
-import { PostProps } from "@/app/(dashboardLayout)/dashboard/Posts";
+
 import { connect } from "@/dbConfig/config";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 import Post from "@/models/postModel";
+import { PostProps } from "@/models/types";
 import { NextRequest, NextResponse } from "next/server";
 
 connect();

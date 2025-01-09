@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faStar,
@@ -6,69 +8,76 @@ import {
   faStar as faStarEmpty,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import { PostProps } from "@/models/types";
+import axios from "axios";
+import { useQuery } from "react-query";
+import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
 
-const contacts = [
-  { name: "username", rating: 3.0 },
-  { name: "username", rating: 5.0 },
-  { name: "username", rating: 2.5 },
-];
+const fetchPosts = async (): Promise<PostProps[]> => {
+  const response = await axios.get("/api/posts/allPosts");
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch posts");
+  }
+  return response.data;
+};
 
-const starStyle = { width: "12px", height: "12px" };
+const RenderStars = () => {
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+
+  const handleMouseEnter = (index: number) => setHoverIndex(index);
+  const handleMouseLeave = () => setHoverIndex(null);
+
+  return (
+    <div className="flex items-center">
+      {[...Array(5)].map((_, index) => (
+        <span
+          key={index}
+          className="self-center flex cursor-pointer"
+          onMouseEnter={() => handleMouseEnter(index)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <FontAwesomeIcon
+            icon={index <= (hoverIndex ?? -1) ? faStar : faStarEmpty}
+            className={
+              index <= (hoverIndex ?? -1) ? "text-yellow-500" : "text-gray-300"
+            }
+            size="lg"
+            style={{ width: "12px", height: "12px" }}
+          />
+        </span>
+      ))}
+    </div>
+  );
+};
 
 const EventPlanner = () => {
-  const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 !== 0;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+  const { data: posts, isLoading, error } = useQuery("postData", fetchPosts);
 
-    return (
-      <div className="flex items-center">
-        <span className="ml-2 text-sm">{rating} &nbsp;</span>
+  const eventPosts = posts
+    ?.filter((post) => post?.postType === "event")
+    ?.reduce((acc: PostProps[], current) => {
+      // Check if the userName already exists in the accumulator
+      if (!acc.find((event) => event.userName === current.userName)) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
 
-        {[...Array(fullStars)].map((_, index) => (
-          <span key={`full-${index}`} className="self-center flex">
-            <FontAwesomeIcon
-              icon={faStar}
-              className="text-yellow-500"
-              size="lg"
-              style={starStyle}
-            />
-          </span>
-        ))}
-
-        {halfStar && (
-          <span className="self-center flex">
-            <FontAwesomeIcon
-              icon={faStarHalfAlt}
-              className="text-yellow-500"
-              size="lg"
-              style={starStyle}
-            />
-          </span>
-        )}
-
-        {[...Array(emptyStars)].map((_, index) => (
-          <span key={`empty-${index}`} className="self-center flex">
-            <FontAwesomeIcon
-              icon={faStarEmpty}
-              className="text-gray-300"
-              size="lg"
-              style={starStyle}
-            />
-          </span>
-        ))}
-      </div>
-    );
-  };
+  if (isLoading) {
+    return <UpcomingEventsSkelton />;
+  }
+  if (error || !posts) {
+    return <p>Failed to load event User. Please try again later.</p>;
+  }
 
   return (
     <div className="w-full">
       <p className="font-bold text-lg">Event Planner</p>
       <div className="flex flex-col">
-        {contacts.map((contact, index) => (
+        {eventPosts?.map((event, index) => (
           <div
             className="flex py-4 justify-between items-center flex-wrap"
-            key={`${contact.name}-${index}`}
+            key={`${event.userName}-${index}`}
           >
             <div className="flex items-center">
               <Image
@@ -79,8 +88,10 @@ const EventPlanner = () => {
                 className="rounded-full"
               />
               <div className="flex flex-col px-2">
-                <p className="text-sm font-bold">{contact.name}</p>
-                <div>{renderStars(contact.rating)}</div>
+                <p className="text-sm font-bold">{event.userName}</p>
+                <div>
+                  <RenderStars />
+                </div>
               </div>
             </div>
             <div>
