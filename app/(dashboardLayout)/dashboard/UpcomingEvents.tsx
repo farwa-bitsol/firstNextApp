@@ -1,21 +1,10 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import { PostProps } from "@/models/types";
-import axios from "axios";
 import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
-import { useQuery } from "react-query";
-
-const fetchPosts = async (): Promise<PostProps[]> => {
-  const response = await axios.get("/api/posts");
-  if (response.status !== 200) {
-    throw new Error("Failed to fetch posts");
-  }
-  return response.data;
-};
+import useFetchPosts from "@/hooks/useFetchPosts";
+import Image from "next/image";
 
 const UpComingEvents = () => {
-  const { data: posts, isLoading, error } = useQuery("postData", fetchPosts);
+  const { posts, isLoading, error } = useFetchPosts();
 
   const extractDateFromDescription = (description: string): Date | null => {
     const dateMatch = description.match(/Date:\s*(\d{4}-\d{2}-\d{2})/);

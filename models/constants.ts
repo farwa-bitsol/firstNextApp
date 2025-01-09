@@ -48,7 +48,8 @@ export const Routes = {
   dashboard: "/dashboard",
   login: "/user/signin",
   settings: "/settings",
-  signupForm: '/user/form'
+  signupForm: '/user/form',
+  chat: '/dashboard/chats'
 }
 
 export const websiteNotificationOptions = [

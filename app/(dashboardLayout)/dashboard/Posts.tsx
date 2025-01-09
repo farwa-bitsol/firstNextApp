@@ -1,28 +1,20 @@
 "use client";
-import React, { useCallback, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PostSkeleton } from "@/components/skeltons/Post";
+import useFetchPosts from "@/hooks/useFetchPosts";
 import {
-  faThumbsUp,
   faCommentAlt,
-  faShare,
   faGlobe,
+  faShare,
+  faThumbsUp,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import Image from "next/image";
-import { formatDistanceToNow } from "date-fns";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
+import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
-import { PostProps } from "@/models/types";
-import { PostSkeleton } from "@/components/skeltons/Post";
-
-const fetchPosts = async (): Promise<PostProps[]> => {
-  const response = await axios.get("/api/posts");
-  if (response.status !== 200) {
-    throw new Error("Failed to fetch posts");
-  }
-  return response.data;
-};
+import { useMutation, useQueryClient } from "react-query";
 
 const deletePost = async (postId: string) => {
   const response = await axios.delete(`/api/posts/${postId}`);
@@ -38,6 +30,11 @@ const Posts = () => {
     [key: string]: boolean;
   }>({});
   const [isDeleting, setIsDeleting] = useState(false);
+  const {
+    posts: postData,
+    isLoading,
+    error: isFetchPostError,
+  } = useFetchPosts();
 
   const handleToggleExpand = (postId: string) => {
     setExpandedPosts((prev) => ({
@@ -52,11 +49,6 @@ const Posts = () => {
     []
   );
 
-  const {
-    data: postData,
-    isLoading,
-    isError,
-  } = useQuery("postData", fetchPosts);
   const queryClient = useQueryClient();
 
   const { mutate: deleteMutate } = useMutation(deletePost, {
@@ -74,7 +66,7 @@ const Posts = () => {
   });
 
   if (isLoading) return <PostSkeleton />;
-  if (isError) return <div>Error fetching posts</div>;
+  if (isFetchPostError) return <div>Error fetching posts</div>;
 
   if (!postData || postData.length === 0) {
     return <div>No posts available</div>;

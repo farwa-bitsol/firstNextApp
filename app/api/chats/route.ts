@@ -1,4 +1,5 @@
 import { connect } from "@/dbConfig/config";
+import { getDataFromToken } from "@/helpers/getDataFromToken";
 import Chat from "@/models/chatModel";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -22,11 +23,12 @@ const defaultMessage = {
 
 export async function POST(request: NextRequest) {
     try {
+        const userId = await getDataFromToken(request);
         const reqBody = await request.json();
         const { name, lastMessage, messages } = reqBody;
 
         const newChat = new Chat({
-            name, lastMessage, messages
+            name, lastMessage, messages, userId
         });
 
         const savedPost = await newChat.save();

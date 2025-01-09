@@ -1,31 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import useFetchAllPosts from "@/hooks/useFetchAllPosts";
+import { PostProps } from "@/models/types";
 import {
   faStar,
-  faStarHalfAlt,
   faStar as faStarEmpty,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import { PostProps } from "@/models/types";
-import axios from "axios";
-import { useQuery } from "react-query";
-import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
-
-const fetchPosts = async (): Promise<PostProps[]> => {
-  const response = await axios.get("/api/posts/allPosts");
-  if (response.status !== 200) {
-    throw new Error("Failed to fetch posts");
-  }
-  return response.data;
-};
+import { useState } from "react";
 
 const RenderStars = () => {
+  const [lockedRating, setLockedRating] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   const handleMouseEnter = (index: number) => setHoverIndex(index);
   const handleMouseLeave = () => setHoverIndex(null);
+  const handleClick = (index: number) => setLockedRating(index); // Lock the rating on click
 
   return (
     <div className="flex items-center">
@@ -33,13 +25,18 @@ const RenderStars = () => {
         <span
           key={index}
           className="self-center flex cursor-pointer"
-          onMouseEnter={() => handleMouseEnter(index)}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={() => handleMouseEnter(index)} // Update hover index
+          onMouseLeave={handleMouseLeave} // Clear hover state
+          onClick={() => handleClick(index)} // Lock the rating on click
         >
           <FontAwesomeIcon
-            icon={index <= (hoverIndex ?? -1) ? faStar : faStarEmpty}
+            icon={
+              index <= (hoverIndex ?? lockedRating ?? -1) ? faStar : faStarEmpty
+            } // Fill stars based on hover or locked rating
             className={
-              index <= (hoverIndex ?? -1) ? "text-yellow-500" : "text-gray-300"
+              index <= (hoverIndex ?? lockedRating ?? -1)
+                ? "text-yellow-500"
+                : "text-gray-300"
             }
             size="lg"
             style={{ width: "12px", height: "12px" }}
@@ -51,7 +48,7 @@ const RenderStars = () => {
 };
 
 const EventPlanner = () => {
-  const { data: posts, isLoading, error } = useQuery("postData", fetchPosts);
+  const { posts, isLoading, error } = useFetchAllPosts();
 
   const eventPosts = posts
     ?.filter((post) => post?.postType === "event")
