@@ -1,15 +1,10 @@
-"use client";
 
-import { PropsWithChildren } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
 
-const queryClient = new QueryClient();
+import UserProvider from "@/Context/UserContextProvider";
+import { ReactNode } from "react";
 
-// Fixing the typing of ProvidersProps by specifying the generic type for PropsWithChildren
-type ProvidersProps = PropsWithChildren<{}>; // You can pass {} or any other type for props
+const Providers = ({ children }: { children: ReactNode }) => {
+  return <UserProvider>{children}</UserProvider>;
+};
 
-export default function Providers({ children }: ProvidersProps) {
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-}
+export default Providers;

@@ -1,11 +1,10 @@
 "use client";
 
-import useFetchUser from "@/hooks/useFetchUser";
+import { useUser } from "@/Context/UserContextProvider";
 import { IUser } from "@/models/types";
-import React from "react";
+import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import { SkeletonDeleteUser } from "./skeltons/User";
-import axios from "axios";
 
 const deleteUser = async (userId: string): Promise<{ message: string }> => {
   try {
@@ -23,7 +22,7 @@ const DeleteUser = ({
   user: IUser;
   invalidateQueryKey: any;
 }) => {
-  const { user: currentUser, isLoading: isUserLoading } = useFetchUser();
+  const { user: currentUser, isLoading: isUserLoading } = useUser();
   const queryClient = useQueryClient();
 
   const {

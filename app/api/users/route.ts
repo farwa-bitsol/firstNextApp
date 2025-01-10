@@ -1,53 +1,52 @@
-import { NextResponse } from 'next/server';
+import { connect } from "@/dbConfig/config";
+import { getDataFromToken } from "@/helpers/getDataFromToken";
+import User from "@/models/userModel";
+import { NextRequest, NextResponse } from "next/server";
 
-const JSON_SERVER_URL = 'http://localhost:3000/users';
+connect();
 
-// Handle GET requests
-export async function GET(req: Request) {
+export async function PATCH(request: NextRequest) {
     try {
-        const { searchParams } = new URL(req.url);
-        const _page = searchParams.get('_page') || '1';
-        const _limit = searchParams.get('_limit') || '4';
+        // Retrieve the user ID from the token
+        const userId = await getDataFromToken(request);
 
+        // Parse the form data from the request
+        const formData = await request.formData();
+        const userImageFile = formData.get("userImage") as File;
 
-        const response = await fetch(`${JSON_SERVER_URL}?_page=${_page}&_limit=${_limit}`);
+        // Convert the file to a format suitable for storage
+        const arrayBuffer = await userImageFile.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch users');
+        const userImage = {
+            name: userImageFile.name,
+            data: buffer.toString("base64"),
+            contentType: userImageFile.type,
+        };
+
+        // Find the user in the database
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return NextResponse.json(
+                { message: "User not found" },
+                { status: 404 }
+            );
         }
+        console.log('>>>>found user', user)
+        user.userImage = userImage;
 
-        const paginatedUsers = await response.json();
-        return NextResponse.json(paginatedUsers);
-    } catch (error) {
-        console.error('GET Error:', error);
-        return NextResponse.json(
-            { message: 'Failed to fetch users', error: (error as Error).message },
-            { status: 500 }
-        );
-    }
-}
+        // Save the updated user object to the database
+        await user.save();
 
-// Handle POST requests
-export async function POST(req: Request) {
-    try {
-        const newUser = await req.json();
-
-        const response = await fetch(JSON_SERVER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newUser),
+        return NextResponse.json({
+            message: "User image added or updated successfully",
+            user,
         });
-
-        if (!response.ok) {
-            throw new Error('Failed to create user');
-        }
-
-        const createdUser = await response.json();
-        return NextResponse.json(createdUser, { status: 201 });
-    } catch (error) {
-        console.error('POST Error:', error);
+    } catch (error: any) {
+        console.error("Error in PATCH request:", error);
         return NextResponse.json(
-            { message: 'Failed to create user', error: (error as Error).message },
+            { error: error.message || "Failed to update user image" },
             { status: 500 }
         );
     }

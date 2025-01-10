@@ -2,29 +2,31 @@ import { connect } from "@/dbConfig/config";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 import GeneralForm from "@/models/General";
 import { NextRequest, NextResponse } from "next/server";
+import { Buffer } from "buffer";
 
 connect();
-
 
 export async function POST(request: NextRequest) {
     try {
         const userId = await getDataFromToken(request);
         const reqBody = await request.formData();
 
+        // Fetch form fields
         const generalProfileFile = reqBody.get("generalProfile") as File | null;
-        const firstName = reqBody.get("firstName") as string || "";
-        const lastName = reqBody.get("lastName") as string || "";
-        const location = reqBody.get("location") as string || "";
-        const profession = reqBody.get("profession") as string || "";
-        const bio = reqBody.get("bio") as string || "";
-        const onlinePresence = JSON.parse(reqBody.get("onlinePresence") as string || "[]");
+        const firstName = (reqBody.get("firstName") as string) || "";
+        const lastName = (reqBody.get("lastName") as string) || "";
+        const location = (reqBody.get("location") as string) || "";
+        const profession = (reqBody.get("profession") as string) || "";
+        const bio = (reqBody.get("bio") as string) || "";
+        const onlinePresence = JSON.parse(
+            (reqBody.get("onlinePresence") as string) || "[]"
+        );
 
         let generalProfile = null;
 
         if (generalProfileFile) {
-            const bufferData = await generalProfileFile.arrayBuffer();
-            const buffer = Buffer.from(bufferData);
-            const base64Data = buffer.toString("base64");
+            const fileBuffer = Buffer.from(await generalProfileFile.arrayBuffer());
+            const base64Data = fileBuffer.toString("base64");
 
             generalProfile = {
                 name: generalProfileFile.name,
@@ -33,12 +35,11 @@ export async function POST(request: NextRequest) {
             };
         }
 
-
-
-
+        // Check if the user form already exists
         let userForm = await GeneralForm.findOne({ userId });
 
         if (userForm) {
+            // Update existing document
             userForm.generalProfile = generalProfile;
             userForm.firstName = firstName;
             userForm.lastName = lastName;
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+
 
 
 export async function GET(request: NextRequest) {

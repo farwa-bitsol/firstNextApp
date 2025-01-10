@@ -1,4 +1,5 @@
 "use client";
+import Overlay from "@/components/Overlay";
 import { PostSkeleton } from "@/components/skeltons/Post";
 import useFetchPosts from "@/hooks/useFetchPosts";
 import {
@@ -79,14 +80,7 @@ const Posts = () => {
   return (
     <>
       {/* Overlay when post is being deleted */}
-      {isDeleting && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex justify-center items-center">
-          <div className="bg-white p-4 rounded-lg shadow-lg flex justify-center items-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-t-blue-500 border-solid"></div>
-            <p className="ml-4 text-lg font-semibold">Deleting post...</p>
-          </div>
-        </div>
-      )}
+      {isDeleting && <Overlay title="Deleting post..." />}
 
       {/* Page content with dimming effect */}
       <div className={isDeleting ? "opacity-50 pointer-events-none" : ""}>

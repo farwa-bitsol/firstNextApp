@@ -1,11 +1,10 @@
 "use client";
 
-import useFetchUser from "@/hooks/useFetchUser";
+import { useUser } from "@/Context/UserContextProvider";
 import { SkeletonUserInfo } from "../skeltons/UserInfo";
 
 const SettingsUserInfo = () => {
-  const { user, isLoading } = useFetchUser();
-
+  const { user, isLoading } = useUser();
   if (isLoading) return <SkeletonUserInfo />;
 
   return (

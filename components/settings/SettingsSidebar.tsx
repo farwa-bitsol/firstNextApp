@@ -1,48 +1,10 @@
-import {
-  BadgeDollarSign,
-  CircleUserRound,
-  LayoutDashboard,
-  LucideIcon,
-  SquareChartGantt,
-  WalletCards,
-} from "lucide-react";
 import SidebarItem from "./Item";
 import Image from "next/image";
 import LogoutMenuItem from "./LogoutMenuItem";
 import MobileWrapper from "./MobileWrapper";
 import SettingsUserInfo from "./SettingsUserInfo";
 import Link from "next/link";
-import { Routes } from "@/models/constants";
-import { ISidebarItem } from "@/models/types";
-
-const items: ISidebarItem[] = [
-  {
-    name: "General",
-    path: "/general",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "Security",
-    path: "/security",
-    icon: CircleUserRound,
-  },
-  {
-    name: "Notifications",
-    path: "/notifications",
-    icon: WalletCards,
-  },
-  {
-    name: "Billing",
-    path: "/billing",
-    icon: BadgeDollarSign,
-  },
-
-  {
-    name: "Analytics",
-    path: "/analytics",
-    icon: SquareChartGantt,
-  },
-];
+import { Routes, sidebarItems } from "@/models/constants";
 
 const SettingsSidebar = () => {
   return (
@@ -63,7 +25,7 @@ const SettingsSidebar = () => {
           </div>
         </div>
         <div className="flex flex-col space-y-2 px-2">
-          {items.map((item, index) => (
+          {sidebarItems.map((item, index) => (
             <SidebarItem key={index} item={item} />
           ))}
         </div>

@@ -1,3 +1,13 @@
+import {
+  BadgeDollarSign,
+  CircleUserRound,
+  LayoutDashboard,
+  LucideIcon,
+  SquareChartGantt,
+  WalletCards,
+} from "lucide-react";
+import { ISidebarItem } from "./types";
+
 export const steps = [
   {
     id: "Step 1",
@@ -58,4 +68,33 @@ export const websiteNotificationOptions = [
   { label: "Someone you followed posted", value: "followedPosted" },
   { label: "Post added to collection", value: "postAddedToCollection" },
   { label: "Post downloaded", value: "postDownloaded" },
+];
+
+export const sidebarItems: ISidebarItem[] = [
+  {
+    name: "General",
+    path: "/general",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "Security",
+    path: "/security",
+    icon: CircleUserRound,
+  },
+  {
+    name: "Notifications",
+    path: "/notifications",
+    icon: WalletCards,
+  },
+  {
+    name: "Billing",
+    path: "/billing",
+    icon: BadgeDollarSign,
+  },
+
+  {
+    name: "Analytics",
+    path: "/analytics",
+    icon: SquareChartGantt,
+  },
 ];

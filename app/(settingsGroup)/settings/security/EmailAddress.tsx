@@ -1,9 +1,9 @@
 "use client";
 
-import useFetchUser from "@/hooks/useFetchUser";
+import { useUser } from "@/Context/UserContextProvider";
 
 const EmailAddress = () => {
-  const { user, isLoading } = useFetchUser();
+  const { user, isLoading } = useUser();
   if (isLoading) return <p>Loading...</p>;
   return (
     <p className="lg:pr-28">

@@ -4,38 +4,13 @@ import DeleteUser from "@/components/DeleteUser";
 import Pagination from "@/components/Pagination";
 import LogoutSkeletonLoader from "@/components/skeltons/Logout";
 import { Routes } from "@/models/constants";
-import { IUser } from "@/models/types";
-import axios from "axios";
 import Link from "next/link";
-import { useState } from "react";
 import toast from "react-hot-toast";
-import { useQuery } from "react-query";
-
-const fetchUsers = async (page: number): Promise<{ users: IUser[] }> => {
-  try {
-    const response = await axios.get(`/api/users/userList`);
-    return response.data;
-  } catch (error: any) {
-    const errorMessage =
-      error?.response?.data?.error ||
-      error?.message ||
-      error?.error ||
-      "Failed to fetch users";
-    toast.error(errorMessage);
-    throw new Error(errorMessage);
-  }
-};
+import { useFetchUsers } from "@/hooks/useFetchUsers";
+import axios from "axios";
 
 const Users = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const { data, isLoading } = useQuery(
-    ["fetchUsers", currentPage],
-    () => fetchUsers(currentPage),
-    {
-      keepPreviousData: true, // Keeps data from the previous query while fetching new data
-    }
-  );
+  const { data, isLoading, currentPage, setCurrentPage } = useFetchUsers();
 
   const logout = async () => {
     try {

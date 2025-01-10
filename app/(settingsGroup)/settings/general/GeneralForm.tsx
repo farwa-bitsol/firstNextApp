@@ -1,8 +1,13 @@
 "use client";
 
 import { CustomField } from "@/components/Form";
+import { generalFormSchema } from "@/components/schemas/GeneralForm";
+import { GeneralFormSkeleton } from "@/components/skeltons/GeneralForm";
+import { useUser } from "@/Context/UserContextProvider";
 import { InitialGeneralFormValues } from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import { Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FormProvider,
@@ -10,13 +15,9 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form";
-import * as yup from "yup";
-import { Plus } from "lucide-react";
-import ImageUpload from "./ImageUpload";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { GeneralFormSkeleton } from "@/components/skeltons/GeneralForm";
-import { generalFormSchema } from "@/components/schemas/GeneralForm";
+import * as yup from "yup";
+import ImageUpload from "./ImageUpload";
 
 type Inputs = yup.InferType<typeof generalFormSchema>;
 
@@ -27,6 +28,7 @@ const GeneralForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [initialValues, setInitialValues] = useState<Inputs | null>(null);
+  const { user, isLoading: isUserDetailLoading } = useUser();
 
   useEffect(() => {
     // Fetch initial data for the form
@@ -69,7 +71,6 @@ const GeneralForm = () => {
     control,
     name: "onlinePresence",
   });
-
   const processForm: SubmitHandler<Inputs> = async (data) => {
     setIsSaving(true);
     const formData = new FormData();
@@ -85,14 +86,35 @@ const GeneralForm = () => {
     });
 
     try {
+      // First API Call: Submit general form data
       const response = await axios.post("/api/settings/general", formData);
 
       if (response.status === 200) {
-        toast.success("Form submitted successfully!");
-        console.log("Server Response:", response.data);
+        console.log("General form response:", response.data);
       } else {
-        toast.error("Failed to submit the form.");
+        toast.error("Failed to submit general form.");
+        setIsSaving(false);
+        return;
       }
+
+      // Second API Call: Update user image if image exists
+      if (image) {
+        const imageFormData = new FormData();
+        imageFormData.append("userImage", image);
+
+        const imageResponse = await axios.patch("/api/users", imageFormData);
+
+        if (imageResponse.status === 200) {
+          console.log("User image response:", imageResponse.data);
+        } else {
+          toast.error("Failed to update user image.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      // If both API calls are successful
+      toast.success("General form submitted successfully!");
       setIsSaving(false);
     } catch (error) {
       console.error("Error during submission:", error);
@@ -105,9 +127,20 @@ const GeneralForm = () => {
     if (initialValues) {
       formInstance.reset(initialValues); //reset the form values when form data fetched
     }
-  }, [formInstance, initialValues]);
+    if (user) {
+      // Split full name into first name and last name
+      const [firstName, ...lastNameArr] = user.fullName.split(" ");
+      const lastName = lastNameArr.join(" ");
 
-  if (isLoading) {
+      formInstance.reset({
+        ...initialValues,
+        firstName: firstName || "",
+        lastName: lastName || "",
+      });
+    }
+  }, [formInstance, initialValues, user]);
+
+  if (isLoading || isUserDetailLoading) {
     return <GeneralFormSkeleton />;
   }
   return (

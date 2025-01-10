@@ -4,7 +4,7 @@ import CustomMultiCheckbox from "@/components/CustomCheckbox";
 import CustomSwitch from "@/components/CustomSwitch";
 import { notificationFormSchema } from "@/components/schemas/NotificationForm";
 import { NotificationFormSkeleton } from "@/components/skeltons/NotificationForm";
-import useFetchUser from "@/hooks/useFetchUser";
+import { useUser } from "@/Context/UserContextProvider";
 import {
   InitialNotificationFormValues,
   websiteNotificationOptions,
@@ -71,7 +71,7 @@ const NotificationForm = () => {
     defaultValues: InitialNotificationFormValues,
   });
   const { handleSubmit, setValue } = formInstance;
-  const { user, isLoading } = useFetchUser();
+  const { user, isLoading } = useUser();
 
   const loadNotificationSettings = useCallback(
     async (userId: string) => {

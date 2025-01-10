@@ -1,21 +1,22 @@
 "use client";
-import React from "react";
-import Image from "next/image";
-import useFetchAllPosts from "@/hooks/useFetchAllPosts";
-import { PostProps } from "@/models/types";
+import Overlay from "@/components/Overlay";
 import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useFetchUsers } from "@/hooks/useFetchUsers";
 import { Routes } from "@/models/constants";
+import { IUser } from "@/models/types";
+import axios from "axios";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const Contacts = () => {
   const router = useRouter();
-  const { posts, isLoading, error } = useFetchAllPosts();
-
-  const contacts = posts?.reduce((acc: PostProps[], current) => {
+  const { data, isLoading, isError } = useFetchUsers();
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const contacts = data?.users?.reduce((acc: IUser[], current) => {
     // Check if the userName already exists in the accumulator
-    if (!acc.find((event) => event.userName === current.userName)) {
+    if (!acc.find((user) => user._id === current._id)) {
       acc.push(current);
     }
     return acc;
@@ -23,6 +24,7 @@ const Contacts = () => {
 
   const handleCreateChat = async (contactName: string) => {
     try {
+      setIsChatLoading(true);
       const response = await axios.post("/api/chats", {
         name: contactName,
         lastMessage: "",
@@ -39,23 +41,26 @@ const Contacts = () => {
     } catch (error) {
       console.error("Error creating chat:", error);
       alert("An error occurred while creating the chat.");
+    } finally {
+      setIsChatLoading(false);
     }
   };
 
   if (isLoading) {
     return <UpcomingEventsSkelton />;
   }
-  if (error || !posts) {
+  if (isError || !data?.users) {
     return <p>Failed to load event User. Please try again later.</p>;
   }
   return (
     <div className="w-full">
+      {isChatLoading && <Overlay title="Loading Chat..." />}
       <p className="font-bold text-lg ">Contacts</p>
       <div className="flex flex-col">
         {contacts?.map((contact, index) => (
           <div
             className="flex py-4 justify-between items-center flex-wrap"
-            key={`${contact.userName}-${index}`}
+            key={`${contact.fullName}-${index}`}
           >
             <div className="flex items-center">
               <Image
@@ -66,13 +71,13 @@ const Contacts = () => {
                 className="rounded-full"
               />
               <div className="flex flex-col px-2">
-                <p className="text-sm font-bold">{contact.userName}</p>
+                <p className="text-sm font-bold">{contact.fullName}</p>
                 {/* <p className="text-sm">{contact.location}</p> */}
               </div>
             </div>
             <div>
               <button
-                onClick={() => handleCreateChat(contact.userName)}
+                onClick={() => handleCreateChat(contact.fullName)}
                 className="flex items-center"
               >
                 <Image

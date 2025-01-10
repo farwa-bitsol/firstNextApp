@@ -1,11 +1,11 @@
 "use client";
 
-import useFetchUser from "@/hooks/useFetchUser";
+import { useUser } from "@/Context/UserContextProvider";
 import React from "react";
 import UserPageInfoSkelton from "./skeltons/UserPageInfo";
 
 const UserPageInfo = ({ Children }: { Children: React.ReactNode }) => {
-  const { user, isLoading } = useFetchUser();
+  const { user, isLoading } = useUser();
 
   if (isLoading) return <UserPageInfoSkelton />;
   return (

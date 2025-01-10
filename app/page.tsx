@@ -2,7 +2,7 @@
 
 import Logout from "@/components/Logout";
 import SignupSkelton from "@/components/skeltons/Signup";
-import useFetchUser from "@/hooks/useFetchUser";
+import { useUser } from "@/Context/UserContextProvider";
 import { Routes } from "@/models/constants";
 import Image from "next/image";
 import Link from "next/link";
@@ -42,7 +42,7 @@ const AccountOption = ({
 };
 
 const Page = () => {
-  const { user, isLoading } = useFetchUser();
+  const { user, isLoading } = useUser();
 
   if (isLoading) return <SignupSkelton />;
 

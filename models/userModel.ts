@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please provide a password"],
     },
+    userImage: {
+        name: { type: String },
+        data: { type: String },
+        contentType: { type: String },
+    },
     isVerified: {
         type: Boolean,
         default: false,
