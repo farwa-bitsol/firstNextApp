@@ -27,7 +27,12 @@ const GeneralForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [initialValues, setInitialValues] = useState<Inputs | null>(null);
-  const { user, isLoading: isUserDetailLoading, userImageUrl } = useUser();
+  const {
+    user,
+    isLoading: isUserDetailLoading,
+    userImageUrl,
+    refetchUser,
+  } = useUser();
 
   const formInstance = useForm<Inputs>({
     resolver: yupResolver(generalFormSchema),
@@ -98,6 +103,7 @@ const GeneralForm = () => {
 
         if (imageResponse.status === 200) {
           console.log("User image response:", imageResponse.data);
+          await refetchUser();
         } else {
           toast.error("Failed to update user image.");
           setIsSaving(false);
@@ -135,6 +141,7 @@ const GeneralForm = () => {
   if (isLoading || isUserDetailLoading) {
     return <GeneralFormSkeleton />;
   }
+
   return (
     <React.Fragment>
       <ImageUpload
@@ -150,25 +157,21 @@ const GeneralForm = () => {
               label="First name"
               placeholder="Enter First name"
             />
-
             <CustomField
               fieldName="lastName"
               label="Last name"
               placeholder="Enter Last name"
             />
-
             <CustomField
               fieldName="location"
               label="Location"
               placeholder="Enter Location"
             />
-
             <CustomField
               fieldName="profession"
               label="Profession"
               placeholder="Enter Profession"
             />
-
             <CustomField
               fieldName="bio"
               label="Bio"
@@ -176,7 +179,6 @@ const GeneralForm = () => {
               placeholder="Enter Bio"
               rows={3}
             />
-
             <div className="mt-4">
               <label className="block text-sm font-medium leading-6 text-gray-900">
                 Online presence

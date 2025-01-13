@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useUser } from "@/Context/UserContextProvider";
 
 const UserStories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,6 +11,7 @@ const UserStories = () => {
     image: File | null;
   }>({ text: "", image: null });
   const [stories, setStories] = useState([]);
+  const { userImageUrl } = useUser();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -117,7 +119,7 @@ const UserStories = () => {
             <div
               className="w-full h-[75%] flex items-center justify-center rounded-tl-lg rounded-tr-lg"
               style={{
-                backgroundImage: `url(/images/profile.png)`,
+                backgroundImage: `url(${userImageUrl})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}

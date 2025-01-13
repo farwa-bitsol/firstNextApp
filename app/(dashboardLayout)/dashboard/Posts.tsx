@@ -1,6 +1,7 @@
 "use client";
 import Overlay from "@/components/Overlay";
 import { PostSkeleton } from "@/components/skeltons/Post";
+import { useUser } from "@/Context/UserContextProvider";
 import useFetchPosts from "@/hooks/useFetchPosts";
 import {
   faCommentAlt,
@@ -36,6 +37,7 @@ const Posts = () => {
     isLoading,
     error: isFetchPostError,
   } = useFetchPosts();
+  const { userImageUrl } = useUser();
 
   const handleToggleExpand = (postId: string) => {
     setExpandedPosts((prev) => ({
@@ -109,7 +111,7 @@ const Posts = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <Image
-                      src={profilePhoto}
+                      src={userImageUrl}
                       alt="Profile"
                       width={40}
                       height={40}

@@ -2,7 +2,7 @@
 import { useUser } from "@/Context/UserContextProvider";
 import Image from "next/image";
 const Profile = () => {
-  const { user, isLoading } = useUser();
+  const { user, isLoading, userImageUrl } = useUser();
   const SkeletonLoader = () => (
     <div className="flex items-center justify-center flex-col space-y-4">
       <div className="w-20 h-20 bg-gray-300 rounded-full animate-pulse" />{" "}
@@ -18,7 +18,7 @@ const Profile = () => {
   return (
     <div className=" flex items-center justify-center flex-col">
       <Image
-        src="/images/profile.png"
+        src={userImageUrl}
         width={80}
         height={80}
         alt="User Profile"

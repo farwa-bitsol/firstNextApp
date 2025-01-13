@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import Image from "next/image";
 import { EventModal } from "@/components/dashboard/EventModal";
+import { useUser } from "@/Context/UserContextProvider";
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -26,7 +27,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: "50%",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundImage: `url("images/profile.png")`,
   },
   inputField: {
     flexGrow: 1,
@@ -159,6 +159,7 @@ const WhatsOnYourMind = () => {
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEventModalOpen, setEventModalOpen] = useState(false);
+  const { userImageUrl } = useUser();
   const queryClient = useQueryClient();
 
   const { mutate, isLoading: isPosting } = useMutation(
@@ -216,7 +217,7 @@ const WhatsOnYourMind = () => {
         postTime: currentTime,
         userName: "test",
         description: "",
-        profilePhoto: "/images/profile.png",
+        profilePhoto: userImageUrl,
         postMedia: media,
         postType: "normal",
         likes: 0,
@@ -233,7 +234,7 @@ const WhatsOnYourMind = () => {
       description: content,
       postTime: currentTime,
       userName: "test",
-      profilePhoto: "/images/profile.png",
+      profilePhoto: userImageUrl,
       postMedia: null,
       postType: "article",
       likes: 0,
@@ -249,7 +250,7 @@ const WhatsOnYourMind = () => {
       description: content,
       postTime: currentTime,
       userName: "test",
-      profilePhoto: "/images/profile.png",
+      profilePhoto: userImageUrl,
       postMedia: null,
       postType: "event",
       likes: 0,
@@ -284,7 +285,12 @@ const WhatsOnYourMind = () => {
   return (
     <div style={styles.container}>
       <div style={styles.topRow}>
-        <div style={styles.profileCircle}></div>
+        <div
+          style={{
+            ...styles.profileCircle,
+            backgroundImage: `url(${userImageUrl})`,
+          }}
+        ></div>
         <input
           type="text"
           placeholder="What's on your mind?"

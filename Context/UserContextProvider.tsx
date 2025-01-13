@@ -8,15 +8,18 @@ interface UserContextType {
   user: IUser | null;
   userImageUrl: string;
   isLoading: boolean;
+  refetchUser: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
-  const { user, isLoading, userImageUrl } = useFetchUser();
+  const { user, isLoading, userImageUrl, refetchUser } = useFetchUser();
 
   return (
-    <UserContext.Provider value={{ user, isLoading, userImageUrl }}>
+    <UserContext.Provider
+      value={{ user, isLoading, userImageUrl, refetchUser }}
+    >
       {children}
     </UserContext.Provider>
   );

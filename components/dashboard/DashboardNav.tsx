@@ -1,5 +1,6 @@
 "use client";
 
+import { useUser } from "@/Context/UserContextProvider";
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,6 +31,7 @@ const DashboardNavbar = () => {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const { userImageUrl } = useUser();
 
   const notificationsRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -141,7 +143,7 @@ const DashboardNavbar = () => {
                   width={70}
                   height={38}
                   className="h-10 w-fit rounded-lg"
-                  src="/images/profile.png"
+                  src={userImageUrl}
                   alt="profile"
                 />
               </Link>
@@ -162,7 +164,7 @@ const DashboardNavbar = () => {
               width={70}
               height={38}
               className="h-10 w-fit rounded-lg"
-              src="/images/profile.png"
+              src={userImageUrl}
               alt="profile"
             />
           </Link>

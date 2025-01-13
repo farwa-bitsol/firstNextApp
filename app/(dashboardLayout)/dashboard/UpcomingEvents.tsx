@@ -1,10 +1,12 @@
 "use client";
 import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import { useUser } from "@/Context/UserContextProvider";
 import useFetchPosts from "@/hooks/useFetchPosts";
 import Image from "next/image";
 
 const UpComingEvents = () => {
   const { posts, isLoading, error } = useFetchPosts();
+  const { userImageUrl } = useUser();
 
   const extractDateFromDescription = (description: string): Date | null => {
     const dateMatch = description.match(/Date:\s*(\d{4}-\d{2}-\d{2})/);
@@ -48,7 +50,7 @@ const UpComingEvents = () => {
             >
               <div className="flex items-center">
                 <Image
-                  src="/images/profile.png"
+                  src={userImageUrl}
                   width={50}
                   height={50}
                   alt="User Profile"
