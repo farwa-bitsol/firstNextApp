@@ -23,32 +23,31 @@ type Inputs = yup.InferType<typeof generalFormSchema>;
 
 const GeneralForm = () => {
   const [image, setImage] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [initialValues, setInitialValues] = useState<Inputs | null>(null);
-  const { user, isLoading: isUserDetailLoading } = useUser();
+  const { user, isLoading: isUserDetailLoading, userImageUrl } = useUser();
+
+  const formInstance = useForm<Inputs>({
+    resolver: yupResolver(generalFormSchema),
+    defaultValues: InitialGeneralFormValues,
+  });
+
+  const { handleSubmit, control } = formInstance;
 
   useEffect(() => {
-    // Fetch initial data for the form
     const fetchFormData = async () => {
       try {
         setIsLoading(true);
         const response = await axios.get("/api/settings/general");
         if (response.status === 200) {
-          setInitialValues(response.data.data);
-          const responseImage = response?.data?.data?.generalProfile;
-          setImage(responseImage);
-          if (responseImage) {
-            setImageUrl(
-              `data:${responseImage?.contentType};base64,${responseImage?.data}`
-            );
-          }
+          const fetchedData = response.data.data;
+          setInitialValues(fetchedData);
           setIsLoading(false);
         } else {
-          setIsLoading(false);
           toast.error("Failed to fetch form data.");
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("Error fetching form data:", error);
@@ -59,13 +58,6 @@ const GeneralForm = () => {
 
     fetchFormData();
   }, []);
-
-  const formInstance = useForm<Inputs>({
-    resolver: yupResolver(generalFormSchema),
-    defaultValues: InitialGeneralFormValues,
-  });
-
-  const { handleSubmit, control } = formInstance;
 
   const { fields, append } = useFieldArray({
     control,
@@ -147,7 +139,7 @@ const GeneralForm = () => {
     <React.Fragment>
       <ImageUpload
         setImage={setImage}
-        imageUrl={imageUrl}
+        imageUrl={userImageUrl}
         fileInputRef={fileInputRef}
       />
       <div className="md:w-1/2">

@@ -19,14 +19,6 @@ export interface ICurrentForm {
   fields: string[];
 }
 
-export interface IUser {
-  fullName: string;
-  _id?: string;
-  email: string;
-  password: string
-}
-
-
 export interface PostMediaProps {
   contentType: string;
   data: string;
@@ -45,6 +37,14 @@ export interface PostProps {
   comments: number;
   shares: number;
   _id: string;
+}
+
+export interface IUser {
+  fullName: string;
+  _id?: string;
+  email: string;
+  password: string
+  userImage: PostMediaProps | null
 }
 
 export interface Chat {

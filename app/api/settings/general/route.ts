@@ -85,12 +85,19 @@ export async function GET(request: NextRequest) {
         const userId = await getDataFromToken(request);
         const userForm = await GeneralForm.findOne({ userId });
 
-
         return NextResponse.json({
             message: "Form data retrieved successfully.",
             success: true,
-            data: userForm ?? null,
+            data: userForm ? {
+                ...userForm.toObject(),
+                generalProfile: userForm.generalProfile ? {
+                    name: userForm.generalProfile.name,
+                    data: userForm.generalProfile.data, // Base64-encoded string
+                    contentType: userForm.generalProfile.contentType,
+                } : null,
+            } : null,
         });
+
     } catch (error: any) {
         console.error("Error in GET request:", error);
         return NextResponse.json(

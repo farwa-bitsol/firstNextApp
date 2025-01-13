@@ -33,18 +33,12 @@ const ImageUpload = ({
     }
   };
 
-  useEffect(() => {
-    if (imageUrl) {
-      setMediaPreview(imageUrl);
-    }
-  }, [imageUrl, setImage]);
-
   return (
     <div className="flex items-center gap-6">
       <div className="w-28 h-28 border rounded-xl flex items-center justify-center overflow-hidden my-8">
-        {mediaPreview ? (
+        {imageUrl || mediaPreview ? (
           <Image
-            src={mediaPreview}
+            src={mediaPreview ?? imageUrl ?? ""}
             alt="Preview"
             width={112}
             height={112}
