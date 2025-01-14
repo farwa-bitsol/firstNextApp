@@ -4,7 +4,7 @@ import { PostProps } from "@/models/types";
 
 
 const fetchPosts = async (): Promise<PostProps[]> => {
-    const response = await axios.get("/api/posts/allPosts");
+    const response = await axios.get("/api/allPosts");
     if (response.status !== 200) {
         throw new Error("Failed to fetch posts");
     }
@@ -13,7 +13,7 @@ const fetchPosts = async (): Promise<PostProps[]> => {
 
 // Custom hook
 const useFetchAllPosts = () => {
-    const { data, isLoading, error } = useQuery("postData", fetchPosts);
+    const { data, isLoading, error } = useQuery("allPostData", fetchPosts);
 
     return {
         posts: data,

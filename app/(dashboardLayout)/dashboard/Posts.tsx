@@ -37,7 +37,7 @@ const Posts = () => {
     isLoading,
     error: isFetchPostError,
   } = useFetchPosts();
-  const { userImageUrl } = useUser();
+  const { userImageUrl, isLoading: isUserLoading } = useUser();
 
   const handleToggleExpand = (postId: string) => {
     setExpandedPosts((prev) => ({
@@ -68,7 +68,7 @@ const Posts = () => {
     },
   });
 
-  if (isLoading) return <PostSkeleton />;
+  if (isLoading || isUserLoading) return <PostSkeleton />;
   if (isFetchPostError) return <div>Error fetching posts</div>;
 
   if (!postData || postData.length === 0) {

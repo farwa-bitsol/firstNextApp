@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const UpComingEvents = () => {
   const { posts, isLoading, error } = useFetchPosts();
-  const { userImageUrl } = useUser();
+  const { userImageUrl, isLoading: isUserLoading } = useUser();
 
   const extractDateFromDescription = (description: string): Date | null => {
     const dateMatch = description.match(/Date:\s*(\d{4}-\d{2}-\d{2})/);
@@ -28,7 +28,7 @@ const UpComingEvents = () => {
       return (a.eventDate as Date).getTime() - (b.eventDate as Date).getTime();
     });
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <UpcomingEventsSkelton />;
   }
 

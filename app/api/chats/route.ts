@@ -23,29 +23,43 @@ const defaultMessage = {
 
 export async function POST(request: NextRequest) {
     try {
-        const userId = await getDataFromToken(request);
         const reqBody = await request.json();
-        const { name, lastMessage, messages } = reqBody;
+        const { name, lastMessage, messages, userId } = reqBody;
 
+        // Check if a chat already exists for the user
+        const existingChat = await Chat.findOne({ userId });
+        if (existingChat) {
+            return NextResponse.json({
+                message: "Chat already exists.",
+                success: true,
+                existingChat,
+            });
+        }
+
+        // Create a new chat if it doesn't exist
         const newChat = new Chat({
-            name, lastMessage, messages, userId
+            name,
+            lastMessage,
+            messages,
+            userId,
         });
 
         const savedPost = await newChat.save();
-        console.log('This is our newChat', newChat);
+        console.log("This is our newChat", newChat);
 
         return NextResponse.json({
             message: "Chat created successfully.",
             success: true,
-            savedPost
+            savedPost,
         });
-
     } catch (error: any) {
         console.error("Error in POST request:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json(
+            { error: error.message || "Internal server error" },
+            { status: 500 }
+        );
     }
 }
-
 
 export async function GET(request: NextRequest) {
     try {

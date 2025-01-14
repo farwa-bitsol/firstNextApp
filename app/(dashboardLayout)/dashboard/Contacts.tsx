@@ -1,6 +1,7 @@
 "use client";
 import Overlay from "@/components/Overlay";
 import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import { useUser } from "@/Context/UserContextProvider";
 import { useFetchUsers } from "@/hooks/useFetchUsers";
 import { Routes } from "@/models/constants";
 import { IUser } from "@/models/types";
@@ -14,25 +15,30 @@ const Contacts = () => {
   const router = useRouter();
   const { data, isLoading, isError } = useFetchUsers();
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const { user, isLoading: isUserLoading } = useUser();
   const contacts = data?.users?.reduce((acc: IUser[], current) => {
-    // Check if the userName already exists in the accumulator
-    if (!acc.find((user) => user._id === current._id)) {
+    // Check if the current user is not the logged-in user and not already in the accumulator
+    if (
+      current._id !== user?._id &&
+      !acc.find((contact) => contact._id === current._id)
+    ) {
       acc.push(current);
     }
     return acc;
   }, []);
 
-  const handleCreateChat = async (contactName: string) => {
+  const handleCreateChat = async (contactName: string, userId: string) => {
     try {
       setIsChatLoading(true);
       const response = await axios.post("/api/chats", {
         name: contactName,
         lastMessage: "",
         messages: [],
+        userId,
       });
 
       if (response.data.success) {
-        toast.success(`Chat with ${contactName} created successfully!`);
+        // toast.success(`Chat with ${contactName} created successfully!`);
         router.push(Routes.chat);
       } else {
         console.error("Error creating chat:", response.data.error);
@@ -46,7 +52,7 @@ const Contacts = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isUserLoading) {
     return <UpcomingEventsSkelton />;
   }
   if (isError || !data?.users) {
@@ -77,7 +83,9 @@ const Contacts = () => {
             </div>
             <div>
               <button
-                onClick={() => handleCreateChat(contact.fullName)}
+                onClick={() =>
+                  handleCreateChat(contact.fullName, contact?._id ?? "")
+                }
                 className="flex items-center"
               >
                 <Image

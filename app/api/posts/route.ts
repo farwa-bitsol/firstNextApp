@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     try {
         const userId = await getDataFromToken(request);
+        console.log('>>>>user',userId)
         const data = await Post.findOne({ userId }).sort({ postTime: -1 });
 
         return NextResponse.json(data?.posts ?? []);

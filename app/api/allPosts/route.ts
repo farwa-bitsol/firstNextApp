@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
+        console.log('>>>getting all posts')
         const data = await Post.find().sort({ postTime: -1 });
         return NextResponse.json(data.map((d) => d.posts).flat() ?? []);
 

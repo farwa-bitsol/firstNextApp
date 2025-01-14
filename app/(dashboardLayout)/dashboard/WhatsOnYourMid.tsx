@@ -159,7 +159,7 @@ const WhatsOnYourMind = () => {
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEventModalOpen, setEventModalOpen] = useState(false);
-  const { userImageUrl } = useUser();
+  const { userImageUrl, isLoading: isUserLoading } = useUser();
   const queryClient = useQueryClient();
 
   const { mutate, isLoading: isPosting } = useMutation(
@@ -281,6 +281,8 @@ const WhatsOnYourMind = () => {
     setMedia(null);
     setMediaPreview(null);
   };
+
+  if (isUserLoading) return <p>Loading...</p>;
 
   return (
     <div style={styles.container}>

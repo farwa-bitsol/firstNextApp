@@ -11,7 +11,7 @@ const UserStories = () => {
     image: File | null;
   }>({ text: "", image: null });
   const [stories, setStories] = useState([]);
-  const { userImageUrl } = useUser();
+  const { userImageUrl, isLoading: isUserLoading } = useUser();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -67,7 +67,7 @@ const UserStories = () => {
     </div>
   );
 
-  if (loading)
+  if (loading || isUserLoading)
     return (
       <div className="w-full overflow-x-auto whitespace-nowrap py-4 horizontal-scroll-container flex justify-center">
         <div className="flex space-x-4 justify-start items-center min-w-0">
