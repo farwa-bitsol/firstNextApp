@@ -29,25 +29,18 @@
     "lucide-react": "^0.460.0",
     "next": "^14.2.5",
     "next-auth": "^4.24.7",
-<<<<<<< Updated upstream
-=======
     "nodemailer": "^6.9.16",
     "pg": "^8.16.0",
     "prisma": "^6.8.2",
->>>>>>> Stashed changes
     "react": "^18",
     "react-apexcharts": "^1.6.0",
     "react-dom": "^18",
     "react-hook-form": "^7.52.2",
     "react-query": "^3.39.3",
-<<<<<<< Updated upstream
-    "stripe": "^17.4.0",
-=======
     "sharp": "^0.33.5",
     "simplex-noise": "^4.0.3",
     "stripe": "^17.7.0",
     "tailwind-merge": "^2.6.0",
->>>>>>> Stashed changes
     "yup": "^1.4.0"
   },
   "devDependencies": {

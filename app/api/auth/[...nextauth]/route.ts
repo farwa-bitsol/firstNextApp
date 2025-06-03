@@ -1,11 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-<<<<<<< Updated upstream
 import CredentialsProvider from "next-auth/providers/credentials";
-import { fetchUsers } from "@/services/userService";
-import { IUser } from "@/models/types";
-=======
 import { userOperations } from "@/dbConfig/db";
+import bcrypt from "bcryptjs";
 
 declare module "next-auth" {
   interface Session {
@@ -17,7 +14,6 @@ declare module "next-auth" {
     }
   }
 }
->>>>>>> Stashed changes
 
 const authOptions = NextAuth({
   session: {
@@ -33,21 +29,32 @@ const authOptions = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, req) {
-        const fetchedUsers: IUser[] = await fetchUsers();
-        const filteredEmail = fetchedUsers.find(
-          (user) => credentials?.email === user.email
-        );
-
-        if (filteredEmail) {
-          return {
-            id: filteredEmail.id || "",
-            email: filteredEmail.email,
-            name: filteredEmail.fullName,
-          };
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
+        
+        const user = await userOperations.findUserByEmail(credentials.email);
+        
+        if (!user) {
+          throw new Error("No user found with this email");
         }
 
-        return null;
+        if (!user.password) {
+          throw new Error("Please sign in with Google");
+        }
+
+        const isValid = await bcrypt.compare(credentials.password, user.password);
+        
+        if (!isValid) {
+          throw new Error("Invalid password");
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.fullName,
+        };
       },
     }),
     GoogleProvider({
@@ -55,17 +62,14 @@ const authOptions = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       authorization: {
         params: {
-          redirect_uri: "http://localhost:3001/user/signin",
+          redirect_uri: process.env.NEXTAUTH_URL 
+            ? `${process.env.NEXTAUTH_URL}/user/signin`
+            : "http://localhost:3001/user/signin",
         },
       },
     }),
   ],
   callbacks: {
-<<<<<<< Updated upstream
-    async session({ session, user }) {
-      // Pass user data to the session
-      session.user = user;
-=======
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
@@ -92,7 +96,6 @@ const authOptions = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
       }
->>>>>>> Stashed changes
       return session;
     },
     async jwt({ token, user }) {

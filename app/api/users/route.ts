@@ -14,6 +14,30 @@ export async function PATCH(request: NextRequest) {
         const formData = await request.formData();
         const userImageFile = formData.get("userImage") as File;
 
+        if (!userImageFile) {
+            return NextResponse.json(
+                { error: "No image file provided" },
+                { status: 400 }
+            );
+        }
+
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(userImageFile.type)) {
+            return NextResponse.json(
+                { error: "Invalid file type. Only JPEG, PNG and GIF are allowed" },
+                { status: 400 }
+            );
+        }
+
+        // Validate file size (2MB limit)
+        if (userImageFile.size > 2 * 1024 * 1024) {
+            return NextResponse.json(
+                { error: "File size too large. Maximum size is 2MB" },
+                { status: 400 }
+            );
+        }
+
         // Convert the file to a format suitable for storage
         const arrayBuffer = await userImageFile.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
