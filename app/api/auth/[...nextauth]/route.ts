@@ -1,8 +1,23 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+<<<<<<< Updated upstream
 import CredentialsProvider from "next-auth/providers/credentials";
 import { fetchUsers } from "@/services/userService";
 import { IUser } from "@/models/types";
+=======
+import { userOperations } from "@/dbConfig/db";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  }
+}
+>>>>>>> Stashed changes
 
 const authOptions = NextAuth({
   session: {
@@ -46,15 +61,43 @@ const authOptions = NextAuth({
     }),
   ],
   callbacks: {
+<<<<<<< Updated upstream
     async session({ session, user }) {
       // Pass user data to the session
       session.user = user;
+=======
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        try {
+          const existingUser = await userOperations.findUserByEmail(user.email!);
+          
+          if (!existingUser) {
+            // Create new user if doesn't exist
+            await userOperations.createUser({
+              email: user.email!,
+              fullName: user.name!,
+              password: "", // You might want to generate a random password
+              isVerified: true,
+            });
+          }
+          return true;
+        } catch (error) {
+          console.error("Error in signIn callback:", error);
+          return false;
+        }
+      }
+      return true;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+>>>>>>> Stashed changes
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email;
       }
       return token;
     },
