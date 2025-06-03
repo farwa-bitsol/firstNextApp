@@ -1,14 +1,20 @@
+"use client";
+
 import React from "react";
+import dynamic from 'next/dynamic';
 import RadialProgressbar from "./RadialProgressbar";
-import TrafficSourceTypes from "./TraficSourceTypes";
 import Goals from "./Goals";
-import Recycled from "./Recycled";
 import SelectField from "./SelectField";
-import ImpressionsViewsChart from "./ImpressionViews";
-import ExpensesChart from "./Expenses";
+
+// Dynamically import chart components with ssr: false
+const TrafficSourceTypes = dynamic(() => import("./TraficSourceTypes"), { ssr: false });
+const Recycled = dynamic(() => import("./Recycled"), { ssr: false });
+const ImpressionsViewsChart = dynamic(() => import("./ImpressionViews"), { ssr: false });
+const ExpensesChart = dynamic(() => import("./Expenses"), { ssr: false });
 
 const recycledSelectOptions = [{ label: "This month", value: "current-month" }];
-const page = () => {
+
+const Page = () => {
   return (
     <div className="flex flex-col justify-start pt-20 md:pt-10 px-14 pb-8">
       <p className="text-2xl font-bold mb-4">Analytics</p>
@@ -55,4 +61,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

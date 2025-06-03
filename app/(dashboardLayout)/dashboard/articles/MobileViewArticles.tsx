@@ -1,66 +1,66 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { articles } from "./page";
+import React, { useState } from "react";
+import { articles } from "./data";
+
+interface Article {
+  id: number;
+  title: string;
+  author: string;
+  time: string;
+  image: string;
+}
 
 const MobileViewArticles = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter articles based on the search term
-  const filteredArticles = articles.filter((article) =>
+  const filteredArticles = (articles as unknown as Article[]).filter((article) =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="flex flex-col bg-white p-4 md:hidden h-screen">
-      {/* Search Bar */}
-      <div className="p-2 bg-[#EEF4FD]  ml-3 rounded-full">
+    <div className="md:hidden p-4">
+      <div className="mb-4">
         <input
           type="text"
           placeholder="Search articles..."
+          className="w-full p-2 border rounded"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 bg-[transparent] focus:outline-none"
         />
       </div>
-
-      {/* Article List */}
-      {filteredArticles.map((article) => (
-        <div
-          className="flex   p-4 border-b justify-between items-center"
-          key={article.id}
-        >
-          <div className="flex gap-4 items-center">
-            <Image
-              src={article.image}
-              alt={article.title}
-              className="rounded-full max-w-[30px] max-h-[30px]"
-              width={50}
-              height={50}
-            />
-            <div className="mt-2">
-              <h2 className="text-lg font-semibold text-gray-800">
-                {article.title}
-              </h2>
-              <p className="text-gray-500 text-sm">By {article.author}</p>
+      <div className="space-y-4">
+        {filteredArticles.length === 0 ? (
+          <p className="text-center text-gray-500">No articles found</p>
+        ) : (
+          filteredArticles.map((article) => (
+            <div
+              key={article.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden"
+            >
+              <Image
+                src={article.image}
+                alt={article.title}
+                className="w-full h-48 object-cover"
+                width={300}
+                height={200}
+              />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {article.title}
+                </h2>
+                <p className="text-gray-500 text-sm mt-2">
+                  By {article.author} | {article.time}
+                </p>
+                <button className="mt-4 w-full border py-2 px-4 rounded transition">
+                  Read
+                </button>
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="text-gray-500 text-sm">
-              <span className="text-gray-500 font-medium text-sm">Est Time: </span>
-              {article.time}
-            </p>
-          </div>
-        </div>
-      ))}
-
-      {/* No Articles Found Message */}
-      {filteredArticles.length === 0 && (
-        <p className="text-gray-500 text-center mt-4">
-          No articles found matching your search.
-        </p>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 };
