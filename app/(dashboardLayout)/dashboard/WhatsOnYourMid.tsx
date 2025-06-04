@@ -147,7 +147,7 @@ const WhatsOnYourMind = () => {
             width={20} 
             height={20} 
             style={styles.icon} 
-            alt="Media icon" 
+            alt="Media upload icon" 
           />
           <span>Media</span>
         </div>
