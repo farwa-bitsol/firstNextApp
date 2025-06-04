@@ -27,6 +27,7 @@ model User {
   verifyToken          String?
   verifyTokenExpiry    DateTime?
   posts                Post[]
+  cardDetails          CardDetails[]
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
 }
@@ -47,6 +48,17 @@ model Post {
   postTime    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model CardDetails {
+  id            String   @id @default(cuid())
+  cardNumber    String
+  cardHolderName String
+  expiryDate    String
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 enum PostType {
