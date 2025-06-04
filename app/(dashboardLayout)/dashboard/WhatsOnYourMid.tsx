@@ -1,8 +1,21 @@
 "use client";
 
-import { Calendar, FileText, Image } from "lucide-react";
+import { Calendar, FileText } from "lucide-react";
+import Image from "next/image";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query"; // Importing hooks from react-query
+import { useMutation, useQueryClient } from "react-query";
+
+interface PostData {
+  title: string;
+  postTime: string;
+  profilePhoto: string;
+  userName: string;
+  description: string;
+  postPhoto: string;
+  likes: number;
+  comments: number;
+  shares: number;
+}
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -68,38 +81,31 @@ const WhatsOnYourMind = () => {
   const [input, setInput] = useState("");
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading: isPosting } = useMutation(
-    async (newPost: {
-      title: string;
-      postTime: string;
-      profilePhoto: string;
-      userName: string;
-      description: string;
-      postPhoto: string;
-      likes: number;
-      comments: number;
-      shares: number;
-    }) => {
-      const response = await fetch("http://localhost:3000/postData", {
+  const { mutate, isLoading: isPosting } = useMutation<PostData, Error, PostData>(
+    async (newPost) => {
+      const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPost),
       });
+      
+      if (!response.ok) {
+        throw new Error("Failed to create post");
+      }
+      
       return await response.json();
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["postData"]); // Refresh posts
-
+        queryClient.invalidateQueries(["postData"]);
         setInput("");
       },
     }
   );
 
-  // Handle button click to send data
   const handleSend = () => {
     if (input.trim() !== "") {
-      const currentTime = new Date().toISOString(); // Get current time in ISO format
+      const currentTime = new Date().toISOString();
       mutate({
         title: input,
         postTime: currentTime,
@@ -111,7 +117,6 @@ const WhatsOnYourMind = () => {
         comments: 0,
         shares: 0,
       });
-      setInput(""); // Clear the input after sending
     }
   };
 
@@ -135,10 +140,15 @@ const WhatsOnYourMind = () => {
         </button>
       </div>
 
-      {/*  actions */}
       <div style={styles.bottomRow}>
         <div style={styles.iconLabel}>
-          <Image width={20} height={20} style={styles.icon} />
+          <Image 
+            src="/images/media-icon.png" 
+            width={20} 
+            height={20} 
+            style={styles.icon} 
+            alt="Media icon" 
+          />
           <span>Media</span>
         </div>
         <div style={styles.iconLabel}>
