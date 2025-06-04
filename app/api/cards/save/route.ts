@@ -7,6 +7,14 @@ export async function POST(request: NextRequest) {
   try {
     const { cardNumber, cardHolderName, expiryDate, userId } = await request.json();
 
+    // Basic validation
+    if (!cardNumber || !cardHolderName || !expiryDate || !userId) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
     // Save card details to database
     const savedCard = await prisma.cardDetails.create({
       data: {
