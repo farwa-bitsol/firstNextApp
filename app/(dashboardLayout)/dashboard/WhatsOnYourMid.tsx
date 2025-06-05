@@ -1,12 +1,25 @@
 "use client";
 
-import { Calendar, FileText, File } from "lucide-react";
+import { EventModal } from "@/components/dashboard/EventModal";
+import { Calendar, FileText } from "lucide-react";
+import Image from "next/image";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import axios from "axios";
-import Image from "next/image";
-import { EventModal } from "@/components/dashboard/EventModal";
-import { useUser } from "@/Context/UserContextProvider";
+import { useUser } from "@/hooks/useUser";
+
+interface PostData {
+  title: string;
+  postTime: string;
+  profilePhoto: string;
+  userName: string;
+  description: string;
+  postPhoto?: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  postMedia?: File | null;
+  postType: "normal" | "article" | "event";
+}
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -162,35 +175,19 @@ const WhatsOnYourMind = () => {
   const { userImageUrl, isLoading: isUserLoading } = useUser();
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading: isPosting } = useMutation(
-    async (newPost: {
-      title: string;
-      postTime: string;
-      userName: string;
-      description: string;
-      profilePhoto: string;
-      postMedia: File | null;
-      postType: "event" | "article" | "normal";
-      likes: number;
-      comments: number;
-      shares: number;
-    }) => {
-      const formData = new FormData();
-      formData.append("title", newPost.title);
-      formData.append("postTime", newPost.postTime);
-      formData.append("userName", newPost.userName);
-      formData.append("description", newPost.description);
-      formData.append("profilePhoto", newPost.profilePhoto);
-      if (newPost.postMedia) {
-        formData.append("postMedia", newPost.postMedia);
+  const { mutate, isLoading: isPosting } = useMutation<PostData, Error, PostData>(
+    async (newPost) => {
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPost),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to create post");
       }
-      formData.append("likes", newPost.likes.toString());
-      formData.append("comments", newPost.comments.toString());
-      formData.append("shares", newPost.shares.toString());
-      formData.append("postType", newPost.postType);
-
-      const response = await axios.post("/api/posts", formData);
-      return response.data;
+      
+      return await response.json();
     },
     {
       onSuccess: () => {
@@ -210,7 +207,7 @@ const WhatsOnYourMind = () => {
   );
 
   const handleSend = () => {
-    if (input.trim() !== "" || media) {
+    if (input.trim() !== "") {
       const currentTime = new Date().toISOString();
       mutate({
         title: input,
@@ -308,40 +305,23 @@ const WhatsOnYourMind = () => {
           {isPosting ? "Sending..." : "Send"}
         </button>
       </div>
-      {mediaPreview && (
-        <div style={styles.mediaPreviewContainer}>
-          {media?.type.startsWith("image/") && (
-            <>
-              <Image
-                src={mediaPreview}
-                alt="Media Preview"
-                style={styles.mediaPreview}
-                width={100}
-                height={100}
-              />
-              <button style={styles.closeButton} onClick={handleClearMedia}>
-                &times;
-              </button>
-            </>
-          )}
-          {media?.type.startsWith("video/") && (
-            <>
-              <video
-                src={mediaPreview}
-                controls
-                style={styles.mediaPreview}
-              ></video>
-              <button style={styles.closeButton} onClick={handleClearMedia}>
-                &times;
-              </button>
-            </>
-          )}
+
+      <div style={styles.bottomRow}>
+        <div style={styles.iconLabel}>
+          <Image 
+            src="/images/media-icon.png" 
+            width={20} 
+            height={20} 
+            style={styles.icon} 
+            alt="Media upload icon" 
+          />
+          <span>Media</span>
         </div>
-      )}
+      </div>
       {/* Actions */}
       <div style={styles.bottomRow}>
         <div style={styles.iconLabel} onClick={handleMediaClick}>
-          <File size={20} style={styles.icon} />
+          <FileText size={20} style={styles.icon} />
           <span>Media</span>
           <input
             id="fileInput"

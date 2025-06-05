@@ -30,11 +30,9 @@ const PaymentForm = () => {
   useEffect(() => {
     const fetchSavedCards = async () => {
       try {
-        const response = await fetch("http://localhost:3000/customersCard");
+        const response = await fetch("/api/cards/save");
         const data = await response.json();
-
-        // Directly assign the saved card data (assuming it is now saved directly as an array)
-        setSavedCards(data); // Assuming data is an array of card objects
+        setSavedCards(data);
       } catch (err) {
         setError("Failed to fetch saved cards.");
       }
@@ -66,27 +64,31 @@ const PaymentForm = () => {
       setSuccessMessage(null);
     } else if (token && token.card) {
       const { card } = token;
-      // Send the token to your backend to save the card
       try {
         const newCard = {
-          id: generateRandomId()?.toString(),
-          last4: card.last4,
-          exp_month: card.exp_month,
-          exp_year: card.exp_year,
+          cardNumber: card.last4,
+          cardHolderName: "Card Holder", // You might want to get this from a form input
+          expiryDate: `${card.exp_month}/${card.exp_year}`,
+          userId: "user-id-here" // You'll need to get this from your auth context
         };
 
-        const response = await fetch("http://localhost:3000/customersCard", {
+        const response = await fetch("/api/cards/save", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newCard), // Directly send the card data
+          body: JSON.stringify(newCard),
         });
 
         const data = await response.json();
 
-        if (data.id) {
-          setSavedCards((prevCards: cardType[]) => [...prevCards, newCard]); // Append the new card to the state
+        if (data.cardId) {
+          setSavedCards((prevCards: cardType[]) => [...prevCards, {
+            id: data.cardId,
+            last4: card.last4,
+            exp_month: card.exp_month,
+            exp_year: card.exp_year,
+          }]);
 
           setSuccessMessage("Card saved successfully!");
           setError(null);
@@ -105,12 +107,9 @@ const PaymentForm = () => {
     if (!savedCards) return;
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/customersCard/${cardId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/cards/save/${cardId}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         throw new Error("Failed to remove card.");
@@ -118,7 +117,7 @@ const PaymentForm = () => {
 
       setSavedCards((prevCards: cardType[]) =>
         prevCards.filter((card) => card.id !== cardId)
-      ); // Update the state to remove the deleted card
+      );
 
       setSuccessMessage("Card removed successfully!");
       setError(null);

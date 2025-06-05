@@ -1,24 +1,19 @@
-import mongoose from 'mongoose';
+import { PrismaClient } from '@prisma/client';
+import { sql } from '@vercel/postgres';
+
+const prisma = new PrismaClient();
 
 export async function connect() {
     try {
-        mongoose.connect(process.env.MONGO_URI!);
-        const connection = mongoose.connection;
-
-        connection.on('connected', () => {
-            console.log('MongoDB connected successfully');
-        })
-
-        connection.on('error', (err) => {
-            console.log('MongoDB connection error. Please make sure MongoDB is running. ' + err);
-            process.exit();
-        })
-
+        // Test the connection
+        await sql`SELECT 1`;
+        await prisma.$connect();
+        console.log('PostgreSQL connected successfully');
     } catch (error) {
-        console.log('Something goes wrong!');
+        console.log('PostgreSQL connection error. Please make sure PostgreSQL is running.');
         console.log(error);
-        
+        process.exit(1);
     }
-
-
 }
+
+export { prisma, sql };

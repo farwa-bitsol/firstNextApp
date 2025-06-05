@@ -1,18 +1,14 @@
 import { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import { getToken } from "next-auth/jwt";
 
-export const getDataFromToken = (request: NextRequest) => {
+export async function getDataFromToken(request: NextRequest) {
     try {
-        const token = request.cookies.get("token")?.value || '';
-
-        if (!token) {
-            console.log("Token not provided");
-            return null;
+        const token = await getToken({ req: request });
+        if (!token?.id) {
+            throw new Error("Not authenticated");
         }
-        const decodedToken: any = jwt.verify(token, process.env.TOKEN_SECRET!);
-        return decodedToken.id;
+        return token.id as string;
     } catch (error: any) {
         throw new Error(error.message);
     }
-
-}
+} 

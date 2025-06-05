@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import MobileViewArticles from "./MobileViewArticles";
-import { Article } from "@/models/types";
+import { articles } from "./data";
 
 const Page = () => {
   const articles: Article[] = [
