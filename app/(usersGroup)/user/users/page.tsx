@@ -1,37 +1,46 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { fetchUsers } from "@/services/userService";
 import DeleteUser from "@/components/DeleteUser";
-import { IUser } from "@/models/types";
 import Pagination from "@/components/Pagination";
-import Logout from "@/components/Logout";
+import LogoutSkeletonLoader from "@/components/skeltons/Logout";
+import { Routes } from "@/models/constants";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import { useFetchUsers } from "@/hooks/useFetchUsers";
+import axios from "axios";
 
 const Users = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const { data, isLoading, currentPage, setCurrentPage } = useFetchUsers();
 
-  const getUsers = useCallback(async () => {
+  const logout = async () => {
     try {
-      const fetchedUsers = await fetchUsers(currentPage);
-      setUsers(fetchedUsers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
+      const response = await axios.get("/api/users/logout");
+      if (response?.data?.success) {
+        window.location.href = Routes.login;
+      } else {
+        toast.error("Failed to log out");
+      }
+    } catch (error: any) {
+      toast.error("Logout failed, please try again later");
     }
-  }, [currentPage]);
+  };
 
-  useEffect(() => {
-    getUsers();
-  }, [getUsers]);
+  if (isLoading) return <LogoutSkeletonLoader />;
 
   return (
     <>
-      <div className="absolute top-12 right-12 text-gray-700 flex items-center space-x-2 border-b-2 border-transparent hover:border-blue-500">
-        <Logout />
+      <div className="flex gap-4 justify-center mt-4 text-blue-500">
+        <Link href={Routes.dashboard}>Dashboard</Link>
+        <Link href={Routes.settings}>Settings</Link>
+        <button onClick={logout}>Logout</button>
       </div>
       <div className="py-32 px-12">
-        {users?.map((user, index) => (
-          <DeleteUser key={index} user={user} />
+        {data?.users?.map((user) => (
+          <DeleteUser
+            key={user?._id}
+            user={user}
+            invalidateQueryKey={["fetchUsers", currentPage]}
+          />
         ))}
         <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </div>

@@ -22,7 +22,7 @@ const SettingsUserInfo = () => {
 
   return (
     <div className="flex items-center mx-auto space-x-4 mt-4 w-full pl-2">
-      <Link href={Routes.userDashboard}>
+      <Link href={Routes.dashboard}>
         <Image
           width={55}
           height={55}

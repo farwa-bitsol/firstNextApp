@@ -11,7 +11,7 @@ import Posts from "./Posts";
 
 const Page = () => {
   return (
-    <div className="flex gap-4 py-8 justify-center">
+    <div className="flex gap-4 py-8 justify-center  bg-[#EEF4FD]">
       <div className="hidden lg:flex flex-col gap-4 w-1/5">
         <div className="bg-white h-fit px-4 py-6 items-center flex flex-col rounded-lg shadow-md">
           <Profile />
@@ -29,7 +29,7 @@ const Page = () => {
         </div>
       </div>
 
-      <div className="flex-1 max-w-fit overflow-x-auto">
+      <div className="flex-1 w-full px-8 lg:px-0 lg:max-w-[40%] overflow-x-auto">
         <div className="mb-4">
           <UserStories />
         </div>

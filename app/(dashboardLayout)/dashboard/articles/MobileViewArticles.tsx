@@ -13,7 +13,7 @@ interface Article {
 }
 
 const MobileViewArticles = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const filteredArticles = (articles as unknown as Article[]).filter((article) =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase())

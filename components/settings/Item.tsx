@@ -3,18 +3,7 @@ import { useMemo, useState } from "react";
 import { ChevronDown, LucideIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import SubMenuItem from "./SubItem";
-
-interface ISidebarItem {
-  name: string;
-  path: string;
-  icon: LucideIcon;
-  items?: ISubItem[];
-}
-
-interface ISubItem {
-  name: string;
-  path: string;
-}
+import { ISidebarItem } from "@/models/types";
 
 const SidebarItem = ({ item }: { item: ISidebarItem }) => {
   const { name, icon: Icon, items, path } = item;

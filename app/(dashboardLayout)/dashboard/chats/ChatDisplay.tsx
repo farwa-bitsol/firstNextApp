@@ -1,20 +1,20 @@
 "use client";
-import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "react-query";
-import { Chat } from "./Sidebar";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { SkeletonChatMessages } from "@/components/skeltons/Chat";
+import { Chat } from "@/models/types";
 
 interface ChatDisplayProps {
   chatId: string | null;
 }
 
 const fetchChats = async (): Promise<Chat[]> => {
-  const response = await fetch("http://localhost:3000/chats", {
-    cache: "no-store", // Ensures fresh data fetch each time
-  });
-  if (!response.ok) {
+  try {
+    const response = await axios.get("/api/chats");
+    return response.data;
+  } catch (error) {
     throw new Error("Failed to fetch chats");
   }
-  return response.json();
 };
 
 const generateRandomId = () => Math.random().toString(36).substr(2, 9);
@@ -26,92 +26,74 @@ const sendMessage = async ({
   chatId: string;
   message: string;
 }): Promise<void> => {
-  // Fetch the current chat data before updating the message list
-  const chatResponse = await fetch(`http://localhost:3000/chats/${chatId}`);
-  if (!chatResponse.ok) {
-    throw new Error("Failed to fetch chat data");
-  }
+  try {
+    // Fetch the current chat data before updating the message list
+    const chatResponse = await axios.get(`/api/chats/${chatId}`);
 
-  const chatData = await chatResponse.json();
+    const chatData = chatResponse.data;
 
-  const updatedMessages = [
-    ...chatData.messages, // Existing messages
-    {
-      id: generateRandomId(),
-      sender: "me", // Hardcoded sender for now
-      text: message,
-    },
-  ];
+    const updatedMessages = [
+      ...chatData.messages, // Existing messages
+      {
+        id: generateRandomId(),
+        sender: "me", // Hardcoded sender for now
+        text: message,
+      },
+    ];
 
-  // Send the updated messages list back to the server
-  const response = await fetch(`http://localhost:3000/chats/${chatId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+    // Send the updated messages list back to the server
+    await axios.patch(`/api/chats/${chatId}`, {
       messages: updatedMessages,
-    }),
-  });
-
-  if (!response.ok) {
+    });
+  } catch (error) {
     throw new Error("Failed to send message");
   }
 };
 
 const ChatDisplay = ({ chatId }: ChatDisplayProps) => {
-  const queryClient = useQueryClient();
+  const [chats, setChats] = useState<Chat[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loadingMessages, setLoadingMessages] = useState(true);
 
-  const { data: chats, isLoading, isError } = useQuery("chats", fetchChats);
-  const mutation = useMutation(sendMessage, {
-    // Optimistically update the chat messages
-    onMutate: async ({ chatId, message }) => {
-      await queryClient.cancelQueries("chats"); // Cancel any ongoing queries for chats
+  useEffect(() => {
+    // Fetch chats on component mount
+    const getChats = async () => {
+      try {
+        setLoadingMessages(true);
+        const chatData = await fetchChats();
+        setChats(chatData);
+        setLoadingMessages(false);
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    };
 
-      // Snapshot the previous data
-      const previousChats = queryClient.getQueryData<Chat[]>("chats");
+    getChats();
+  }, []);
 
-      // Optimistically update the chat with the new message
-      queryClient.setQueryData<Chat[]>("chats", (oldChats) =>
-        (oldChats ?? [])?.map((chat) =>
-          chat.id === chatId
-            ? {
-                ...chat,
-                messages: [
-                  ...chat.messages,
-                  {
-                    id: (chat.messages.length + 1).toString(), // Generate a unique ID
-                    sender: "me",
-                    text: message,
-                  },
-                ],
-              }
-            : chat
-        )
-      );
+  const filteredChat = chats?.find((chat) => chat._id === chatId);
 
-      return { previousChats }; // Return the snapshot for rollback if needed
-    },
-    onError: (_err, _variables, context) => {
-      // Rollback to the previous state
-      queryClient.setQueryData("chats", context?.previousChats);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries("chats"); // Ensure data is fresh after mutation
-    },
-  });
-
-  const filteredChat = chats?.find((chat) => chat.id === chatId);
-
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !chatId) return;
-    mutation.mutate({ chatId, message: newMessage });
-    setNewMessage(""); // Clear the input box after sending
+    try {
+      await sendMessage({ chatId, message: newMessage });
+      setNewMessage(""); // Clear the input box after sending
+      // Refetch the chats to get updated messages (or alternatively, you can update the chat state locally)
+      const updatedChats = await fetchChats();
+      setChats(updatedChats);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching chats</div>;
+  if (loadingMessages) return <SkeletonChatMessages />;
+
+  if (!chats || !chats?.length)
+    return (
+      <div className="bg-white flex items-center justify-center h-screen">
+        No Messages right now
+      </div>
+    );
 
   if (!filteredChat)
     return (

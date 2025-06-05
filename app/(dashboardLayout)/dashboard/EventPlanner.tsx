@@ -1,74 +1,80 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+"use client";
+
+import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import useFetchAllPosts from "@/hooks/useFetchAllPosts";
+import { PostProps } from "@/models/types";
 import {
   faStar,
-  faStarHalfAlt,
   faStar as faStarEmpty,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
+import { useState } from "react";
 
-const contacts = [
-  { name: "username", rating: 3.0 },
-  { name: "username", rating: 5.0 },
-  { name: "username", rating: 2.5 },
-];
+const RenderStars = () => {
+  const [lockedRating, setLockedRating] = useState<number | null>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
-const starStyle = { width: "12px", height: "12px" };
+  const handleMouseEnter = (index: number) => setHoverIndex(index);
+  const handleMouseLeave = () => setHoverIndex(null);
+  const handleClick = (index: number) => setLockedRating(index); // Lock the rating on click
+
+  return (
+    <div className="flex items-center">
+      {[...Array(5)].map((_, index) => (
+        <span
+          key={index}
+          className="self-center flex cursor-pointer"
+          onMouseEnter={() => handleMouseEnter(index)} // Update hover index
+          onMouseLeave={handleMouseLeave} // Clear hover state
+          onClick={() => handleClick(index)} // Lock the rating on click
+        >
+          <FontAwesomeIcon
+            icon={
+              index <= (hoverIndex ?? lockedRating ?? -1) ? faStar : faStarEmpty
+            } // Fill stars based on hover or locked rating
+            className={
+              index <= (hoverIndex ?? lockedRating ?? -1)
+                ? "text-yellow-500"
+                : "text-gray-300"
+            }
+            size="lg"
+            style={{ width: "12px", height: "12px" }}
+          />
+        </span>
+      ))}
+    </div>
+  );
+};
 
 const EventPlanner = () => {
-  const renderStars = (rating: number) => {
-    const fullStars = Math.floor(rating);
-    const halfStar = rating % 1 !== 0;
-    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+  const { posts, isLoading, error } = useFetchAllPosts();
 
-    return (
-      <div className="flex items-center">
-        <span className="ml-2 text-sm">{rating} &nbsp;</span>
+  const eventPosts = posts
+    ?.filter((post) => post?.postType === "event")
+    ?.reduce((acc: PostProps[], current) => {
+      // Check if the userName already exists in the accumulator
+      if (!acc.find((event) => event.userName === current.userName)) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
 
-        {[...Array(fullStars)].map((_, index) => (
-          <span key={`full-${index}`} className="self-center flex">
-            <FontAwesomeIcon
-              icon={faStar}
-              className="text-yellow-500"
-              size="lg"
-              style={starStyle}
-            />
-          </span>
-        ))}
-
-        {halfStar && (
-          <span className="self-center flex">
-            <FontAwesomeIcon
-              icon={faStarHalfAlt}
-              className="text-yellow-500"
-              size="lg"
-              style={starStyle}
-            />
-          </span>
-        )}
-
-        {[...Array(emptyStars)].map((_, index) => (
-          <span key={`empty-${index}`} className="self-center flex">
-            <FontAwesomeIcon
-              icon={faStarEmpty}
-              className="text-gray-300"
-              size="lg"
-              style={starStyle}
-            />
-          </span>
-        ))}
-      </div>
-    );
-  };
+  if (isLoading) {
+    return <UpcomingEventsSkelton />;
+  }
+  if (error || !posts) {
+    return <p>Failed to load event User. Please try again later.</p>;
+  }
 
   return (
     <div className="w-full">
       <p className="font-bold text-lg">Event Planner</p>
       <div className="flex flex-col">
-        {contacts.map((contact, index) => (
+        {eventPosts?.map((event, index) => (
           <div
             className="flex py-4 justify-between items-center flex-wrap"
-            key={`${contact.name}-${index}`}
+            key={`${event.userName}-${index}`}
           >
             <div className="flex items-center">
               <Image
@@ -79,8 +85,10 @@ const EventPlanner = () => {
                 className="rounded-full"
               />
               <div className="flex flex-col px-2">
-                <p className="text-sm font-bold">{contact.name}</p>
-                <div>{renderStars(contact.rating)}</div>
+                <p className="text-sm font-bold">{event.userName}</p>
+                <div>
+                  <RenderStars />
+                </div>
               </div>
             </div>
             <div>

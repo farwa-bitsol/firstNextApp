@@ -20,7 +20,7 @@ const AddFriends = () => {
           See All
         </button>
       </div>
-      <div className="flex gap-1 overflow-x-auto overflow-y-hidden pb-1">
+      <div className="flex gap-1 overflow-x-auto overflow-y-hidden pb-1 horizontal-scroll-container ">
         {friends.map((friend, index) => (
           <div
             className="border flex flex-col relative justify-center my-2 w-fit p-4 rounded-md"

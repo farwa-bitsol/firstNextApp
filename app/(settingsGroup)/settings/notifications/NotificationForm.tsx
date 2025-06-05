@@ -2,18 +2,20 @@
 
 import CustomMultiCheckbox from "@/components/CustomCheckbox";
 import CustomSwitch from "@/components/CustomSwitch";
-import { InitialNotificationFormValues } from "@/models/constants";
+import { notificationFormSchema } from "@/components/schemas/NotificationForm";
+import { NotificationFormSkeleton } from "@/components/skeltons/NotificationForm";
+import { useUser } from "@/Context/UserContextProvider";
+import {
+  InitialNotificationFormValues,
+  websiteNotificationOptions,
+} from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 
-const FormDataSchema = yup.object({
-  weeklyNewsletter: yup.boolean(),
-  accountSummary: yup.boolean(),
-  websiteNotifications: yup.array(),
-});
-
-type Inputs = yup.InferType<typeof FormDataSchema>;
+type Inputs = yup.InferType<typeof notificationFormSchema>;
 
 const SwitchWithLabel = ({
   fieldName,
@@ -37,22 +39,67 @@ const SwitchWithLabel = ({
   );
 };
 
-const websiteNotificationOptions = [
-  { label: "New follower", value: "newfollower" },
-  { label: "Post like", value: "postLike" },
-  { label: "Someone you followed posted", value: "followedPosted" },
-  { label: "Post added to collection", value: "postAddedToCollection" },
-  { label: "Post downloaded", value: "postDownloaded" },
-];
+const fetchNotificationSettings = async (userId: string): Promise<Inputs> => {
+  try {
+    const response = await axios.get(`/api/settings/notifications/${userId}`);
+    return response?.data?.data;
+  } catch (error) {
+    console.error("Failed to fetch notification settings:", error);
+    return InitialNotificationFormValues;
+  }
+};
+
+type InputsWithUserId = Inputs & {
+  userId: string;
+};
+
+const saveNotificationSettings = async (data: InputsWithUserId) => {
+  try {
+    await axios.post("/api/settings/notifications", data);
+    console.log("Notification settings saved successfully!");
+  } catch (error) {
+    console.error("Failed to save notification settings:", error);
+  }
+};
 
 const NotificationForm = () => {
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
   const formInstance = useForm<Inputs>({
-    resolver: yupResolver(FormDataSchema),
+    resolver: yupResolver(notificationFormSchema),
     defaultValues: InitialNotificationFormValues,
   });
-  const { handleSubmit, register, control } = formInstance;
+  const { handleSubmit, setValue } = formInstance;
+  const { user, isLoading } = useUser();
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {};
+  const loadNotificationSettings = useCallback(
+    async (userId: string) => {
+      setIsUpdating(true);
+      const notifications = await fetchNotificationSettings(userId);
+      setValue("weeklyNewsletter", notifications?.weeklyNewsletter);
+      setValue("accountSummary", notifications?.accountSummary);
+      setValue("websiteNotifications", notifications?.websiteNotifications);
+      setIsUpdating(false);
+    },
+    [setValue]
+  );
+
+  useEffect(() => {
+    if (user?._id) {
+      loadNotificationSettings(user?._id);
+    }
+  }, [loadNotificationSettings, user?._id]);
+
+  const processForm: SubmitHandler<Inputs> = async (data) => {
+    setIsSaving(true);
+    await saveNotificationSettings({ ...data, userId: user?._id ?? "" });
+    setIsSaving(false);
+  };
+
+  if (isLoading || isUpdating) {
+    <NotificationFormSkeleton />;
+  }
 
   return (
     <FormProvider {...formInstance}>
@@ -77,12 +124,17 @@ const NotificationForm = () => {
 
         <div className="flex gap-4 flex-wrap">
           <button
-            type="button"
+            disabled={isSaving}
+            type="submit"
             className="bg-[#1565D8] text-white px-6 py-3 rounded-xl"
           >
-            Save changes
+            {isSaving ? " Saving..." : "Save changes"}
           </button>
-          <button type="button" className=" border px-12 py-3 rounded-xl">
+          <button
+            type="button"
+            className="border px-12 py-3 rounded-xl"
+            disabled={isSaving}
+          >
             Cancel
           </button>
         </div>

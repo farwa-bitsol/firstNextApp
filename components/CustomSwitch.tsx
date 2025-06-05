@@ -32,6 +32,8 @@ const CustomSwitch = ({
               <input
                 type="checkbox"
                 className="absolute left-1/2 -translate-x-1/2 w-full h-full peer appearance-none rounded-md"
+                checked={field.value || false} // Bind to the field value
+                onChange={(e) => field.onChange(e.target.checked)} // Update form state
               />
               <span className="w-16 h-9 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-300 rounded-full duration-300 ease-in-out peer-checked:bg-[#1565D8] peer-checked:ring-4 peer-checked:ring-[#1565D81A] after:w-7 after:h-7 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-6 group-hover:after:translate-x-1"></span>
             </label>

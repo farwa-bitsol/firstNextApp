@@ -1,8 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import Logout from "@/components/Logout";
-import { getServerSession } from "next-auth";
+import UserPageInfo from "@/components/UserPageInfo";
 
 const AccountOption = ({
   heading,
@@ -38,45 +37,12 @@ const AccountOption = ({
   );
 };
 
-const Page = async () => {
-  const session = await getServerSession();
+const Page = () => {
   return (
     <div className="px-8 pt-16">
-      <div className="flex justify-between  space-x-2">
-        <Link href="/user/signin" className="text-blue-500 font-bold">
-          User Dashboard
-        </Link>
-
-        <div className="text-gray-700  space-x-2 border-b-2 border-transparent hover:border-blue-500">
-          {session ? (
-            <Logout />
-          ) : (
-            <>
-              <p className="inline-block">Already have an account?</p>
-              <Link href="/user/signin" className="text-blue-500 font-bold">
-                Sign in
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* main content */}
-
-      <div className="flex flex-col gap-2 items-center justify-center h-[80vh] mx-auto max-w-md px-2">
-        {session ? (
-          <h1 className="text-2xl font-bold text-gray-800">
-            {`Welcome to Dashboard ${
-              session.user?.name ?? session.user?.email
-            }!`}
-          </h1>
-        ) : (
+      <UserPageInfo
+        Children={
           <>
-            <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
-            <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
-              To begin this journey, tell us what type of account you’d be
-              opening.
-            </p>
             <AccountOption
               heading="Individual"
               description="Personal account to manage all you activities."
@@ -88,8 +54,8 @@ const Page = async () => {
               navigateTo="/user/form/1" // this is dynamic route, will not retain the form state, just for practice
             />
           </>
-        )}
-      </div>
+        }
+      />
     </div>
   );
 };

@@ -1,10 +1,6 @@
 "use client";
+import { ISubItem } from "@/models/types";
 import { usePathname, useRouter } from "next/navigation";
-
-interface ISubItem {
-  name: string;
-  path: string;
-}
 
 const SubMenuItem = ({ item }: { item: ISubItem }) => {
   const { name, path } = item;
