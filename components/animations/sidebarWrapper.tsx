@@ -89,7 +89,7 @@ export const WavyBackground = ({
     }
   };
 
-  let animationId: number;
+  let animationId: number | undefined;
   const render = () => {
     ctx.fillStyle = backgroundFill || "black";
     ctx.globalAlpha = waveOpacity || 0.5;
@@ -101,7 +101,9 @@ export const WavyBackground = ({
   useEffect(() => {
     init();
     return () => {
-      cancelAnimationFrame(animationId);
+      if (typeof animationId === 'number') {
+        cancelAnimationFrame(animationId);
+      }
     };
   }, []);
 

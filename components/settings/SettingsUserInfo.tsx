@@ -26,7 +26,7 @@ const SettingsUserInfo = () => {
         <Image
           width={55}
           height={55}
-          className="h-55 w-55 rounded-lg object-cover"
+          className="h-[55px] w-[55px] rounded-lg object-cover"
           src={userImageUrl || '/default-avatar.png'}
           alt="User profile"
         />

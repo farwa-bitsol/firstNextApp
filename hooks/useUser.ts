@@ -9,7 +9,7 @@ interface User {
 }
 
 export const useUser = () => {
-  const { data: session, status } = useSession();
+  const session = useSession();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userImageUrl, setUserImageUrl] = useState<string>('/default-avatar.png');
@@ -17,8 +17,8 @@ export const useUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        if (session?.user?.email) {
-          const response = await fetch(`/api/users?email=${session.user.email}`);
+        if (session?.data?.user?.email) {
+          const response = await fetch(`/api/users?email=${session.data.user.email}`);
           if (response.ok) {
             const userData = await response.json();
             setUser(userData);
@@ -34,12 +34,12 @@ export const useUser = () => {
       }
     };
 
-    if (status === 'authenticated') {
+    if (session?.status === 'authenticated' && session?.data) {
       fetchUser();
-    } else if (status === 'unauthenticated') {
+    } else if (session?.status === 'unauthenticated' || !session?.data) {
       setIsLoading(false);
     }
-  }, [session, status]);
+  }, [session]);
 
   return {
     user,
