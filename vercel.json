@@ -6,12 +6,12 @@
   "regions": ["iad1"],
   "env": {
     "POSTGRES_URL": "postgres://neondb_owner:npg_RY4XEKOxFIc9@ep-lingering-credit-a4hrd79c-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require",
-    "POSTGRES_PRISMA_URL": "@postgres-prisma-url",
-    "POSTGRES_URL_NON_POOLING": "@postgres-url-non-pooling",
-    "POSTGRES_USER": "@postgres-user",
-    "POSTGRES_HOST": "@postgres-host",
-    "POSTGRES_PASSWORD": "@postgres-password",
-    "POSTGRES_DATABASE": "@postgres-database"  
+    "POSTGRES_PRISMA_URL": "postgres://neondb_owner:npg_RY4XEKOxFIc9@ep-lingering-credit-a4hrd79c-pooler.us-east-1.aws.neon.tech/neondb?connect_timeout=15&sslmode=require",
+    "POSTGRES_URL_NON_POOLING": "postgres://neondb_owner:npg_RY4XEKOxFIc9@ep-lingering-credit-a4hrd79c.us-east-1.aws.neon.tech/neondb?sslmode=require",
+    "POSTGRES_USER": "neondb_owner",
+    "POSTGRES_HOST": "ep-lingering-credit-a4hrd79c-pooler.us-east-1.aws.neon.tech",
+    "POSTGRES_PASSWORD": "npg_RY4XEKOxFIc9",
+    "POSTGRES_DATABASE": "neondb"  
     
   }
 } 
