@@ -184,10 +184,15 @@ export default function Form({
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       setIsLoading(true);
+      
+      // Encrypt password before sending to API
+      const salt = await bcrypt.genSalt(10);
+      const encryptedPassword = await bcrypt.hash(data.password, salt);
+      
       const newUser = {
         fullName: data.fullName,
         email: data.email,
-        password: data.password,
+        password: encryptedPassword, // Send encrypted password
       };
 
       const response = await axios.post("/api/users/signup", newUser);

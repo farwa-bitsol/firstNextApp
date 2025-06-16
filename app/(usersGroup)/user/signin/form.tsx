@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
+import bcrypt from "bcryptjs";
 
 export default function Form() {
   const router = useRouter();
@@ -16,9 +17,15 @@ export default function Form() {
 
     try {
       const formData = new FormData(e.currentTarget);
+      const password = formData.get("password") as string;
+      
+      // Encrypt password before sending to API
+      const salt = await bcrypt.genSalt(10);
+      const encryptedPassword = await bcrypt.hash(password, salt);
+      
       const user = {
         email: formData.get("email"),
-        password: formData.get("password"),
+        password: encryptedPassword,
       };
       setLoading(true);
 
