@@ -9,11 +9,11 @@ export async function POST(request: NextRequest) {
         const { email, password, fullName } = reqBody;
 
         // Check if user already exists
-        const user = await prisma.user.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { email }
         });
 
-        if (user) {
+        if (existingUser) {
             return NextResponse.json({ error: "User already exists" }, { status: 400 });
         }
 
@@ -26,6 +26,13 @@ export async function POST(request: NextRequest) {
                 email,
                 password: hashedPassword,
                 fullName
+            },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                isVerified: true,
+                createdAt: true
             }
         });
 
@@ -35,8 +42,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             message: "User created successfully. Please verify your email.",
             success: true,
+            user: newUser // Only sending non-sensitive data
         });
     } catch (error: any) {
+        console.error("Signup error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

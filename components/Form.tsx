@@ -184,12 +184,10 @@ export default function Form({
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
       setIsLoading(true);
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(data.password, salt);
       const newUser = {
         fullName: data.fullName,
         email: data.email,
-        password: hashedPassword,
+        password: data.password,
       };
 
       const response = await axios.post("/api/users/signup", newUser);

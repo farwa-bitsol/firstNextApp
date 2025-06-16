@@ -11,8 +11,17 @@ export async function POST(request: NextRequest) {
 
         // Check if user exists
         const user = await prisma.user.findUnique({
-            where: { email }
+            where: { email },
+            select: {
+                id: true,
+                email: true,
+                password: true,
+                fullName: true,
+                isVerified: true,
+                isAdmin: true
+            }
         });
+
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
@@ -42,16 +51,13 @@ export async function POST(request: NextRequest) {
         // Create token
         const token = jwt.sign(tokenData, process.env.JWT_SECRET!, { expiresIn: "1d" });
 
+        // Remove sensitive data before sending response
+        const { password: _, ...userWithoutPassword } = user;
+
         const response = NextResponse.json({
             message: "Login successful",
             success: true,
-            user: {
-                id: user.id,
-                fullName: user.fullName,
-                email: user.email,
-                isAdmin: user.isAdmin,
-                isVerified: user.isVerified
-            }
+            user: userWithoutPassword
         });
 
         // Set token in cookies
@@ -64,6 +70,7 @@ export async function POST(request: NextRequest) {
 
         return response;
     } catch (error: any) {
+        console.error("Login error:", error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
