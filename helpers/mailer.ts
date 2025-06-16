@@ -25,17 +25,26 @@ export const sendEmail = async ({ email, emailType, userId }: { email: string; e
             });
         }
 
+        // Ensure environment variables are available
+        if (!process.env.MAILTRAP_USER || !process.env.MAILTRAP_PASS) {
+            throw new Error("Mailtrap credentials are not configured");
+        }
+
         const transport = nodemailer.createTransport({
             host: "sandbox.smtp.mailtrap.io",
             port: 2525,
             auth: {
                 user: process.env.MAILTRAP_USER,
                 pass: process.env.MAILTRAP_PASS
+            },
+            secure: false,
+            tls: {
+                rejectUnauthorized: false
             }
         });
 
         const mailOptions = {
-            from: "your-email@example.com",
+            from: '"Your App" <noreply@yourapp.com>',
             to: email,
             subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password",
             html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${hashedToken}">here</a> to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}
@@ -47,6 +56,7 @@ export const sendEmail = async ({ email, emailType, userId }: { email: string; e
         return mailresponse;
 
     } catch (error: any) {
+        console.error("Email sending error:", error);
         throw new Error(error.message);
     }
 };

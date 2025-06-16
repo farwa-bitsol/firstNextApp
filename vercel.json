@@ -11,7 +11,10 @@
     "POSTGRES_USER": "neondb_owner",
     "POSTGRES_HOST": "ep-lingering-credit-a4hrd79c-pooler.us-east-1.aws.neon.tech",
     "POSTGRES_PASSWORD": "npg_RY4XEKOxFIc9",
-    "POSTGRES_DATABASE": "neondb"  
-    
+    "POSTGRES_DATABASE": "neondb",
+    "MAILTRAP_USER": "8b26999420d473",
+    "MAILTRAP_PASS": "9f9ea0d4f5846b",
+    "JWT_SECRET": "a6587651dc566d103d231b323221e5b5827f2a73a14f66458ce2594cbad7c311",
+    "DOMAIN": "https://first-next-app-inky-eight.vercel.app/"
   }
 } 
