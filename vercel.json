@@ -5,7 +5,7 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
-    "POSTGRES_URL": "@postgres-url",
+    "POSTGRES_URL": "postgres://neondb_owner:npg_RY4XEKOxFIc9@ep-lingering-credit-a4hrd79c-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require",
     "POSTGRES_PRISMA_URL": "@postgres-prisma-url",
     "POSTGRES_URL_NON_POOLING": "@postgres-url-non-pooling",
     "POSTGRES_USER": "@postgres-user",
