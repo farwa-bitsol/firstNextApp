@@ -1,27 +1,27 @@
-import { connect } from "@/dbConfig/config";
-import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
-
-connect();
+import { prisma } from "@/dbConfig/config";
 
 export async function GET(request: NextRequest) {
     try {
-        console.log("Fetching all users...");
-
         // Fetch all users, excluding the password field
-        const users = await User.find({}).select("-password");
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                fullName: true,
+                email: true,
+                userImage: true,
+                isVerified: true,
+                isAdmin: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
 
         return NextResponse.json({
             success: true,
-            message: "Users fetched successfully",
-            users,
+            users
         });
     } catch (error: any) {
-        console.error("Error fetching users:", error.message);
-
-        return NextResponse.json({
-            success: false,
-            error: error.message || "An error occurred while fetching users",
-        }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

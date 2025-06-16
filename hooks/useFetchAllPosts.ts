@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { PostProps } from "@/models/types";
 
@@ -13,7 +13,10 @@ const fetchPosts = async (): Promise<PostProps[]> => {
 
 // Custom hook
 const useFetchAllPosts = () => {
-    const { data, isLoading, error } = useQuery("allPostData", fetchPosts);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["allPostData"],
+        queryFn: fetchPosts,
+    });
 
     return {
         posts: data,

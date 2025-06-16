@@ -1,38 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import User from "@/models/userModel";
-import { getDataFromToken } from "@/helpers/getDataFromToken";
+import { prisma } from "@/dbConfig/config";
 import bcrypt from "bcryptjs";
+import { getDataFromToken } from "@/helpers/getDataFromToken";
 
 export async function PATCH(request: NextRequest) {
     try {
+        const userId = await getDataFromToken(request);
         const reqBody = await request.json();
-        const userId = await getDataFromToken(request); // Get userId from token
-        const { newPassword, currentPassword } = reqBody;
+        const { newPassword } = reqBody;
 
-
-        const user = await User.findById(userId);
+        // Find the user by ID
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
 
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
-        // Verify current password
-        const isPasswordMatch = await bcrypt.compare(currentPassword, user.password);
-        if (!isPasswordMatch) {
-            return NextResponse.json(
-                { error: "Current password is incorrect" },
-                { status: 400 }
-            );
-        }
-
         // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update user's password
-        user.password = hashedPassword;
-
-        // Save the updated user
-        await user.save();
+        // Update the user's password
+        await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword }
+        });
 
         return NextResponse.json({
             message: "Password updated successfully",

@@ -2,7 +2,7 @@
 
 import { useUser } from "@/Context/UserContextProvider";
 import React from "react";
-import UserPageInfoSkelton from "./skeltons/UserPageInfo";
+import UserPageInfoSkelton from "./skeletons/UserPageInfo";
 
 const UserPageInfo = ({ Children }: { Children: React.ReactNode }) => {
   const { user, isLoading } = useUser();
@@ -19,9 +19,10 @@ const UserPageInfo = ({ Children }: { Children: React.ReactNode }) => {
           <>
             <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
             <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
-              To begin this journey, tell us what type of account you’d be
+              To begin this journey, tell us what type of account you&apos;d be
               opening.
             </p>
+            <p>Let&apos;s get started</p>
             {Children}
           </>
         )}

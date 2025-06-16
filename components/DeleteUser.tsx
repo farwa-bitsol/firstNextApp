@@ -1,17 +1,22 @@
 "use client";
 
 import { useUser } from "@/Context/UserContextProvider";
-import { IUser } from "@/models/types";
+import { IUser, ApiError } from "@/models/types";
 import axios from "axios";
-import { useMutation, useQueryClient } from "react-query";
-import { SkeletonDeleteUser } from "./skeltons/User";
+import { useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
+import { SkeletonDeleteUser } from "./skeletons/User";
 
 const deleteUser = async (userId: string): Promise<{ message: string }> => {
   try {
     const response = await axios.delete(`/api/users/${userId}`);
     return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Failed to delete user");
+  } catch (error) {
+    const apiError = error as ApiError;
+    const errorMessage =
+      apiError?.response?.data?.error ||
+      apiError?.message ||
+      "Failed to delete user";
+    throw new Error(errorMessage);
   }
 };
 
@@ -27,17 +32,18 @@ const DeleteUser = ({
 
   const {
     mutate: handleDelete,
-    isLoading,
+    isPending,
     isError,
     error,
-  } = useMutation(deleteUser, {
+  }: UseMutationResult<{ message: string }, Error, string> = useMutation({
+    mutationFn: deleteUser,
     onSuccess: () => {
       // Invalidate the users query to refetch the updated list
       queryClient.invalidateQueries(invalidateQueryKey);
     },
   });
 
-  if (isUserLoading || isLoading) {
+  if (isUserLoading || isPending) {
     return <SkeletonDeleteUser />;
   }
 
@@ -52,9 +58,9 @@ const DeleteUser = ({
           type="button"
           className="text-blue-500 font-bold"
           onClick={() => handleDelete(user?._id ?? "")}
-          disabled={isLoading}
+          disabled={isPending}
         >
-          {isLoading ? "Deleting..." : "Delete"}
+          {isPending ? "Deleting..." : "Delete"}
         </button>
       )}
       {isError && <p className="text-red-500">{(error as Error).message}</p>}

@@ -1,15 +1,23 @@
 import { LucideIcon } from "lucide-react";
 import { UseFormRegister } from "react-hook-form";
 
-export interface ICustomField {
-  register?: UseFormRegister<any>;
-  fieldName: string;
+export interface ApiError extends Error {
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
+
+export interface ICustomField<T extends Record<string, any>> {
+  register?: UseFormRegister<T>;
+  fieldName: keyof T;
   type?: string;
   label: string;
   required?: boolean;
   placeholder?: string;
-  rows?: number
-  noMargin?: boolean
+  rows?: number;
+  noMargin?: boolean;
 }
 
 export interface ICurrentForm {
@@ -24,37 +32,50 @@ export interface PostMediaProps {
   data: string;
   name: string;
 }
+
 export interface PostProps {
-  profilePhoto: string;
+  _id: string;
+  id: string;
+  userId: string;
+  profilePhoto: string | null;
   postMedia: PostMediaProps | null;
   userName: string;
-  postTime: string;
-  title: string;
-  description: string;
-  postPhoto?: string;
-  postType?: "event" | "article" | "normal"
+  title: string | null;
+  description: string | null;
+  postType: "event" | "article" | "normal";
   likes: number;
   comments: number;
   shares: number;
-  _id: string;
+  postTime: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUser {
+  _id: string;
+  id: string;
   fullName: string;
-  _id?: string;
   email: string;
-  password: string
-  userImage: PostMediaProps | null
+  password: string;
+  userImage: PostMediaProps | null;
+  isVerified: boolean;
+  isAdmin: boolean;
+  forgotPasswordToken: string | null;
+  forgotPasswordTokenExpiry: Date | null;
+  verifyToken: string | null;
+  verifyTokenExpiry: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Chat {
-  _id?: string;
+  _id: string;
+  id: string;
   name: string;
   lastMessage: string;
   messages: { id: string; sender: string; text: string }[];
 }
 
-// Define the type for the props
 export interface SidebarProps {
   onSelectChat: (id: string) => void;
 }
@@ -66,7 +87,6 @@ export interface Article {
   time: string;
   image: string;
 }
-
 
 export interface ISidebarItem {
   name: string;
@@ -80,7 +100,6 @@ export interface ISubItem {
   path: string;
 }
 
-
 export interface ICustomMultiCheckbox {
   fieldName: string;
   label?: string;
@@ -88,4 +107,14 @@ export interface ICustomMultiCheckbox {
   required?: boolean;
   layout?: "row" | "col";
   noMargin?: boolean;
+}
+
+export interface CardDetails {
+  id: string;
+  cardNumber: string;
+  cardHolderName: string;
+  expiryDate: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

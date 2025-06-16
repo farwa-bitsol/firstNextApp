@@ -2,7 +2,7 @@
 import SessionWrapper from "@/components/SessionWrapper";
 import SettingsSidebar from "@/components/settings/SettingsSidebar";
 import React, { Suspense } from "react";
-import { GeneralFormSkeleton } from "@/components/skeltons/GeneralForm";
+import { GeneralFormSkeleton } from "@/components/skeletons/GeneralForm";
 
 const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
   return (

@@ -2,15 +2,16 @@
 
 import DeleteUser from "@/components/DeleteUser";
 import Pagination from "@/components/Pagination";
-import LogoutSkeletonLoader from "@/components/skeltons/Logout";
+import LogoutSkeletonLoader from "@/components/skeletons/Logout";
 import { Routes } from "@/models/constants";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { useFetchUsers } from "@/hooks/useFetchUsers";
+import useFetchUsers from "@/hooks/useFetchUsers";
 import axios from "axios";
+import { IUser } from "@/models/types";
 
 const Users = () => {
-  const { data, isLoading, currentPage, setCurrentPage } = useFetchUsers();
+  const { users, isLoading } = useFetchUsers();
 
   const logout = async () => {
     try {
@@ -35,14 +36,13 @@ const Users = () => {
         <button onClick={logout}>Logout</button>
       </div>
       <div className="py-32 px-12">
-        {data?.users?.map((user) => (
+        {users?.map((user: IUser) => (
           <DeleteUser
             key={user?._id}
             user={user}
-            invalidateQueryKey={["fetchUsers", currentPage]}
+            invalidateQueryKey={["users"]}
           />
         ))}
-        <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} />
       </div>
     </>
   );

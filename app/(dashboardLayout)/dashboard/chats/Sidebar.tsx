@@ -1,6 +1,6 @@
 "use client";
 
-import { SkeletonChatList, SkeletonSearch } from "@/components/skeltons/Chat";
+import { SkeletonChatList, SkeletonSearch } from "@/components/skeletons/Chat";
 import { Chat, SidebarProps } from "@/models/types";
 import axios from "axios";
 import React, { useEffect, useState } from "react";

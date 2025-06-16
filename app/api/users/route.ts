@@ -2,6 +2,7 @@ import { connect } from "@/dbConfig/config";
 import { userOperations } from "@/dbConfig/db";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
+import { ApiError } from "@/models/types";
 
 connect();
 
@@ -64,10 +65,16 @@ export async function PATCH(request: NextRequest) {
             message: "User image added or updated successfully",
             user,
         });
-    } catch (error: any) {
+    } catch (error) {
+        const apiError = error as ApiError;
+        const errorMessage =
+            apiError?.response?.data?.error ||
+            apiError?.message ||
+            "An error occurred";
+            
         console.error("Error in PATCH request:", error);
         return NextResponse.json(
-            { error: error.message || "Failed to update user image" },
+            { error: errorMessage },
             { status: 500 }
         );
     }

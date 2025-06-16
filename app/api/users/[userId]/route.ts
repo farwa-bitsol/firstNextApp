@@ -1,5 +1,4 @@
-import { connect } from "@/dbConfig/config";
-import User from "@/models/userModel";
+import { connect, prisma } from "@/dbConfig/config";
 import { NextRequest, NextResponse } from "next/server";
 
 connect();
@@ -19,7 +18,10 @@ export async function DELETE(
         }
 
         // Find and verify the user performing the action
-        const requestingUser = await User.findById(userId);
+        const requestingUser = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+        
         if (!requestingUser) {
             return NextResponse.json(
                 { message: "Requesting user not found" },
@@ -28,7 +30,9 @@ export async function DELETE(
         }
 
         // Find and delete the target user
-        const targetUser = await User.findByIdAndDelete(userId);
+        const targetUser = await prisma.user.delete({
+            where: { id: userId }
+        });
 
         if (!targetUser) {
             return NextResponse.json(

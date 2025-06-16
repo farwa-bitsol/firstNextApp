@@ -1,10 +1,8 @@
-
 import { connect } from "@/dbConfig/config";
 import { NextRequest, NextResponse } from "next/server";
-import Notification from "@/models/Notification";
+import { NotificationModel } from '@/models/Notification';
 
 connect();
-
 
 export async function GET(request: NextRequest, { params }: { params: { userId: string } }) {
     try {
@@ -16,7 +14,9 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
             );
         }
 
-        const notifications = await Notification.findOne({ userId });
+        const notifications = await NotificationModel.findFirst({
+            where: { userId }
+        });
 
         return NextResponse.json({
             message: "Notification preferences retrieved successfully.",

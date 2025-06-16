@@ -1,11 +1,12 @@
 "use client";
-import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import UpcomingEventsSkelton from "@/components/skeletons/UpcomingEvents";
 import { useUser } from "@/Context/UserContextProvider";
 import useFetchPosts from "@/hooks/useFetchPosts";
 import Image from "next/image";
+import { PostProps } from "@/models/types";
 
 const UpComingEvents = () => {
-  const { posts, isLoading, error } = useFetchPosts();
+  const { data: posts = [], isLoading, error } = useFetchPosts("");
   const { userImageUrl, isLoading: isUserLoading } = useUser();
 
   const extractDateFromDescription = (description: string): Date | null => {
@@ -17,13 +18,13 @@ const UpComingEvents = () => {
   };
 
   const eventPosts = posts
-    ?.filter((post) => post?.postType === "event")
-    .map((event) => ({
+    ?.filter((post: PostProps) => post?.postType === "event")
+    .map((event: PostProps) => ({
       ...event,
-      eventDate: extractDateFromDescription(event.description),
+      eventDate: extractDateFromDescription(event.description || ""),
     }))
-    .filter((event) => event?.eventDate !== null)
-    .sort((a, b) => {
+    .filter((event: PostProps & { eventDate: Date | null }) => event?.eventDate !== null)
+    .sort((a: PostProps & { eventDate: Date | null }, b: PostProps & { eventDate: Date | null }) => {
       // Sort by date in ascending order
       return (a.eventDate as Date).getTime() - (b.eventDate as Date).getTime();
     });
@@ -40,9 +41,9 @@ const UpComingEvents = () => {
     <div className="w-full">
       <p className="font-bold text-lg ">Upcoming Events</p>
       <div className="flex flex-col">
-        {eventPosts?.map((contact, index) => {
-          const locationMatch = contact.description.match(/Location:\s*(.+)/i);
-          const location = locationMatch ? locationMatch?.[1].trim() : null;
+        {eventPosts?.map((contact: PostProps & { eventDate: Date | null }, index: number) => {
+          const locationMatch = contact.description?.match(/Location:\s*(.+)/i);
+          const location = locationMatch ? locationMatch[1].trim() : null;
           return (
             <div
               className="flex py-4 justify-between items-center flex-wrap"

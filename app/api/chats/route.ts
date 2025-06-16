@@ -1,10 +1,9 @@
 import { connect } from "@/dbConfig/config";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
-import Chat from "@/models/chatModel";
+import { ChatModel } from '@/models/chatModel';
 import { NextRequest, NextResponse } from "next/server";
 
 connect();
-
 
 const defaultMessage = {
     "id": "1",
@@ -16,8 +15,6 @@ const defaultMessage = {
             "sender": "Alice",
             "text": "Hey, are you free this weekend?"
         },
-
-
     ]
 }
 
@@ -27,7 +24,7 @@ export async function POST(request: NextRequest) {
         const { name, lastMessage, messages, userId } = reqBody;
 
         // Check if a chat already exists for the user
-        const existingChat = await Chat.findOne({ userId });
+        const existingChat = await ChatModel.findFirst({ where: { userId } });
         if (existingChat) {
             return NextResponse.json({
                 message: "Chat already exists.",
@@ -37,15 +34,16 @@ export async function POST(request: NextRequest) {
         }
 
         // Create a new chat if it doesn't exist
-        const newChat = new Chat({
-            name,
-            lastMessage,
-            messages,
-            userId,
+        const savedPost = await ChatModel.create({
+            data: {
+                name,
+                lastMessage,
+                messages,
+                userId,
+            }
         });
 
-        const savedPost = await newChat.save();
-        console.log("This is our newChat", newChat);
+        console.log("This is our newChat", savedPost);
 
         return NextResponse.json({
             message: "Chat created successfully.",
@@ -63,16 +61,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
     try {
-        const chats = await Chat.find();
+        const chats = await ChatModel.findMany();
 
-        // If no chats are found, create the default message
+        // If no chats are found, return an empty array (cannot create default chat without a valid userId)
         if (!chats || chats.length === 0) {
-            // Create a new chat with the defaultMessage object
-            const newChat = new Chat(defaultMessage);
-            await newChat.save();  // Save the new chat to MongoDB
-
-            console.log("Default chat created:", newChat);
-            return NextResponse.json([defaultMessage], { status: 200 }); // Return the default message as an array
+            console.warn("No chats found and cannot create default chat without a valid userId.");
+            return NextResponse.json([], { status: 200 });
         }
 
         return NextResponse.json(chats);

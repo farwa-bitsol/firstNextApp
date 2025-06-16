@@ -4,7 +4,7 @@ import { EventModal } from "@/components/dashboard/EventModal";
 import { Calendar, FileText } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUser } from "@/hooks/useUser";
 
 interface PostData {
@@ -175,8 +175,8 @@ const WhatsOnYourMind = () => {
   const { userImageUrl, isLoading: isUserLoading } = useUser();
   const queryClient = useQueryClient();
 
-  const { mutate, isLoading: isPosting } = useMutation<PostData, Error, PostData>(
-    async (newPost) => {
+  const { mutate, isPending: isPosting } = useMutation({
+    mutationFn: async (newPost: PostData) => {
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -189,22 +189,20 @@ const WhatsOnYourMind = () => {
       
       return await response.json();
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["postData"]);
-        setInput("");
-        setMedia(null);
-        setMediaPreview(null);
-        setEventModalOpen(false);
-        setModalOpen(false);
-      },
-      onError: (error) => {
-        console.log("Error posting:", error);
-        setEventModalOpen(false);
-        setModalOpen(false);
-      },
-    }
-  );
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["postData"] });
+      setInput("");
+      setMedia(null);
+      setMediaPreview(null);
+      setEventModalOpen(false);
+      setModalOpen(false);
+    },
+    onError: (error: Error) => {
+      console.log("Error posting:", error);
+      setEventModalOpen(false);
+      setModalOpen(false);
+    },
+  });
 
   const handleSend = () => {
     if (input.trim() !== "") {

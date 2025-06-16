@@ -1,30 +1,9 @@
-import mongoose from "mongoose";
-import "./userModel"; // register userdashboard schema
+import { PrismaClient, UserStory as PrismaUserStory, Story as PrismaStory } from '@prisma/client';
 
-const storySchema = new mongoose.Schema({
-  text: { type: String },
-  image: { type: String },
-});
+const prisma = new PrismaClient();
 
-const userStorySchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "userDashboard",
-    },
-    coverImage: {
-      type: String,
-    },
-    story: {
-      type: storySchema,
-    },
-  },
-  {
-    collection: "userStories",
-  }
-);
+export type UserStory = PrismaUserStory;
+export type Story = PrismaStory;
 
-const UserStory =
-  mongoose.models.userStories || mongoose.model("userStories", userStorySchema);
-
-export default UserStory;
+// Export the Prisma model
+export const UserStoryModel = prisma.userStory;

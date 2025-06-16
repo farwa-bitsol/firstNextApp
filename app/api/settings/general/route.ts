@@ -1,10 +1,8 @@
-import { connect } from "@/dbConfig/config";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
-import GeneralForm from "@/models/General";
+import { prisma } from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { Buffer } from "buffer";
-
-connect();
+import { Prisma } from '@prisma/client';
 
 export async function POST(request: NextRequest) {
     try {
@@ -36,32 +34,36 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if the user form already exists
-        let userForm = await GeneralForm.findOne({ userId });
+        let userForm = await (prisma as any).generalForm.findUnique({ where: { userId } });
 
         if (userForm) {
             // Update existing document
-            userForm.generalProfile = generalProfile;
-            userForm.firstName = firstName;
-            userForm.lastName = lastName;
-            userForm.location = location;
-            userForm.profession = profession;
-            userForm.bio = bio;
-            userForm.onlinePresence = onlinePresence;
-
-            await userForm.save();
+            userForm = await (prisma as any).generalForm.update({
+                where: { userId },
+                data: {
+                    generalProfile,
+                    firstName,
+                    lastName,
+                    location,
+                    profession,
+                    bio,
+                    onlinePresence,
+                },
+            });
         } else {
             // Create a new document
-            userForm = new GeneralForm({
-                userId,
-                generalProfile,
-                firstName,
-                lastName,
-                location,
-                profession,
-                bio,
-                onlinePresence,
+            userForm = await (prisma as any).generalForm.create({
+                data: {
+                    userId,
+                    generalProfile,
+                    firstName,
+                    lastName,
+                    location,
+                    profession,
+                    bio,
+                    onlinePresence,
+                },
             });
-            await userForm.save();
         }
 
         return NextResponse.json({
@@ -78,21 +80,19 @@ export async function POST(request: NextRequest) {
     }
 }
 
-
-
 export async function GET(request: NextRequest) {
     try {
         const userId = await getDataFromToken(request);
-        const userForm = await GeneralForm.findOne({ userId });
+        const userForm = await (prisma as any).generalForm.findUnique({ where: { userId } });
 
         return NextResponse.json({
             message: "Form data retrieved successfully.",
             success: true,
             data: userForm ? {
-                ...userForm.toObject(),
+                ...userForm,
                 generalProfile: userForm.generalProfile ? {
                     name: userForm.generalProfile.name,
-                    data: userForm.generalProfile.data, // Base64-encoded string
+                    data: userForm.generalProfile.data,
                     contentType: userForm.generalProfile.contentType,
                 } : null,
             } : null,

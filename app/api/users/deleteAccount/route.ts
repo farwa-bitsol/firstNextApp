@@ -7,15 +7,17 @@ connect();
 
 export async function DELETE(request: NextRequest) {
     try {
-
         const userId = await getDataFromToken(request);
 
         if (!userId) {
             return NextResponse.json({ message: 'Invalid user ID' }, { status: 400 });
         }
 
-
-        const deletedUser = await User.findByIdAndDelete(userId);
+        const deletedUser = await User.delete({
+            where: {
+                id: userId
+            }
+        });
 
         if (!deletedUser) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });

@@ -1,7 +1,7 @@
 "use client";
 
 import Logout from "@/components/Logout";
-import SignupSkelton from "@/components/skeltons/Signup";
+import SignupSkelton from "@/components/skeletons/Signup";
 import { useUser } from "@/Context/UserContextProvider";
 import { Routes } from "@/models/constants";
 import Image from "next/image";
@@ -77,7 +77,7 @@ const Page = () => {
           <>
             <h1 className="text-2xl font-bold text-gray-800">Join Us!</h1>
             <p className="mt-2 text-lg font-normal text-gray-500 lg:text-xl dark:text-gray-400">
-              To begin this journey, tell us what type of account you’d be
+              To begin this journey, tell us what type of account you&apos;d be
               opening.
             </p>
             <AccountOption

@@ -1,10 +1,7 @@
-import { connect } from "@/dbConfig/config";
 import { NextRequest, NextResponse } from "next/server";
-import User from "@/models/userModel";
+import { prisma } from "@/dbConfig/config";
 import { sendEmail } from "@/helpers/mailer";
 import bcrypt from "bcryptjs";
-
-connect();
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,13 +9,15 @@ export async function POST(request: NextRequest) {
         const { email } = reqBody;
 
         // Check if the user exists
-        const user = await User.findOne({ email });
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
         if (!user) {
             return NextResponse.json({ error: "User with this email does not exist" }, { status: 404 });
         }
 
         //send verification email
-        await sendEmail({ email, emailType: "RESET", userId: user._id })
+        await sendEmail({ email, emailType: "RESET", userId: user.id })
 
         return NextResponse.json({
             message: "Password reset email sent successfully",
@@ -29,17 +28,19 @@ export async function POST(request: NextRequest) {
     }
 }
 
-
-
 export async function PATCH(request: NextRequest) {
     try {
         const reqBody = await request.json();
         const { token, newPassword } = reqBody;
 
         // Find the user based on the provided token and ensure it's not expired
-        const user = await User.findOne({
-            forgotPasswordToken: token,
-            forgotPasswordTokenExpiry: { $gt: Date.now() }, // Token is not expired
+        const user = await prisma.user.findFirst({
+            where: {
+                forgotPasswordToken: token,
+                forgotPasswordTokenExpiry: {
+                    gt: new Date()
+                }
+            }
         });
 
         if (!user) {
@@ -52,14 +53,15 @@ export async function PATCH(request: NextRequest) {
         // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update the user's password
-        user.password = hashedPassword;
-
-        // Clear the reset token and expiry
-        user.forgotPasswordToken = undefined;
-        user.forgotPasswordTokenExpiry = undefined;
-
-        await user.save();
+        // Update the user's password and clear reset token
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                forgotPasswordToken: null,
+                forgotPasswordTokenExpiry: null
+            }
+        });
 
         return NextResponse.json({
             message: "Password has been successfully reset",

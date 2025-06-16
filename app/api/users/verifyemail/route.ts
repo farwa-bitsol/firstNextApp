@@ -1,34 +1,40 @@
-import { connect } from "@/dbConfig/config";
 import { NextRequest, NextResponse } from "next/server";
-import User from "@/models/userModel";
+import { prisma } from "@/dbConfig/config";
 
-connect()
 export async function POST(request: NextRequest) {
-
     try {
-        const reqBody = await request.json()
-        const { token } = reqBody
+        const reqBody = await request.json();
+        const { token } = reqBody;
 
-        const user = await User.findOne({ verifyToken: token, verifyTokenExpiry: { $gt: Date.now() } });
+        // Find the user based on the provided token and ensure it's not expired
+        const user = await prisma.user.findFirst({
+            where: {
+                verifyToken: token,
+                verifyTokenExpiry: {
+                    gt: new Date()
+                }
+            }
+        });
 
         if (!user) {
-            return NextResponse.json({ error: "Invalid token" }, { status: 400 })
+            return NextResponse.json({ error: "Invalid token" }, { status: 400 });
         }
 
-        user.isVerified = true;
-        user.verifyToken = undefined;
-        user.verifyTokenExpiry = undefined;
-        console.log('verification successfull', user);
-        await user.save();
+        // Update the user's verification status
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                isVerified: true,
+                verifyToken: null,
+                verifyTokenExpiry: null
+            }
+        });
 
         return NextResponse.json({
             message: "Email verified successfully",
-            success: true
-        })
-
-
+            success: true,
+        });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
-
 }

@@ -1,8 +1,8 @@
 "use client";
 import Overlay from "@/components/Overlay";
-import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import UpcomingEventsSkelton from "@/components/skeletons/UpcomingEvents";
 import { useUser } from "@/Context/UserContextProvider";
-import { useFetchUsers } from "@/hooks/useFetchUsers";
+import useFetchUsers from "@/hooks/useFetchUsers";
 import { Routes } from "@/models/constants";
 import { IUser } from "@/models/types";
 import axios from "axios";
@@ -13,10 +13,10 @@ import toast from "react-hot-toast";
 
 const Contacts = () => {
   const router = useRouter();
-  const { data, isLoading, isError } = useFetchUsers();
+  const { users, isLoading, error } = useFetchUsers();
   const [isChatLoading, setIsChatLoading] = useState(false);
   const { user, isLoading: isUserLoading } = useUser();
-  const contacts = data?.users?.reduce((acc: IUser[], current) => {
+  const contacts = users?.reduce((acc: IUser[], current: IUser) => {
     // Check if the current user is not the logged-in user and not already in the accumulator
     if (
       current._id !== user?._id &&
@@ -55,7 +55,7 @@ const Contacts = () => {
   if (isLoading || isUserLoading) {
     return <UpcomingEventsSkelton />;
   }
-  if (isError || !data?.users) {
+  if (error || !users) {
     return <p>Failed to load event User. Please try again later.</p>;
   }
   return (
@@ -63,7 +63,7 @@ const Contacts = () => {
       {isChatLoading && <Overlay title="Loading Chat..." />}
       <p className="font-bold text-lg ">Contacts</p>
       <div className="flex flex-col">
-        {contacts?.map((contact, index) => (
+        {contacts?.map((contact: IUser, index: number) => (
           <div
             className="flex py-4 justify-between items-center flex-wrap"
             key={`${contact.fullName}-${index}`}

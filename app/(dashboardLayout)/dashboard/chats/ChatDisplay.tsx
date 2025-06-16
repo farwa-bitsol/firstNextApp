@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { SkeletonChatMessages } from "@/components/skeltons/Chat";
+import { SkeletonChatMessages } from "@/components/skeletons/Chat";
 import { Chat } from "@/models/types";
 
 interface ChatDisplayProps {

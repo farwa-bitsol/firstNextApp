@@ -1,11 +1,6 @@
-
-import { connect } from "@/dbConfig/config";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
-import Post from "@/models/postModel";
-import { PostProps } from "@/models/types";
+import { prisma } from "../../../../prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-
-connect();
 
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
     try {
@@ -16,27 +11,27 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
             return NextResponse.json({ message: "User ID and Post ID are required" }, { status: 400 });
         }
 
-        // Find the user's document
-        const userPostDoc = await Post.findOne({ userId });
+        // Find the post using Prisma
+        const post = await prisma.post.findFirst({
+            where: {
+                id: id,
+                userId: userId
+            }
+        });
 
-        if (!userPostDoc) {
-            return NextResponse.json({ message: "User not found" }, { status: 404 });
-        }
-
-        // Find the post index
-        const postIndex = userPostDoc.posts.findIndex((post: PostProps) => post._id.toString() === id);
-
-        if (postIndex === -1) {
+        if (!post) {
             return NextResponse.json({ message: "Post not found" }, { status: 404 });
         }
 
-        // Remove the post from the array
-        userPostDoc.posts.splice(postIndex, 1);
-        await userPostDoc.save();
+        // Delete the post using Prisma
+        await prisma.post.delete({
+            where: {
+                id: id
+            }
+        });
 
         return NextResponse.json({
-            message: "Post deleted successfully",
-            posts: userPostDoc.posts,
+            message: "Post deleted successfully"
         });
     } catch (error: any) {
         console.error("Error in DELETE request:", error);

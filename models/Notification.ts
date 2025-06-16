@@ -1,30 +1,16 @@
-import mongoose from "mongoose";
+import { PrismaClient } from '@prisma/client';
 
-const notificationSchema = new mongoose.Schema(
-    {
-        userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "userDashboard", // Reference to the user collection
-            required: true,
-        },
-        weeklyNewsletter: {
-            type: Boolean,
-            default: false,
-        },
-        accountSummary: {
-            type: Boolean,
-            default: false,
-        },
-        websiteNotifications: [
-            {
-                type: String,
-            },
-        ],
-    },
-    { collection: "notifications", timestamps: true }
-);
+const prisma = new PrismaClient();
 
-const Notification =
-    mongoose.models.notifications || mongoose.model("notifications", notificationSchema);
+export interface Notification {
+  id: string;
+  userId: string;
+  weeklyNewsletter: boolean;
+  accountSummary: boolean;
+  websiteNotifications: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
-export default Notification;
+// Export the Prisma model
+export const NotificationModel = prisma.notification;

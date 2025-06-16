@@ -1,24 +1,9 @@
-import mongoose from "mongoose";
+import { PrismaClient, Chat as PrismaChat, Message as PrismaMessage } from '@prisma/client';
 
+const prisma = new PrismaClient();
 
-const messageSchema = new mongoose.Schema(
-    {
-        sender: { type: String },
-        text: { type: String },
-    },
-);
+export type Chat = PrismaChat;
+export type Message = PrismaMessage;
 
-
-const chatSchema = new mongoose.Schema(
-    {
-        userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-        name: { type: String },
-        lastMessage: { type: String },
-        messages: [messageSchema],
-    },
-    { collection: "chats" }
-);
-
-const Chat = mongoose.models.Chat || mongoose.model("Chat", chatSchema);
-
-export default Chat;
+// Export the Prisma model
+export const ChatModel = prisma.chat;

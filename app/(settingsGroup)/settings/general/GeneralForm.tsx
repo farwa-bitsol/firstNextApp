@@ -2,7 +2,7 @@
 
 import { CustomField } from "@/components/Form";
 import { generalFormSchema } from "@/components/schemas/GeneralForm";
-import { GeneralFormSkeleton } from "@/components/skeltons/GeneralForm";
+import { GeneralFormSkeleton } from "@/components/skeletons/GeneralForm";
 import { useUser } from "@/Context/UserContextProvider";
 import { InitialGeneralFormValues } from "@/models/constants";
 import { yupResolver } from "@hookform/resolvers/yup";

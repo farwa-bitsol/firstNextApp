@@ -35,7 +35,7 @@ const FormDataSchema = yup.object({
 
 export type Inputs = yup.InferType<typeof FormDataSchema>;
 
-export const CustomField = ({
+export const CustomField = <T extends Record<string, any>>({
   fieldName,
   type = "text",
   label,
@@ -43,14 +43,14 @@ export const CustomField = ({
   placeholder,
   rows,
   noMargin,
-}: ICustomField) => {
-  const { clearErrors, setError, control } = useFormContext();
+}: ICustomField<T>) => {
+  const { clearErrors, setError, control } = useFormContext<T>();
 
   return (
     <div className={`sm:col-span-3 ${noMargin ? "" : "my-4"}`}>
       {label && (
         <label
-          htmlFor={fieldName}
+          htmlFor={String(fieldName)}
           className="block text-sm font-medium leading-6 text-gray-900"
         >
           {label} {required && <span className="text-red-500">*</span>}
@@ -58,24 +58,24 @@ export const CustomField = ({
       )}
       <div className="mt-2">
         <Controller
-          name={fieldName}
+          name={fieldName as any}
           control={control}
           render={({ field, fieldState }) => (
             <div>
               {type === "textarea" ? (
                 <textarea
-                  id={fieldName}
+                  id={String(fieldName)}
                   placeholder={placeholder}
                   value={field.value || ""}
                   onChange={(e) => {
                     field.onChange(e);
                     // clear error
-                    if (e.target.value) clearErrors(fieldName);
+                    if (e.target.value) clearErrors(fieldName as any);
                   }}
                   onBlur={() => {
                     field.onBlur();
                     if (!field.value)
-                      setError(fieldName, {
+                      setError(fieldName as any, {
                         type: "manual",
                         message: "required(*)",
                       });
@@ -90,7 +90,7 @@ export const CustomField = ({
               ) : (
                 <input
                   type={type}
-                  id={fieldName}
+                  id={String(fieldName)}
                   placeholder={placeholder}
                   {...field}
                   autoComplete="given-name"
@@ -102,12 +102,12 @@ export const CustomField = ({
                   onChange={(e) => {
                     field.onChange(e);
                     // clear error
-                    if (e.target.value) clearErrors(fieldName);
+                    if (e.target.value) clearErrors(fieldName as any);
                   }}
                   onBlur={() => {
                     field.onBlur();
                     if (!field.value)
-                      setError(fieldName, {
+                      setError(fieldName as any, {
                         type: "manual",
                         message: "required(*)",
                       });

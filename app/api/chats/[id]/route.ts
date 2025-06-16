@@ -1,5 +1,5 @@
 import { connect } from "@/dbConfig/config";
-import Chat from "@/models/chatModel";
+import { ChatModel } from '@/models/chatModel';
 import { NextRequest, NextResponse } from "next/server";
 
 connect();
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
             return NextResponse.json({ message: "Chat ID is required" }, { status: 400 });
         }
 
-        const chat = await Chat.findById(id);
+        const chat = await ChatModel.findUnique({ where: { id } });
 
         if (!chat) {
             return NextResponse.json({ message: "Chat not found" }, { status: 404 });
@@ -34,7 +34,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         }
 
         const reqBody = await request.json();
-        const updatedChat = await Chat.findByIdAndUpdate(id, reqBody, { new: true, runValidators: true });
+        const updatedChat = await ChatModel.update({ where: { id }, data: reqBody });
 
         if (!updatedChat) {
             return NextResponse.json({ message: "Chat not found" }, { status: 404 });

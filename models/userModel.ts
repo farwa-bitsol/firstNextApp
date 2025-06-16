@@ -1,38 +1,27 @@
-import mongoose from "mongoose";
+import { PrismaClient } from '@prisma/client';
 
-const userSchema = new mongoose.Schema({
-    fullName: {
-        type: String,
-        required: [true, "Please provide a fullName"],
-    },
-    email: {
-        type: String,
-        required: [true, "Please provide a email"],
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: [true, "Please provide a password"],
-    },
-    userImage: {
-        name: { type: String },
-        data: { type: String },
-        contentType: { type: String },
-    },
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    },
-    forgotPasswordToken: String,
-    forgotPasswordTokenExpiry: Date,
-    verifyToken: String,
-    verifyTokenExpiry: Date,
-}, { collection: 'userDashboard' });
+const prisma = new PrismaClient();
 
-const User = mongoose.models.userDashboard || mongoose.model("userDashboard", userSchema);
+export interface UserImage {
+  name: string;
+  data: string;
+  contentType: string;
+}
 
-export default User;
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  password: string;
+  userImage: UserImage | null;
+  isVerified: boolean;
+  isAdmin: boolean;
+  forgotPasswordToken: string | null;
+  forgotPasswordTokenExpiry: Date | null;
+  verifyToken: string | null;
+  verifyTokenExpiry: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export default prisma.user;

@@ -1,33 +1,28 @@
-import mongoose from "mongoose";
+import { PrismaClient } from '@prisma/client';
 
-const postSchema = new mongoose.Schema({
-    userId: {
-        type: String,
-        required: true,
-    },
-    posts: [
-        {
-            profilePhoto: { type: String },
-            postMedia: {
-                name: { type: String },
-                data: { type: String },
-                contentType: { type: String },
-            },
-            userName: { type: String, required: true },
-            title: { type: String },
-            description: { type: String },
-            postType: {
-                type: String,
-                enum: ["event", "article", "normal"],
-            },
-            likes: { type: Number, default: 0 },
-            comments: { type: Number, default: 0 },
-            shares: { type: Number, default: 0 },
-            postTime: { type: String, required: true },
-        },
-    ],
-});
+const prisma = new PrismaClient();
 
-const Post = mongoose.models.Post || mongoose.model("Post", postSchema);
+export interface PostMedia {
+  name: string;
+  data: string;
+  contentType: string;
+}
 
-export default Post;
+export interface Post {
+  id: string;
+  userId: string;
+  profilePhoto: string | null;
+  postMedia: PostMedia | null;
+  userName: string;
+  title: string | null;
+  description: string | null;
+  postType: 'event' | 'article' | 'normal';
+  likes: number;
+  comments: number;
+  shares: number;
+  postTime: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export default prisma.post;

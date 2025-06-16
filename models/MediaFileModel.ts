@@ -1,18 +1,8 @@
-import mongoose from "mongoose";
+import { PrismaClient, MediaFile as PrismaMediaFile } from '@prisma/client';
 
-const MediaSchema = new mongoose.Schema({
-    data: {
-        type: String,
-    },
-    name: {
-        type: String,
-    },
-    contentType: {
-        type: String,
+const prisma = new PrismaClient();
 
-    }
-})
+export type MediaFile = PrismaMediaFile;
 
-const MediaFile = mongoose.models.MediaFiles || mongoose.model("MediaFiles", MediaSchema);
-
-export default MediaFile;
+// Export the Prisma model
+export const MediaFileModel = prisma.mediaFile;

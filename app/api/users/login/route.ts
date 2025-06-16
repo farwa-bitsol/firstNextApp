@@ -1,52 +1,65 @@
-import { connect } from "@/dbConfig/config";
 import { NextRequest, NextResponse } from "next/server";
-import User from "@/models/userModel";
+import { prisma } from "@/dbConfig/config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/helpers/mailer";
 
-connect();
-
 export async function POST(request: NextRequest) {
     try {
-        const { email, password } = await request.json();
+        const reqBody = await request.json();
+        const { email, password } = reqBody;
 
-
-        const user = await User.findOne({ email });
+        // Check if user exists
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
 
         if (!user.isVerified) {
             // Send verification email
-            await sendEmail({ email, emailType: "VERIFY", userId: user._id });
+            await sendEmail({ email, emailType: "VERIFY", userId: user.id });
             return NextResponse.json(
                 { error: "Please verify your email before logging in." },
                 { status: 400 }
             );
         }
 
-
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return NextResponse.json({ error: "Invalid credentials" }, { status: 400 });
+        // Check if password is correct
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return NextResponse.json({ error: "Invalid password" }, { status: 400 });
         }
 
-        // Generate JWT
-        const token = jwt.sign(
-            { id: user._id, email: user.email },
-            process.env.TOKEN_SECRET || "",
-            { expiresIn: "1d" }
-        );
+        // Create token data
+        const tokenData = {
+            id: user.id,
+            email: user.email,
+            isAdmin: user.isAdmin
+        };
 
-        // Set cookie with JWT
-        const response = NextResponse.json({ message: "Login successful" });
-        response.cookies.set('token', token, {
+        // Create token
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET!, { expiresIn: "1d" });
+
+        const response = NextResponse.json({
+            message: "Login successful",
+            success: true,
+            user: {
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                isVerified: user.isVerified
+            }
+        });
+
+        // Set token in cookies
+        response.cookies.set("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            path: '/',
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24, // 1 day
+            sameSite: "strict",
+            maxAge: 86400 // 1 day
         });
 
         return response;

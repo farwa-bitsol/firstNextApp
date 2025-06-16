@@ -1,45 +1,19 @@
-import mongoose from "mongoose";
+import { PrismaClient, GeneralForm as PrismaGeneralForm } from '@prisma/client';
 
-const onlinePresenceSchema = new mongoose.Schema({
-    id: {
-        type: String,
-    },
-    url: {
-        type: String,
-    },
-});
+const prisma = new PrismaClient();
 
-const generalFormSchema = new mongoose.Schema({
-    userId: {
-        type: String,
-        required: true,
-    },
-    generalProfile: {
-        name: { type: String },
-        data: { type: String },
-        contentType: { type: String },
-    },
-    firstName: {
-        type: String,
-    },
-    lastName: {
-        type: String,
-    },
-    location: {
-        type: String,
-    },
-    profession: {
-        type: String,
-    },
-    bio: {
-        type: String,
-    },
-    onlinePresence: {
-        type: [onlinePresenceSchema],
-        default: [],
-    },
-}, { collection: 'generalForms' });
+export type GeneralForm = PrismaGeneralForm;
 
-const GeneralForm = mongoose.models.generalForms || mongoose.model("generalForms", generalFormSchema);
+export interface OnlinePresence {
+  id: string;
+  url: string;
+}
 
-export default GeneralForm;
+export interface GeneralProfile {
+  name: string;
+  data: string;
+  contentType: string;
+}
+
+// Export the Prisma model
+export const GeneralFormModel = prisma.generalForm;

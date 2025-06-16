@@ -73,7 +73,7 @@ const SecurityForm = () => {
     <FormProvider {...formInstance}>
       <form onSubmit={handleSubmit(processForm)} noValidate>
         <div className="flex lg:gap-4 gap-1 flex-wrap">
-          <CustomField
+          <CustomField<Inputs>
             register={register}
             fieldName="newPassword"
             label="New password"
@@ -81,7 +81,7 @@ const SecurityForm = () => {
             type="password"
           />
 
-          <CustomField
+          <CustomField<Inputs>
             register={register}
             fieldName="currentPassword"
             label="Current password"
@@ -90,7 +90,7 @@ const SecurityForm = () => {
           />
         </div>
         <p className="py-4 mt-2">
-          Can’t remember your current password?&nbsp;
+          Can&apos;t remember your current password?&nbsp;
           <button
             type="button"
             className="text-[#1565D8]"

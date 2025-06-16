@@ -33,8 +33,38 @@ jest.mock("@/components/Logout", () => {
 
 describe("Users Component", () => {
   const mockUsers: IUser[] = [
-    { _id: "1", fullName: "User 1", email: "", password: "", userImage: null },
-    { _id: "2", fullName: "User 2", email: "", password: "", userImage: null },
+    {
+      _id: "1",
+      id: "1",
+      fullName: "User 1",
+      email: "user1@test.com",
+      password: "password123",
+      userImage: null,
+      isVerified: true,
+      isAdmin: false,
+      forgotPasswordToken: null,
+      forgotPasswordTokenExpiry: null,
+      verifyToken: null,
+      verifyTokenExpiry: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      _id: "2",
+      id: "2",
+      fullName: "User 2",
+      email: "user2@test.com",
+      password: "password123",
+      userImage: null,
+      isVerified: true,
+      isAdmin: false,
+      forgotPasswordToken: null,
+      forgotPasswordTokenExpiry: null,
+      verifyToken: null,
+      verifyTokenExpiry: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
   ];
 
   beforeEach(() => {

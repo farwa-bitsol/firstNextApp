@@ -1,6 +1,6 @@
 "use client";
 
-import UpcomingEventsSkelton from "@/components/skeltons/UpcomingEvents";
+import UpcomingEventsSkelton from "@/components/skeletons/UpcomingEvents";
 import useFetchAllPosts from "@/hooks/useFetchAllPosts";
 import { PostProps } from "@/models/types";
 import {
@@ -50,9 +50,9 @@ const RenderStars = () => {
 const EventPlanner = () => {
   const { posts, isLoading, error } = useFetchAllPosts();
 
-  const eventPosts = posts
-    ?.filter((post) => post?.postType === "event")
-    ?.reduce((acc: PostProps[], current) => {
+  const eventPosts = (posts as PostProps[] | undefined)
+    ?.filter((post: PostProps) => post?.postType === "event")
+    ?.reduce((acc: PostProps[], current: PostProps) => {
       // Check if the userName already exists in the accumulator
       if (!acc.find((event) => event.userName === current.userName)) {
         acc.push(current);
@@ -71,7 +71,7 @@ const EventPlanner = () => {
     <div className="w-full">
       <p className="font-bold text-lg">Event Planner</p>
       <div className="flex flex-col">
-        {eventPosts?.map((event, index) => (
+        {eventPosts?.map((event: PostProps, index: number) => (
           <div
             className="flex py-4 justify-between items-center flex-wrap"
             key={`${event.userName}-${index}`}

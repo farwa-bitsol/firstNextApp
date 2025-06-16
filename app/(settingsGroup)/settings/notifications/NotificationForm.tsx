@@ -3,7 +3,7 @@
 import CustomMultiCheckbox from "@/components/CustomCheckbox";
 import CustomSwitch from "@/components/CustomSwitch";
 import { notificationFormSchema } from "@/components/schemas/NotificationForm";
-import { NotificationFormSkeleton } from "@/components/skeltons/NotificationForm";
+import { NotificationFormSkeleton } from "@/components/skeletons/NotificationForm";
 import { useUser } from "@/Context/UserContextProvider";
 import {
   InitialNotificationFormValues,

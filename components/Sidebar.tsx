@@ -7,7 +7,7 @@ const Sidebar = () => {
     <div className="hidden md:block w-1/2">
       <div className="relative h-full">
         <WavyBackground
-          backgroundColor="black"
+          backgroundFill="black"
           rangeY={800}
           particleCount={500}
           baseHue={120}

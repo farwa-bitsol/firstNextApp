@@ -1,225 +1,120 @@
 "use client";
 import Overlay from "@/components/Overlay";
-import { PostSkeleton } from "@/components/skeltons/Post";
+import { PostSkeleton } from "@/components/skeletons/Post";
 import { useUser } from "@/Context/UserContextProvider";
 import useFetchPosts from "@/hooks/useFetchPosts";
-import {
-  faCommentAlt,
-  faGlobe,
-  faShare,
-  faThumbsUp,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
-import { formatDistanceToNow } from "date-fns";
+import { PostProps } from "@/models/types";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const deletePost = async (postId: string) => {
-  const response = await axios.delete(`/api/posts/${postId}`);
-  if (response.status !== 200) {
-    throw new Error("Failed to fetch posts");
+interface DeletePostResponse {
+  message: string;
+}
+
+const deletePost = async (postId: string): Promise<DeletePostResponse> => {
+  const response = await fetch(`/api/posts/${postId}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete post");
   }
-  toast.success("post deleted successfully");
-  return postId;
+  return response.json();
 };
 
 const Posts = () => {
-  const [expandedPosts, setExpandedPosts] = useState<{
-    [key: string]: boolean;
-  }>({});
-  const [isDeleting, setIsDeleting] = useState(false);
-  const {
-    posts: postData,
-    isLoading,
-    error: isFetchPostError,
-  } = useFetchPosts();
-  const { userImageUrl, isLoading: isUserLoading } = useUser();
+  const { user } = useUser();
+  const queryClient = useQueryClient();
+  const [selectedPost, setSelectedPost] = useState<PostProps | null>(null);
 
-  const handleToggleExpand = (postId: string) => {
-    setExpandedPosts((prev) => ({
-      ...prev,
-      [postId]: !prev[postId],
-    }));
+  const { data: posts = [], isLoading } = useFetchPosts(user?._id || "");
+
+  const { mutate: deletePostMutation, isPending: isDeleting } = useMutation({
+    mutationFn: deletePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.success("Post deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete post");
+    },
+  });
+
+  const handleDelete = useCallback((postId: string) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      deletePostMutation(postId);
+    }
+  }, [deletePostMutation]);
+
+  const formatDate = (date: string): string => {
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
-  const truncateText = useCallback(
-    (text: string, limit: number) =>
-      text?.length > limit ? text?.slice(0, limit) : text,
-    []
-  );
-
-  const queryClient = useQueryClient();
-
-  const { mutate: deleteMutate } = useMutation(deletePost, {
-    onMutate: () => {
-      setIsDeleting(true); // Start overlay when mutation begins
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries("postData");
-      setIsDeleting(false); // Stop overlay after mutation
-    },
-    onError: (error) => {
-      setIsDeleting(false); // Stop overlay if there's an error
-      console.error("Error deleting post:", error);
-    },
-  });
-
-  if (isLoading || isUserLoading) return <PostSkeleton />;
-  if (isFetchPostError) return <div>Error fetching posts</div>;
-
-  if (!postData || postData.length === 0) {
-    return <div>No posts available</div>;
-  }
-
-  const sortedPosts = postData?.sort((a, b) => {
-    return new Date(b.postTime).getTime() - new Date(a.postTime).getTime();
-  });
+  if (isLoading) return <PostSkeleton />;
 
   return (
-    <>
-      {/* Overlay when post is being deleted */}
-      {isDeleting && <Overlay title="Deleting post..." />}
-
-      {/* Page content with dimming effect */}
-      <div className={isDeleting ? "opacity-50 pointer-events-none" : ""}>
-        {sortedPosts?.map(
-          (
-            {
-              profilePhoto,
-              postTime,
-              title,
-              userName,
-              description,
-              postMedia,
-              likes,
-              comments,
-              shares,
-              _id: postId,
-            },
-            index
-          ) => {
-            return (
-              <div
-                className="bg-white rounded-lg shadow-md p-4 mb-4"
-                key={`${title}-${index}`}
+    <div className="space-y-4">
+      {posts.map((post) => (
+        <div key={post._id} className="bg-white rounded-lg shadow p-4">
+          <div className="flex items-center space-x-2">
+            <Image
+              src={post.profilePhoto || "/images/default-avatar.png"}
+              alt="Profile"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <div>
+              <h3 className="font-semibold">{post.userName}</h3>
+              <p className="text-sm text-gray-500">{formatDate(post.postTime)}</p>
+            </div>
+          </div>
+          {post.title && <h2 className="text-xl font-bold mt-2">{post.title}</h2>}
+          {post.description && (
+            <p className="mt-2 text-gray-700">{post.description}</p>
+          )}
+          {post.postMedia && (
+            <div className="mt-4">
+              <Image
+                src={post.postMedia.data}
+                alt={post.postMedia.name}
+                width={500}
+                height={300}
+                className="rounded-lg"
+              />
+            </div>
+          )}
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex space-x-4">
+              <button className="text-gray-500 hover:text-blue-500">
+                Like ({post.likes})
+              </button>
+              <button className="text-gray-500 hover:text-blue-500">
+                Comment ({post.comments})
+              </button>
+              <button className="text-gray-500 hover:text-blue-500">
+                Share ({post.shares})
+              </button>
+            </div>
+            {user?._id === post.userId && (
+              <button
+                onClick={() => handleDelete(post._id)}
+                className="text-red-500 hover:text-red-700"
+                disabled={isDeleting}
               >
-                {/* Header */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Image
-                      src={userImageUrl}
-                      alt="Profile"
-                      width={40}
-                      height={40}
-                      className="rounded-full"
-                    />
-                    <div className="ml-4">
-                      <p className="font-bold text-sm">{userName}</p>
-                      <div className="flex items-center text-gray-500 text-xs">
-                        <span>
-                          {postTime &&
-                            formatDistanceToNow(new Date(postTime ?? ""), {
-                              addSuffix: true,
-                            })}{" "}
-                          &bull;
-                        </span>
-                        <FontAwesomeIcon
-                          icon={faGlobe}
-                          className="ml-1"
-                          style={{ width: "12px", height: "12px" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* Delete Icon */}
-                  <FontAwesomeIcon
-                    icon={faTrash}
-                    className="cursor-pointer text-red-500"
-                    onClick={() => deleteMutate(postId)}
-                    style={{ width: "16px", height: "16px" }}
-                  />
-                </div>
-
-                {/* Title */}
-                <p className="mt-2 font-semibold">{title}</p>
-
-                <div
-                  className="mt-2 text-gray-700"
-                  style={{
-                    whiteSpace: "break-spaces",
-                  }}
-                >
-                  {expandedPosts[postId] ? (
-                    <>
-                      <p>{description}</p>
-                      <button
-                        className="text-blue-500 mt-1 inline-block"
-                        onClick={() => handleToggleExpand(postId)}
-                      >
-                        Show Less...
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <p>{truncateText(description, 300)}</p>
-                      {description?.length > 300 && (
-                        <button
-                          className="text-blue-500 mt-1 inline-block"
-                          onClick={() => handleToggleExpand(postId)}
-                        >
-                          Read More...
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-
-                {/* Post Media */}
-                {postMedia && (
-                  <div className="mt-2">
-                    <Image
-                      src={`data:${postMedia.contentType};base64,${postMedia.data}`}
-                      alt="Post"
-                      width={500}
-                      height={300}
-                      className="rounded-lg"
-                    />
-                  </div>
-                )}
-
-                {/* Likes, Comments, Shares */}
-                <div className="mt-4 text-gray-500 text-sm">
-                  <p>
-                    {likes} Likes &bull; {comments} Comments &bull; {shares}{" "}
-                    Shares
-                  </p>
-                </div>
-
-                {/* Actions */}
-                <div className="mt-4 border-t pt-2 flex justify-around text-gray-600 text-sm">
-                  <div className="flex items-center cursor-pointer">
-                    <FontAwesomeIcon icon={faThumbsUp} className="mr-2" />
-                    <span>Like</span>
-                  </div>
-                  <div className="flex items-center cursor-pointer">
-                    <FontAwesomeIcon icon={faCommentAlt} className="mr-2" />
-                    <span>Comment</span>
-                  </div>
-                  <div className="flex items-center cursor-pointer">
-                    <FontAwesomeIcon icon={faShare} className="mr-2" />
-                    <span>Share</span>
-                  </div>
-                </div>
-              </div>
-            );
-          }
-        )}
-      </div>
-    </>
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
 
