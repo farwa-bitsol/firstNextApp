@@ -5,10 +5,10 @@ import { sendVerificationEmail } from '@/lib/mailer';
 
 export async function POST(req: Request) {
     try {
-        const { email, password, name } = await req.json();
+        const { email, password, fullName } = await req.json();
 
         // Validate input
-        if (!email || !password || !name) {
+        if (!email || !password || !fullName) {
             return NextResponse.json(
                 { error: 'Missing required fields' },
                 { status: 400 }
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         const user = await prisma.user.create({
             data: {
                 email,
-                fullName: name,
+                fullName,
                 password: hashedPassword,
                 isVerified: false,
             },
@@ -60,9 +60,9 @@ export async function POST(req: Request) {
             { status: 201 }
         );
     } catch (error) {
-        console.error('Signup error:', error);
+        console.error('Error in signup:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: 'Error creating user' },
             { status: 500 }
         );
     }
