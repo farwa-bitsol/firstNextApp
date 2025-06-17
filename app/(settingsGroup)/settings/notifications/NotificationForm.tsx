@@ -41,8 +41,12 @@ const SwitchWithLabel = ({
 
 const fetchNotificationSettings = async (userId: string): Promise<Inputs> => {
   try {
-    const response = await axios.get(`/api/settings/notifications/${userId}`);
-    return response?.data?.data;
+    const response = await fetch(`/api/settings/notifications/${userId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch notification settings");
+    }
+    const data = await response.json();
+    return data?.data;
   } catch (error) {
     console.error("Failed to fetch notification settings:", error);
     return InitialNotificationFormValues;

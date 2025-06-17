@@ -1,15 +1,21 @@
 "use client";
 
 import { Routes } from "@/models/constants";
-import axios from "axios";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-export default function Logout() {
-  const logout = async () => {
+const Logout = () => {
+  const router = useRouter();
+
+  const handleLogout = async () => {
     try {
-      const response = await axios.get("/api/users/logout");
-      if (response?.data?.success) {
-        window.location.href = Routes.login;
+      const response = await fetch("/api/users/logout");
+      if (!response.ok) {
+        throw new Error("Failed to log out");
+      }
+      const data = await response.json();
+      if (data?.success) {
+        router.push(Routes.login);
       } else {
         toast.error("Failed to log out");
       }
@@ -18,5 +24,14 @@ export default function Logout() {
     }
   };
 
-  return <button onClick={logout}>Logout</button>;
-}
+  return (
+    <button
+      onClick={handleLogout}
+      className="text-blue-500 font-bold"
+    >
+      Logout
+    </button>
+  );
+};
+
+export default Logout;

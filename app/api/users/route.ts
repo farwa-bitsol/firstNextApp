@@ -3,8 +3,45 @@ import { userOperations } from "@/dbConfig/db";
 import { getDataFromToken } from "@/helpers/getDataFromToken";
 import { NextRequest, NextResponse } from "next/server";
 import { ApiError } from "@/models/types";
+import { User } from "@prisma/client";
 
 connect();
+
+export async function GET(request: NextRequest) {
+    try {
+        // Get all users
+        const users = await userOperations.getAllUsers();
+        
+        // Remove sensitive data from response
+        const sanitizedUsers = users.map((user: User) => ({
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            isVerified: user.isVerified,
+            isAdmin: user.isAdmin,
+            userImage: user.userImage,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        }));
+
+        return NextResponse.json({
+            message: "Users fetched successfully",
+            users: sanitizedUsers
+        });
+    } catch (error) {
+        const apiError = error as ApiError;
+        const errorMessage =
+            apiError?.response?.data?.error ||
+            apiError?.message ||
+            "An error occurred";
+            
+        console.error("Error in GET request:", error);
+        return NextResponse.json(
+            { error: errorMessage },
+            { status: 500 }
+        );
+    }
+}
 
 export async function PATCH(request: NextRequest) {
     try {

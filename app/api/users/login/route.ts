@@ -33,10 +33,10 @@ export async function POST(request: NextRequest) {
                 { error: "Please verify your email before logging in." },
                 { status: 400 }
             );
-        }
-
-        // Check if password is correct
-        const validPassword = await bcrypt.compare(password, user.password);
+        }     
+        
+        const validPassword = await bcrypt.compare(password, user.password);        
+        
         if (!validPassword) {
             return NextResponse.json({ error: "Invalid password" }, { status: 400 });
         }

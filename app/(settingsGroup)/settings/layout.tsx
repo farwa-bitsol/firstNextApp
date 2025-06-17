@@ -6,14 +6,14 @@ import { GeneralFormSkeleton } from "@/components/skeletons/GeneralForm";
 
 const SettingsLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex h-screen">
-      <SettingsSidebar />
-      <SessionWrapper>
+    <SessionWrapper>
+      <div className="flex h-screen">
+        <SettingsSidebar />
         <main className="w-full overflow-auto">
           <Suspense fallback={<GeneralFormSkeleton />}>{children}</Suspense>
         </main>
-      </SessionWrapper>
-    </div>
+      </div>
+    </SessionWrapper>
   );
 };
 

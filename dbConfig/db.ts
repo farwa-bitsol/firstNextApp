@@ -26,6 +26,12 @@ export const userOperations = {
       data,
     });
   },
+
+  getAllUsers: async () => {
+    return await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+  },
 };
 
 // Post operations

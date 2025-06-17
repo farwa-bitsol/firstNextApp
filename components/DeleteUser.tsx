@@ -2,18 +2,22 @@
 
 import { useUser } from "@/Context/UserContextProvider";
 import { IUser, ApiError } from "@/models/types";
-import axios from "axios";
 import { useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
 import { SkeletonDeleteUser } from "./skeletons/User";
 
 const deleteUser = async (userId: string): Promise<{ message: string }> => {
   try {
-    const response = await axios.delete(`/api/users/${userId}`);
-    return response.data;
+    const response = await fetch(`/api/users/${userId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to delete user");
+    }
+    return response.json();
   } catch (error) {
     const apiError = error as ApiError;
     const errorMessage =
-      apiError?.response?.data?.error ||
       apiError?.message ||
       "Failed to delete user";
     throw new Error(errorMessage);

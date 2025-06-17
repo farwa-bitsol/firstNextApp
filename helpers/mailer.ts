@@ -25,17 +25,22 @@ export const sendEmail = async ({ email, emailType, userId }: { email: string; e
             });
         }
 
+      
         // Ensure environment variables are available
         if (!process.env.MAILTRAP_USER || !process.env.MAILTRAP_PASS) {
             throw new Error("Mailtrap credentials are not configured");
         }
 
+        // Trim any whitespace from credentials and remove any quotes
+        const cleanUser = process.env.MAILTRAP_USER.trim().replace(/['"]/g, '');
+        const cleanPass = process.env.MAILTRAP_PASS.trim().replace(/['"]/g, '');
+
         const transport = nodemailer.createTransport({
             host: "sandbox.smtp.mailtrap.io",
             port: 2525,
             auth: {
-                user: process.env.MAILTRAP_USER,
-                pass: process.env.MAILTRAP_PASS
+                user: cleanUser,
+                pass: cleanPass
             },
             secure: false,
             tls: {

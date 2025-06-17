@@ -1,18 +1,17 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { IUser } from "@/models/types";
 
 const useFetchUsers = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
-
-  const { isLoading, error } = useQuery({
+  const { data: users, isLoading, error } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const response = await axios.get("/api/users");
-      setUsers(response.data);
-      return response.data;
+      const response = await fetch("/api/users");
+      if (!response.ok) {
+        throw new Error("Failed to fetch users");
+      }
+      const data = await response.json();
+      return data.users as IUser[];
     },
   });
 

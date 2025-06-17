@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import { sendEmail } from '@/helpers/mailer';
 
-const prisma = new PrismaClient();
+const prismaClient = new PrismaClient();
 
 export async function POST(request: Request) {
-  try {
+  try {  
+
     const { email, password, fullName } = await request.json();
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prismaClient.user.findUnique({
       where: { email },
     });
 
@@ -24,7 +26,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const user = await prisma.user.create({
+    const user = await prismaClient.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -32,11 +34,26 @@ export async function POST(request: Request) {
       },
     });
 
+    // Send verification email
+    try {
+      await sendEmail({ email, emailType: "VERIFY", userId: user.id });
+    } catch (emailError) {
+      // If email sending fails, delete the user and return error
+      await prismaClient.user.delete({
+        where: { id: user.id }
+      });
+      console.error('Failed to send verification email:', emailError);
+      return NextResponse.json(
+        { error: 'Failed to send verification email' },
+        { status: 500 }
+      );
+    }
+
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;
 
     return NextResponse.json(
-      { message: "User created successfully", user: userWithoutPassword },
+      { message: "User created successfully. Please check your email for verification.", user: userWithoutPassword },
       { status: 201 }
     );
   } catch (error) {

@@ -1,7 +1,6 @@
 "use client";
 
 import { IUser } from "@/models/types";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -14,9 +13,13 @@ const useFetchUser = () => {
     if (!disableLoading)
       setIsLoading(true);
     try {
-      const response = await axios.get<{ data: IUser }>("/api/users/me");
-      const responseImage = response?.data?.data?.userImage;
-      setUser(response.data.data);
+      const response = await fetch("/api/users/me");
+      if (!response.ok) {
+        throw new Error("Failed to fetch user");
+      }
+      const data = await response.json();
+      const responseImage = data?.data?.userImage;
+      setUser(data.data);
 
       if (responseImage) {
         const blob = new Blob(
@@ -36,9 +39,7 @@ const useFetchUser = () => {
       }
     } catch (error: any) {
       const errorMessage =
-        error?.response?.data?.error ||
         error?.message ||
-        error?.error ||
         "Failed to fetch user";
       toast.error(errorMessage);
     } finally {
@@ -49,7 +50,6 @@ const useFetchUser = () => {
   useEffect(() => {
     fetchUser(); // Fetch the user data when the component mounts
   }, []);
-
 
   const refetchUser = async () => {
     await fetchUser(true);

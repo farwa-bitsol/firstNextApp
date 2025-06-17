@@ -185,28 +185,33 @@ export default function Form({
     try {
       setIsLoading(true);
       
-      // Encrypt password before sending to API
-      const salt = await bcrypt.genSalt(10);
-      const encryptedPassword = await bcrypt.hash(data.password, salt);
-      
       const newUser = {
         fullName: data.fullName,
         email: data.email,
-        password: encryptedPassword, // Send encrypted password
+        password: data.password, // Send plain password
       };
 
-      const response = await axios.post("/api/users/signup", newUser);
-      console.log("Signup success", response.data);
-      toast.success("Signup success!");
-      router.push(Routes.login);
+      const response = await fetch("/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Signup failed");
+      }
+
+      const data = await response.json();
+      if (data?.message === "Signup success") {
+        router.push(Routes.dashboard);
+      } else {
+        toast.error("Signup failed");
+      }
     } catch (error: any) {
-      console.error("Error creating user:", error);
-      const errorMessage =
-        error?.response?.data?.error ||
-        error?.message ||
-        error?.error ||
-        "An unknown error occurred";
-      toast.error(errorMessage);
+      toast.error(error.message || "Signup failed, please try again");
     } finally {
       setIsLoading(false);
     }

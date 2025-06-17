@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/dbConfig/config';
 import bcrypt from 'bcryptjs';
-import { sendVerificationEmail } from '@/lib/mailer';
+import { sendEmail } from '@/helpers/mailer';
 
 export async function POST(req: Request) {
     try {
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
         // Send verification email
         try {
-            await sendVerificationEmail(email);
+            await sendEmail({ email, emailType: "VERIFY", userId: user.id });
         } catch (emailError) {
             // If email sending fails, delete the user and return error
             await prisma.user.delete({

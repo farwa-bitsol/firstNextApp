@@ -1,13 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { PostProps } from "@/models/types";
 
 const useFetchPosts = (userId: string) => {
   return useQuery({
     queryKey: ["posts", userId],
     queryFn: async () => {
-      const response = await axios.get(`/api/posts?userId=${userId}`);
-      return response.data as PostProps[];
+      const response = await fetch(`/api/posts?userId=${userId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch posts");
+      }
+      const data = await response.json();
+      return data as PostProps[];
     },
   });
 };

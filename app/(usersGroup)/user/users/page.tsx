@@ -1,13 +1,11 @@
 "use client";
 
 import DeleteUser from "@/components/DeleteUser";
-import Pagination from "@/components/Pagination";
 import LogoutSkeletonLoader from "@/components/skeletons/Logout";
 import { Routes } from "@/models/constants";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import useFetchUsers from "@/hooks/useFetchUsers";
-import axios from "axios";
 import { IUser } from "@/models/types";
 
 const Users = () => {
@@ -15,8 +13,12 @@ const Users = () => {
 
   const logout = async () => {
     try {
-      const response = await axios.get("/api/users/logout");
-      if (response?.data?.success) {
+      const response = await fetch("/api/users/logout");
+      if (!response.ok) {
+        throw new Error("Failed to log out");
+      }
+      const data = await response.json();
+      if (data?.success) {
         window.location.href = Routes.login;
       } else {
         toast.error("Failed to log out");

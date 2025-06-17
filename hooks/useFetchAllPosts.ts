@@ -1,14 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { PostProps } from "@/models/types";
 
-
 const fetchPosts = async (): Promise<PostProps[]> => {
-    const response = await axios.get("/api/allPosts");
-    if (response.status !== 200) {
+    const response = await fetch("/api/allPosts");
+    if (!response.ok) {
         throw new Error("Failed to fetch posts");
     }
-    return response.data;
+    const data = await response.json();
+    return data;
 };
 
 // Custom hook
