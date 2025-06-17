@@ -30,31 +30,40 @@ const authOptions = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
-        }
-        
-        const user = await userOperations.findUserByEmail(credentials.email);
-        
-        if (!user) {
-          throw new Error("No user found with this email");
-        }
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.error("Missing credentials:", { email: !!credentials?.email, password: !!credentials?.password });
+            throw new Error("Email and password are required");
+          }
+          
+          const user = await userOperations.findUserByEmail(credentials.email);
+          
+          if (!user) {
+            console.error("No user found for email:", credentials.email);
+            throw new Error("No user found with this email");
+          }
 
-        if (!user.password) {
-          throw new Error("Please sign in with Google");
-        }
+          if (!user.password) {
+            console.error("User has no password set:", credentials.email);
+            throw new Error("Please sign in with Google");
+          }
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        
-        if (!isValid) {
-          throw new Error("Invalid password");
-        }
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isValid) {
+            console.error("Invalid password for user:", credentials.email);
+            throw new Error("Invalid password");
+          }
 
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.fullName,
-        };
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.fullName,
+          };
+        } catch (error) {
+          console.error("Authorization error:", error);
+          throw error;
+        }
       },
     }),
     GoogleProvider({
@@ -106,5 +115,10 @@ const authOptions = NextAuth({
     },
   },
 });
+
+// Validate required environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET is not set in environment variables");
+}
 
 export { authOptions as GET, authOptions as POST };

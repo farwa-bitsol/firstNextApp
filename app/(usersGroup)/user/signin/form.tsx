@@ -1,14 +1,15 @@
 "use client";
 
 import { Routes } from "@/models/constants";
-import axios from "axios";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function Form() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -16,26 +17,29 @@ export default function Form() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const user = {
-        email: formData.get("email"),
-        password: formData.get("password"),
-      };
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+      
       setLoading(true);
 
-      const response = await axios.post("/api/users/login", user);
-      console.log("Login success", response.data);
-      router.push(Routes.users);
-      toast.success("Login success");
-    } catch (error: any) {
-      console.log("Login failed", error);
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-      // Extract error message
-      const errorMessage =
-        error?.response?.data?.error ||
-        error?.message ||
-        error?.error ||
-        "An unknown error occurred";
-      toast.error(errorMessage);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      // Get the callback URL from the search params or use default
+      const callbackUrl = searchParams.get("callbackUrl") || Routes.users;
+      router.push(callbackUrl);
+      toast.success("Login successful");
+    } catch (error: any) {
+      console.error("Login failed", error);
+      toast.error(error?.message || "An error occurred during login");
     } finally {
       setLoading(false);
     }
@@ -69,14 +73,13 @@ export default function Form() {
           type="password"
         />
         <div className="flex justify-center items-center gap-4 mt-2">
-          {" "}
           <button type="submit" disabled={loading}>
             {loading ? "Loading..." : "Login"}
           </button>
           <Link
             href={Routes.userForm}
             className={`text-blue-500 ${
-              loading ? "pointer-events-none opacity-50" : "" // disable link on loading
+              loading ? "pointer-events-none opacity-50" : ""
             }`}
           >
             Sign up

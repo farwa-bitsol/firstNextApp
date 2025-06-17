@@ -205,10 +205,10 @@ export default function Form({
       }
 
       const result = await response.json();
-      if (result?.message === "Signup success") {
+      if (result?.success) {
         router.push(Routes.dashboard);
       } else {
-        toast.error("Signup failed");
+        toast.error(result?.error || "Signup failed");
       }
     } catch (error: any) {
       toast.error(error.message || "Signup failed, please try again");
