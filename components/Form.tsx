@@ -181,17 +181,17 @@ export default function Form({
     formState: { errors },
   } = formInstance;
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {
+  const processForm: SubmitHandler<Inputs> = async (data: Inputs) => {
     try {
       setIsLoading(true);
       
-      const newUser = {
+      const newUser: { fullName: string; email: string; password: string } = {
         fullName: data.fullName,
         email: data.email,
         password: data.password, // Send plain password
       };
 
-      const response = await fetch("/api/users/signup", {
+      const response: Response = await fetch("/api/users/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -204,8 +204,8 @@ export default function Form({
         throw new Error(error.error || "Signup failed");
       }
 
-      const data = await response.json();
-      if (data?.message === "Signup success") {
+      const result = await response.json();
+      if (result?.message === "Signup success") {
         router.push(Routes.dashboard);
       } else {
         toast.error("Signup failed");
