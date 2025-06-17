@@ -43,9 +43,16 @@ export const sendEmail = async ({ email, emailType, userId }: { email: string; e
             }
         });
 
-        // Use environment DOMAIN or fallback to localhost
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const verificationLink = `${baseUrl}/user/verifyemail?token=${hashedToken}`;
+        // Get the base URL from environment variable
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.DOMAIN || 'http://localhost:3000';
+        
+        // Remove any trailing slashes and ensure proper URL format
+        const cleanBaseUrl = baseUrl.replace(/\/+$/, '');
+        
+        // Construct the verification link
+        const verificationLink = `${cleanBaseUrl}/user/verifyemail?token=${hashedToken}`;
+        
+        console.log('Verification Link:', verificationLink); // For debugging
         
         const mailOptions = {
             from: '"Your App" <noreply@yourapp.com>',
