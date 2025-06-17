@@ -4,10 +4,10 @@ import { Routes } from "@/models/constants";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, Suspense } from "react";
 import toast from "react-hot-toast";
 
-export default function Form() {
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -87,5 +87,13 @@ export default function Form() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function Form() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignInForm />
+    </Suspense>
   );
 }
