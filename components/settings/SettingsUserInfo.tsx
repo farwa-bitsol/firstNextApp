@@ -7,7 +7,7 @@ import { Routes } from "@/models/constants";
 
 const SettingsUserInfo = () => {
   const { user, isLoading, userImageUrl } = useUser();
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center mx-auto space-x-4 mt-4 w-full pl-2">

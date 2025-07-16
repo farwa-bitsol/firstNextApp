@@ -6,11 +6,6 @@ export const generalFormSchema = yup.object({
   location: yup.string(),
   profession: yup.string(),
   bio: yup.string(),
-  generalProfile: yup.object({
-    name: yup.string(),
-    data: yup.string(),
-    contentType: yup.string(),
-  }),
   onlinePresence: yup
     .array()
     .of(

@@ -16,6 +16,7 @@ export const useUser = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      setIsLoading(true);
       try {
         if (session?.data?.user?.email) {
           const response = await fetch(`/api/users?email=${session.data.user.email}`);
@@ -34,7 +35,10 @@ export const useUser = () => {
       }
     };
 
-    if (session?.status === 'authenticated' && session?.data) {
+    if (session?.status === 'loading') {
+      // Keep loading while session is loading
+      setIsLoading(true);
+    } else if (session?.status === 'authenticated' && session?.data) {
       fetchUser();
     } else if (session?.status === 'unauthenticated' || !session?.data) {
       setIsLoading(false);

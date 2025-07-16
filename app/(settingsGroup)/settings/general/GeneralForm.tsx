@@ -71,19 +71,38 @@ const GeneralForm = () => {
   const processForm: SubmitHandler<Inputs> = async (data) => {
     setIsSaving(true);
     const formData = new FormData();
-    if (image) {
-      formData.append("generalProfile", image as unknown as File);
+    if (image && image instanceof File) {
+      formData.append("generalProfile", image);
     }
 
     Object.entries(data).forEach(([key, value]) => {
-      formData.append(
-        key,
-        typeof value === "object" ? JSON.stringify(value) : value
-      );
+      if (value !== undefined && value !== null) {
+        if (key === "onlinePresence") {
+          // Filter out empty online presence entries
+          const filteredOnlinePresence = (value as any[]).filter((presence: any) => 
+            presence.url && presence.url.trim() !== ""
+          );
+          formData.append(key, JSON.stringify(filteredOnlinePresence));
+        } else {
+          formData.append(
+            key,
+            typeof value === "object" ? JSON.stringify(value) : String(value)
+          );
+        }
+      }
     });
 
     try {
       // First API Call: Submit general form data
+      console.log("Submitting form data:", {
+        hasImage: !!image,
+        formDataEntries: Array.from(formData.entries()).map(([key, value]) => ({
+          key,
+          type: typeof value,
+          isFile: value instanceof File
+        }))
+      });
+      
       const response = await axios.post("/api/settings/general", formData);
 
       if (response.status === 200) {
@@ -113,17 +132,30 @@ const GeneralForm = () => {
 
       // If both API calls are successful
       toast.success("General form submitted successfully!");
+      
+      // Refresh user data to reflect the updated name
+      await refetchUser();
+      
       setIsSaving(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during submission:", error);
-      toast.error("An error occurred while submitting the form.");
+      const errorMessage = error.response?.data?.error || error.message || "An error occurred while submitting the form.";
+      toast.error(errorMessage);
       setIsSaving(false);
     }
   };
 
   useEffect(() => {
     if (initialValues) {
-      formInstance.reset(initialValues); //reset the form values when form data fetched
+      // Transform onlinePresence data to match form structure
+      const transformedData = {
+        ...initialValues,
+        onlinePresence: initialValues.onlinePresence?.map((presence: any) => ({
+          id: presence.id || "",
+          url: presence.url || ""
+        })) || []
+      };
+      formInstance.reset(transformedData);
     }
     if (user) {
       // Split full name into first name and last name

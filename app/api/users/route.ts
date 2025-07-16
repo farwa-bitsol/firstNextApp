@@ -9,7 +9,36 @@ connect();
 
 export async function GET(request: NextRequest) {
     try {
-        // Get all users
+        const { searchParams } = new URL(request.url);
+        const email = searchParams.get('email');
+
+        if (email) {
+            // Get specific user by email
+            const user = await userOperations.findUserByEmail(email);
+            
+            if (!user) {
+                return NextResponse.json(
+                    { error: "User not found" },
+                    { status: 404 }
+                );
+            }
+
+            // Remove sensitive data from response
+            const sanitizedUser = {
+                id: user.id,
+                email: user.email,
+                fullName: user.fullName,
+                isVerified: user.isVerified,
+                isAdmin: user.isAdmin,
+                userImage: user.userImage,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            };
+
+            return NextResponse.json(sanitizedUser);
+        }
+
+        // Get all users (when no email parameter is provided)
         const users = await userOperations.getAllUsers();
         
         // Remove sensitive data from response
