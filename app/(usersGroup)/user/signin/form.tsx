@@ -4,21 +4,37 @@ import { Routes } from "@/models/constants";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState, Suspense } from "react";
+import {  useState, Suspense } from "react";
 import toast from "react-hot-toast";
+import { CustomField } from "@/components/Form";
+import { useForm, FormProvider } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const SignInFormSchema = yup.object({
+  email: yup.string().required("Email is required*"),
+  password: yup.string().required("Password is required*"),
+});
+
+type SignInInputs = yup.InferType<typeof SignInFormSchema>;
 
 function SignInForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const formInstance = useForm<SignInInputs>({
+    resolver: yupResolver(SignInFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
+  const { handleSubmit } = formInstance;
+
+  const onSubmit = async (data: SignInInputs) => {
     try {
-      const formData = new FormData(e.currentTarget);
-      const email = formData.get("email") as string;
-      const password = formData.get("password") as string;
+      const { email, password } = data;
       
       setLoading(true);
 
@@ -34,7 +50,7 @@ function SignInForm() {
       }
 
       // Get the callback URL from the search params or use default
-      const callbackUrl =  Routes.users;
+      const callbackUrl = Routes.users;
       router.push(callbackUrl);
       toast.success("Login successful");
     } catch (error: any) {
@@ -47,45 +63,42 @@ function SignInForm() {
 
   return (
     <div className="flex flex-col gap-2 items-center justify-center min-h-screen mx-auto max-w-md mt-10">
-      <form onSubmit={handleSubmit}>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          className="block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset"
-          type="email"
-        />
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          className="block w-full rounded-md border-0 px-5 py-4 text-gray-900 shadow-sm ring-1 ring-inset"
-          type="password"
-        />
-        <div className="flex justify-center items-center gap-4 mt-2">
-          <button type="submit" disabled={loading}>
-            {loading ? "Loading..." : "Login"}
-          </button>
-          <Link
-            href={Routes.signupForm}
-            className={`text-blue-500 ${
-              loading ? "pointer-events-none opacity-50" : ""
-            }`}
-          >
-            Sign up
-          </Link>
-        </div>
-      </form>
+      <FormProvider {...formInstance}>
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+          <CustomField
+            fieldName="email"
+            type="email"
+            label="Email address"
+            required
+            placeholder="Enter email"
+          />
+          <CustomField
+            fieldName="password"
+            type="password"
+            label="Password"
+            required
+            placeholder="Enter password"
+          />
+          <div className="flex flex-col items-center gap-4 mt-6">
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="submit-button"
+            >
+              {loading ? "Loading..." : "Login"}
+            </button>
+            <div className="text-center text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                href={Routes.signupForm}
+                className="text-blue-600 hover:text-blue-800 font-medium"
+              >
+                Sign up
+              </Link>
+            </div>
+          </div>
+        </form>
+      </FormProvider>
     </div>
   );
 }
