@@ -1,15 +1,24 @@
 "use client";
 
 import { IUser } from "@/models/types";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const useFetchUser = () => {
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<IUser | null>(null);
   const [userImageUrl, setUserImageUrl] = useState<string>("/images/profile.png"); // default profile
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchUser = async (disableLoading?: boolean) => {
+    // Don't fetch if not authenticated
+    if (status === "unauthenticated") {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
     if (!disableLoading)
       setIsLoading(true);
     try {
@@ -42,14 +51,21 @@ const useFetchUser = () => {
         error?.message ||
         "Failed to fetch user";
       toast.error(errorMessage);
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUser(); // Fetch the user data when the component mounts
-  }, []);
+    // Only fetch user data if authenticated
+    if (status === "authenticated") {
+      fetchUser();
+    } else if (status === "unauthenticated") {
+      setUser(null);
+      setIsLoading(false);
+    }
+  }, [status]);
 
   const refetchUser = async () => {
     await fetchUser(true);

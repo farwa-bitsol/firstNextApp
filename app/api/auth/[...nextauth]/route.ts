@@ -18,6 +18,7 @@ declare module "next-auth" {
 const authOptions = NextAuth({
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: "/",
@@ -102,7 +103,7 @@ const authOptions = NextAuth({
       return true;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (token && session.user) {
         session.user.id = token.id as string;
       }
       return session;

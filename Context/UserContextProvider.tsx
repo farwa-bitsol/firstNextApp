@@ -9,6 +9,7 @@ interface UserContextType {
   userImageUrl: string;
   isLoading: boolean;
   refetchUser: () => Promise<void>;
+  clearUser: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -16,9 +17,13 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const { user, isLoading, userImageUrl, refetchUser } = useFetchUser();
 
+  const clearUser = () => {
+    // This will be handled by the useFetchUser hook when session changes
+  };
+
   return (
     <UserContext.Provider
-      value={{ user, isLoading, userImageUrl, refetchUser }}
+      value={{ user, isLoading, userImageUrl, refetchUser, clearUser }}
     >
       {children}
     </UserContext.Provider>

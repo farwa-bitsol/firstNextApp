@@ -1,26 +1,30 @@
 "use client";
 
 import { Routes } from "@/models/constants";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { signOut } from "next-auth/react";
+import { useUser } from "@/Context/UserContextProvider";
 
 const Logout = () => {
-  const router = useRouter();
+  const { clearUser } = useUser();
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("/api/users/logout");
-      if (!response.ok) {
-        throw new Error("Failed to log out");
-      }
-      const data = await response.json();
-      if (data?.success) {
-        router.push(Routes.login);
-      } else {
-        toast.error("Failed to log out");
-      }
+      // Clear user context first
+      clearUser();
+      
+      // Sign out from NextAuth
+      await signOut({ 
+        redirect: false,
+        callbackUrl: Routes.login 
+      });
+      
+      // Clear any custom cookies
+      await fetch("/api/users/logout");
+      
+      // Force page refresh to clear session cache
+      window.location.href = Routes.login;
     } catch (error: any) {
-      toast.error("Logout failed, please try again later");
+      console.error("Logout error:", error);
     }
   };
 

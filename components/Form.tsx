@@ -162,7 +162,7 @@ export default function Form({
   currStep: number;
   handleNext?: () => void;
 }>) {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const previousStep = currStep - 1;
   const delta = currStep - previousStep;
@@ -206,6 +206,7 @@ export default function Form({
 
       const result = await response.json();
       if (result?.success) {
+        toast.success("Please check your email to complete the signup process");
         router.push(Routes.dashboard);
       } else {
         toast.error(result?.error || "Signup failed");
@@ -368,7 +369,9 @@ export default function Form({
 
       <div className="flex justify-center flex-col items-center">
         <p className="text-gray-500">or</p>
-        {session?.user?.email ? (
+        {status === "loading" ? (
+          <p className="text-gray-500">Loading session...</p>
+        ) : status === "authenticated" && session?.user?.email ? (
           <p>
             Logged in by&nbsp;{session?.user?.email}.
             <Logout />

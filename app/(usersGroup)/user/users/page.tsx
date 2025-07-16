@@ -3,6 +3,7 @@
 import DeleteUser from "@/components/DeleteUser";
 import LogoutSkeletonLoader from "@/components/skeletons/Logout";
 import { Routes } from "@/models/constants";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import useFetchUsers from "@/hooks/useFetchUsers";
@@ -13,16 +14,20 @@ const Users = () => {
 
   const logout = async () => {
     try {
+      // Sign out from NextAuth
+      await signOut({ 
+        redirect: false,
+        callbackUrl: Routes.login 
+      });
+      
+      // Also call the custom logout API to clear any additional cookies
       const response = await fetch("/api/users/logout");
       if (!response.ok) {
-        throw new Error("Failed to log out");
+        console.warn("Custom logout API failed, but NextAuth logout succeeded");
       }
-      const data = await response.json();
-      if (data?.success) {
-        window.location.href = Routes.login;
-      } else {
-        toast.error("Failed to log out");
-      }
+      
+      toast.success("Logged out successfully");
+      window.location.href = Routes.login;
     } catch (error: any) {
       toast.error("Logout failed, please try again later");
     }

@@ -34,7 +34,7 @@ function SignInForm() {
       }
 
       // Get the callback URL from the search params or use default
-      const callbackUrl = searchParams.get("callbackUrl") || Routes.users;
+      const callbackUrl =  Routes.users;
       router.push(callbackUrl);
       toast.success("Login successful");
     } catch (error: any) {
@@ -77,7 +77,7 @@ function SignInForm() {
             {loading ? "Loading..." : "Login"}
           </button>
           <Link
-            href={Routes.userForm}
+            href={Routes.signupForm}
             className={`text-blue-500 ${
               loading ? "pointer-events-none opacity-50" : ""
             }`}
