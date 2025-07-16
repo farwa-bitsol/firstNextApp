@@ -21,9 +21,10 @@ const authOptions = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: "/",
+    signIn: "/user/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
   providers: [
     CredentialsProvider({
       credentials: {
@@ -73,12 +74,41 @@ const authOptions = NextAuth({
       authorization: {
         params: {
           redirect_uri: process.env.NEXTAUTH_URL 
-            ? `${process.env.NEXTAUTH_URL}/user/signin`
-            : "http://localhost:3001/user/signin",
+            ? `${process.env.NEXTAUTH_URL}/api/auth/callback/google`
+            : "http://localhost:3001/api/auth/callback/google",
         },
       },
     }),
   ],
+  cookies: {
+    sessionToken: {
+      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.session-token" : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    callbackUrl: {
+      name: process.env.NODE_ENV === "production" ? "__Secure-next-auth.callback-url" : "next-auth.callback-url",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+    csrfToken: {
+      name: process.env.NODE_ENV === "production" ? "__Host-next-auth.csrf-token" : "next-auth.csrf-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
